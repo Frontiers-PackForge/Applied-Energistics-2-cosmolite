@@ -472,7 +472,7 @@ spotless {
         bumpThisNumberIfACustomStepChanges(1)
     }
 
-   json {
+    json {
         target 'src/*/resources/**/*.json'
         targetExclude 'src/generated/resources/**'
         var biomeConfig = it.new JsonExtension.BiomeJson(null)
@@ -484,27 +484,6 @@ spotless {
         indentWithSpaces(2)
         endWithNewline()
     }
-}
-
-////////////////
-// Crowdin
-tasks.register('uploadToCrowdin', JavaExec) {
-    classpath = sourceSets.buildtools.runtimeClasspath
-    mainClass = 'Crowdin'
-    args 'upload_source'
-    workingDir "."
-}
-tasks.register('uploadTranslations', JavaExec) {
-    classpath = sourceSets.buildtools.runtimeClasspath
-    mainClass = 'Crowdin'
-    args 'upload_translations'
-    workingDir "."
-}
-tasks.register('downloadFromCrowdin', JavaExec) {
-    classpath = sourceSets.buildtools.runtimeClasspath
-    mainClass = 'Crowdin'
-    args 'update_translations'
-    workingDir "."
 }
 
 // See https://github.com/AppliedEnergistics/Applied-Energistics-2/issues/5259
