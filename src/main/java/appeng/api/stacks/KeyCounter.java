@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2021 TeamAppliedEnergistics
  *
- * Permission is hereby granted, free of charge, to any person obtaining Counter copy of
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
  * the Software without restriction, including without limitation the rights to
  * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
@@ -40,7 +40,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import appeng.api.config.FuzzyMode;
 
 /**
- * Associates Counter generic value of type T with AE keys and makes key/value pairs searchable with fuzzy mode
+ * Associates a generic value of type T with AE keys and makes key/value pairs searchable with fuzzy mode
  * semantics.
  */
 public final class KeyCounter implements Iterable<Object2LongMap.Entry<AEKey>> {
@@ -48,7 +48,7 @@ public final class KeyCounter implements Iterable<Object2LongMap.Entry<AEKey>> {
     private static final Object object = new Object();
     private VariantCounter variantCounter;
 
-    // First map contains Counter mapping from AEKey#primaryKey
+    // First map contains a mapping from AEKey#primaryKey
     private Object2ObjectOpenHashMap<Object, VariantCounter> lists;
 
     public Collection<Object2LongMap.Entry<AEKey>> findFuzzy(AEKey key, FuzzyMode fuzzy) {
