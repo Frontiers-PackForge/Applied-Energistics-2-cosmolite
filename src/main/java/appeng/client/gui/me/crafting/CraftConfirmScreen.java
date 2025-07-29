@@ -18,8 +18,6 @@
 
 package appeng.client.gui.me.crafting;
 
-import java.text.NumberFormat;
-
 import org.lwjgl.glfw.GLFW;
 
 import net.minecraft.client.gui.GuiGraphics;
@@ -34,6 +32,7 @@ import appeng.client.gui.widgets.Scrollbar;
 import appeng.core.localization.GuiText;
 import appeng.menu.me.crafting.CraftConfirmMenu;
 import appeng.menu.me.crafting.CraftingPlanSummary;
+import appeng.util.NumberUtil;
 
 /**
  * This screen shows the computed crafting plan and allows the player to select a CPU on which it should be scheduled
@@ -76,7 +75,7 @@ public class CraftConfirmScreen extends AEBaseScreen<CraftConfirmMenu> {
         this.selectCPU.setMessage(getNextCpuButtonLabel());
 
         CraftingPlanSummary plan = menu.getPlan();
-        boolean planIsStartable = plan != null && !plan.isSimulation();
+        boolean planIsStartable = plan != null && !plan.simulation();
         this.start.active = !this.menu.hasNoCPU() && planIsStartable;
         this.selectCPU.active = planIsStartable;
 
@@ -84,10 +83,10 @@ public class CraftConfirmScreen extends AEBaseScreen<CraftConfirmMenu> {
         Component planDetails = GuiText.CalculatingWait.text();
         Component cpuDetails = Component.empty();
         if (plan != null) {
-            String byteUsed = NumberFormat.getInstance().format(plan.getUsedBytes());
+            String byteUsed = NumberUtil.formatNumber(plan.usedBytes());
             planDetails = GuiText.BytesUsed.text(byteUsed);
 
-            if (plan.isSimulation()) {
+            if (plan.simulation()) {
                 cpuDetails = GuiText.PartialPlan.text();
             } else if (this.menu.getCpuAvailableBytes() > 0) {
                 cpuDetails = GuiText.ConfirmCraftCpuStatus.text(
@@ -101,7 +100,7 @@ public class CraftConfirmScreen extends AEBaseScreen<CraftConfirmMenu> {
         setTextContent(TEXT_ID_DIALOG_TITLE, GuiText.CraftingPlan.text(planDetails));
         setTextContent("cpu_status", cpuDetails);
 
-        final int size = plan != null ? plan.getEntries().size() : 0;
+        final int size = plan != null ? plan.entries().size() : 0;
         scrollbar.setRange(0, this.table.getScrollableRows(size), 1);
     }
 
@@ -126,7 +125,7 @@ public class CraftConfirmScreen extends AEBaseScreen<CraftConfirmMenu> {
 
         CraftingPlanSummary plan = menu.getPlan();
         if (plan != null) {
-            this.table.render(guiGraphics, mouseX, mouseY, plan.getEntries(), scrollbar.getCurrentScroll());
+            this.table.render(guiGraphics, mouseX, mouseY, plan.entries(), scrollbar.getCurrentScroll());
         }
 
     }
