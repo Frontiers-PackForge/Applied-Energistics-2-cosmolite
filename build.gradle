@@ -472,7 +472,7 @@ spotless {
         bumpThisNumberIfACustomStepChanges(1)
     }
 
-    json {
+   json {
         target 'src/*/resources/**/*.json'
         targetExclude 'src/generated/resources/**'
         var biomeConfig = it.new JsonExtension.BiomeJson(null)
