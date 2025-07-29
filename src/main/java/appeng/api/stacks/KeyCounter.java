@@ -32,16 +32,18 @@ import java.util.Set;
 
 import com.google.common.collect.Iterators;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectMaps;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 
 import appeng.api.config.FuzzyMode;
 
 /**
- * Associates a generic value of type T with AE keys and makes key/value pairs searchable with fuzzy mode
- * semantics.
+ * Associates a generic value of type T with AE keys and makes key/value pairs searchable with fuzzy mode semantics.
  */
 public final class KeyCounter implements Iterable<Object2LongMap.Entry<AEKey>> {
 
@@ -49,7 +51,7 @@ public final class KeyCounter implements Iterable<Object2LongMap.Entry<AEKey>> {
     private VariantCounter variantCounter;
 
     // First map contains a mapping from AEKey#primaryKey
-    private Object2ObjectOpenHashMap<Object, VariantCounter> lists;
+    private Reference2ObjectMap<Object, VariantCounter> lists;
 
     public Collection<Object2LongMap.Entry<AEKey>> findFuzzy(AEKey key, FuzzyMode fuzzy) {
         if (this.lists == null)
@@ -73,36 +75,31 @@ public final class KeyCounter implements Iterable<Object2LongMap.Entry<AEKey>> {
             this.variantCounter.removeZeros();
             return;
         }
-        var iterator = lists.object2ObjectEntrySet().fastIterator();
-        while (iterator.hasNext()) {
-            var entry = iterator.next();
+        for (var entry : Reference2ObjectMaps.fastIterable(this.lists)) {
             VariantCounter variantCounter = entry.getValue();
             variantCounter.removeZeros();
             if (variantCounter != this.variantCounter && variantCounter.isEmpty())
-                iterator.remove();
+                this.lists.remove(entry.getKey());
         }
     }
 
     public void removeEmptySubmaps() {
         if (this.lists == null)
             return;
-        var iterator = lists.object2ObjectEntrySet().fastIterator();
-        while (iterator.hasNext()) {
-            var entry = iterator.next();
+        for (var entry : Reference2ObjectMaps.fastIterable(this.lists)) {
             VariantCounter variantCounter = entry.getValue();
             if (variantCounter != this.variantCounter && variantCounter.isEmpty())
-                iterator.remove();
+                this.lists.remove(entry.getKey());
         }
     }
 
     public void addAll(KeyCounter other) {
         if (this.lists == null)
-            this.lists = new Object2ObjectOpenHashMap<>();
+            this.lists = new Reference2ObjectOpenHashMap<>();
         var map = other.lists;
-        for (var iterator = map.object2ObjectEntrySet().fastIterator(); iterator.hasNext();) {
-            var entry = iterator.next();
+        for (var entry : Reference2ObjectMaps.fastIterable(map)) {
             var obj = entry.getKey();
-            var counter = lists.get(obj);
+            var counter = this.lists.get(obj);
             if (counter == null) {
                 var counter1 = entry.getValue().copy();
                 if (obj == object)
@@ -116,12 +113,11 @@ public final class KeyCounter implements Iterable<Object2LongMap.Entry<AEKey>> {
 
     public void removeAll(KeyCounter other) {
         if (this.lists == null)
-            this.lists = new Object2ObjectOpenHashMap<>();
+            this.lists = new Reference2ObjectOpenHashMap<>();
         var map = other.lists;
-        for (var iterator = map.object2ObjectEntrySet().fastIterator(); iterator.hasNext();) {
-            var entry = iterator.next();
+        for (var entry : Reference2ObjectMaps.fastIterable(map)) {
             var obj = entry.getKey();
-            var counter = lists.get(obj);
+            var counter = this.lists.get(obj);
             if (counter == null) {
                 var counter1 = entry.getValue().copy();
                 if (obj == object)
@@ -178,8 +174,8 @@ public final class KeyCounter implements Iterable<Object2LongMap.Entry<AEKey>> {
             this.variantCounter.reset();
             return;
         }
-        for (var iterator = this.lists.object2ObjectEntrySet().fastIterator(); iterator.hasNext();)
-            iterator.next().getValue().reset();
+        for (var entry : Reference2ObjectMaps.fastIterable(this.lists))
+            entry.getValue().reset();
     }
 
     public void clear() {
@@ -189,8 +185,8 @@ public final class KeyCounter implements Iterable<Object2LongMap.Entry<AEKey>> {
             this.variantCounter.clear();
             return;
         }
-        for (var iterator = this.lists.object2ObjectEntrySet().fastIterator(); iterator.hasNext();)
-            iterator.next().getValue().clear();
+        for (var entry : Reference2ObjectMaps.fastIterable(this.lists))
+            entry.getValue().clear();
     }
 
     public boolean isEmpty() {
@@ -198,8 +194,8 @@ public final class KeyCounter implements Iterable<Object2LongMap.Entry<AEKey>> {
             return true;
         if (this.variantCounter != null && this.lists.size() == 1)
             return this.variantCounter.isEmpty();
-        for (var iterator = this.lists.object2ObjectEntrySet().fastIterator(); iterator.hasNext();)
-            if (!iterator.next().getValue().isEmpty())
+        for (var entry : Reference2ObjectMaps.fastIterable(this.lists))
+            if (!entry.getValue().isEmpty())
                 return false;
         return true;
     }
@@ -210,12 +206,13 @@ public final class KeyCounter implements Iterable<Object2LongMap.Entry<AEKey>> {
         if (this.variantCounter != null && this.lists.size() == 1)
             return this.variantCounter.size();
         int i = 0;
-        for (var iterator = this.lists.object2ObjectEntrySet().fastIterator(); iterator.hasNext();)
-            i += iterator.next().getValue().size();
+        for (var entry : Reference2ObjectMaps.fastIterable(this.lists))
+            i += entry.getValue().size();
         return i;
     }
 
     @Override
+    @NotNull
     public Iterator<Object2LongMap.Entry<AEKey>> iterator() {
         if (this.lists == null)
             return Collections.emptyIterator();
@@ -226,7 +223,7 @@ public final class KeyCounter implements Iterable<Object2LongMap.Entry<AEKey>> {
 
     private VariantCounter getSubIndex(AEKey key) {
         if (lists == null)
-            this.lists = new Object2ObjectOpenHashMap<>();
+            this.lists = new Reference2ObjectOpenHashMap<>();
         if (key.getFuzzySearchMaxValue() > 0)
             return lists.computeIfAbsent(key.getPrimaryKey(), k -> new VariantCounter.FuzzyVariantMap());
         if (this.variantCounter == null) {
@@ -261,8 +258,8 @@ public final class KeyCounter implements Iterable<Object2LongMap.Entry<AEKey>> {
     public Object2LongMap.Entry<AEKey> getFirstEntry() {
         if (this.lists == null)
             return null;
-        for (var iterator = this.lists.object2ObjectEntrySet().fastIterator(); iterator.hasNext();) {
-            var it = iterator.next().getValue().iterator();
+        for (var entry : Reference2ObjectMaps.fastIterable(this.lists)) {
+            var it = entry.getValue().iterator();
             if (it.hasNext())
                 return it.next();
         }
@@ -273,12 +270,12 @@ public final class KeyCounter implements Iterable<Object2LongMap.Entry<AEKey>> {
     public <T extends AEKey> Object2LongMap.Entry<AEKey> getFirstEntry(Class<T> keyClass) {
         if (this.lists == null)
             return null;
-        for (var iterator = this.lists.object2ObjectEntrySet().fastIterator(); iterator.hasNext();) {
-            var it = iterator.next().getValue().iterator();
+        for (var entry : Reference2ObjectMaps.fastIterable(this.lists)) {
+            var it = entry.getValue().iterator();
             if (it.hasNext()) {
-                var entry = it.next();
-                if (keyClass.isInstance(entry.getKey()))
-                    return entry;
+                var entry1 = it.next();
+                if (keyClass.isInstance(entry1.getKey()))
+                    return entry1;
             }
         }
         return null;
@@ -290,9 +287,9 @@ public final class KeyCounter implements Iterable<Object2LongMap.Entry<AEKey>> {
         if (this.variantCounter != null && this.lists.size() == 1)
             return this.variantCounter.keySet();
         var set = new HashSet<AEKey>(size());
-        for (var iterator = this.lists.object2ObjectEntrySet().fastIterator(); iterator.hasNext();)
-            for (var entry : iterator.next().getValue())
-                set.add(entry.getKey());
+        for (var entry : Reference2ObjectMaps.fastIterable(this.lists))
+            for (var entry1 : entry.getValue())
+                set.add(entry1.getKey());
         return set;
     }
 
