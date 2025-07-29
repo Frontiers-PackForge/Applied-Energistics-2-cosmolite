@@ -3,6 +3,9 @@ package appeng.api.stacks;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Set;
+
+import org.jetbrains.annotations.NotNull;
 
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import it.unimi.dsi.fastutil.objects.Object2LongMaps;
@@ -134,6 +137,10 @@ abstract class VariantCounter implements Iterable<Object2LongMap.Entry<AEKey>> {
         }
     }
 
+    public abstract Set<AEKey> keySet();
+
+    public abstract long getOrMin(AEKey paramAEKey);
+
     /**
      * Only returns entries that do not have amount 0.
      */
@@ -172,7 +179,6 @@ abstract class VariantCounter implements Iterable<Object2LongMap.Entry<AEKey>> {
                     return entry;
                 }
             }
-
             return null;
         }
     }
@@ -204,6 +210,48 @@ abstract class VariantCounter implements Iterable<Object2LongMap.Entry<AEKey>> {
             result.records.putAll(records);
             return result;
         }
+
+        public Set<AEKey> keySet() {
+            return this.records.keySet();
+        }
+
+        public int size() {
+            return this.records.size();
+        }
+
+        public boolean isEmpty() {
+            return this.records.isEmpty();
+        }
+
+        public long getOrMin(AEKey key) {
+            return this.records.getOrDefault(key, Long.MIN_VALUE);
+        }
+
+        public long get(AEKey key) {
+            return this.records.getLong(key);
+        }
+
+        public long remove(AEKey key) {
+            return this.records.removeLong(key);
+        }
+
+        public void reset() {
+            for (Object2LongMap.Entry<AEKey> aeKeyEntry : this.records.object2LongEntrySet())
+                aeKeyEntry.setValue(0L);
+        }
+
+        public void clear() {
+            this.records.clear();
+        }
+
+        public void removeZeros() {
+            this.records.object2LongEntrySet().removeIf(entry -> entry.getLongValue() == 0L);
+        }
+
+        @NotNull
+        public Iterator<Object2LongMap.Entry<AEKey>> iterator() {
+            return this.records.object2LongEntrySet().iterator();
+        }
     }
 
     /**
@@ -219,9 +267,46 @@ abstract class VariantCounter implements Iterable<Object2LongMap.Entry<AEKey>> {
             return FuzzySearch.findFuzzy((Object2LongSortedMap<AEKey>) records, key, fuzzy).object2LongEntrySet();
         }
 
+        public Set<AEKey> keySet() {
+            return this.records.keySet();
+        }
+
+        public int size() {
+            return this.records.size();
+        }
+
+        public boolean isEmpty() {
+            return this.records.isEmpty();
+        }
+
+        public long getOrMin(AEKey key) {
+            return this.records.getOrDefault(key, Long.MIN_VALUE);
+        }
+
+        public long get(AEKey key) {
+            return this.records.getLong(key);
+        }
+
+        public long remove(AEKey key) {
+            return this.records.removeLong(key);
+        }
+
         @Override
         AEKey2LongMap getRecords() {
             return this.records;
+        }
+
+        public void reset() {
+            for (Object2LongMap.Entry<AEKey> aeKeyEntry : this.records.object2LongEntrySet())
+                aeKeyEntry.setValue(0L);
+        }
+
+        public void clear() {
+            this.records.clear();
+        }
+
+        public void removeZeros() {
+            this.records.object2LongEntrySet().removeIf(entry -> entry.getLongValue() == 0L);
         }
 
         @Override
@@ -229,6 +314,11 @@ abstract class VariantCounter implements Iterable<Object2LongMap.Entry<AEKey>> {
             var result = new FuzzyVariantMap();
             result.records.putAll(records);
             return result;
+        }
+
+        @NotNull
+        public Iterator<Object2LongMap.Entry<AEKey>> iterator() {
+            return this.records.object2LongEntrySet().iterator();
         }
     }
 }
