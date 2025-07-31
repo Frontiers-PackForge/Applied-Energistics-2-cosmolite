@@ -265,7 +265,7 @@ public class PatternEncodingTermMenu extends MEStorageMenu implements IMenuCraft
 
     public void encode(boolean hasShiftDown) {
         if (isClientSide()) {
-            sendClientAction(ACTION_ENCODE, Screen.hasShiftDown());
+            sendClientAction(ACTION_ENCODE, hasShiftDown);
             return;
         }
 
