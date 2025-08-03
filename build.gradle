@@ -441,7 +441,7 @@ publishing {
             artifactId = project.archivesBaseName
             version = project.version
 
-            artifact jar
+            artifact reobfJar
             artifact sourcesJar
             artifact javadocJar
             artifact apiJar
