@@ -82,6 +82,7 @@ public class BasePacketHandler {
 
         BLOCK_TRANSITION_EFFECT(BlockTransitionEffectPacket.class, BlockTransitionEffectPacket::new),
         BLOCK_HIGHLIGHT(BlockHighlightPacket.class, BlockHighlightPacket::new),
+        BLOCK_HIGHLIGHT_WHAT(BlockHighlightPacket.HighlightWhat.class, BlockHighlightPacket.HighlightWhat::new),
 
         GUI_DATA_SYNC(GuiDataSyncPacket.class, GuiDataSyncPacket::new),
 

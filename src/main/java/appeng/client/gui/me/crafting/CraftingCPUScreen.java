@@ -18,7 +18,6 @@
 
 package appeng.client.gui.me.crafting;
 
-import appeng.core.sync.packets.BlockHighlightPacket;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -26,12 +25,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import net.minecraft.client.gui.screens.Screen;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 
@@ -44,6 +43,8 @@ import appeng.client.gui.widgets.Scrollbar;
 import appeng.client.gui.widgets.ServerSettingToggleButton;
 import appeng.client.gui.widgets.SettingToggleButton;
 import appeng.core.localization.GuiText;
+import appeng.core.sync.network.NetworkHandler;
+import appeng.core.sync.packets.BlockHighlightPacket;
 import appeng.menu.me.crafting.CraftingCPUMenu;
 import appeng.menu.me.crafting.CraftingStatus;
 import appeng.menu.me.crafting.CraftingStatusEntry;
@@ -191,7 +192,8 @@ public class CraftingCPUScreen<T extends CraftingCPUMenu> extends AEBaseScreen<T
         if (btn == 0 && Screen.hasShiftDown()) {
             var hovered = table.getHoveredStack();
             if (hovered != null) {
-                menu.highlight(hovered.stack().what().toTagGeneric());
+                var packet = new BlockHighlightPacket.HighlightWhat(hovered.stack().what());
+                NetworkHandler.instance().sendToServer(packet);
                 return true;
             }
         }

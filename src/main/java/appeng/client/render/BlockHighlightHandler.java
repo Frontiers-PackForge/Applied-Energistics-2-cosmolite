@@ -23,4 +23,8 @@ public class BlockHighlightHandler {
     private static boolean blink() {
         return ((System.currentTimeMillis() / 500) & 1) != 0;
     }
+
+    public static long getTime(BlockPos be, BlockPos player) {
+        return System.currentTimeMillis() + (long) (600 * be.distSqr(player));
+    }
 }

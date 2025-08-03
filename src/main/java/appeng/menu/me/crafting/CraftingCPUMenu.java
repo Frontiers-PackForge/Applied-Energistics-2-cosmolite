@@ -22,8 +22,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuType;
@@ -36,10 +36,12 @@ import appeng.api.networking.security.IActionHost;
 import appeng.api.stacks.AEKey;
 import appeng.api.stacks.KeyCounter;
 import appeng.blockentity.crafting.CraftingBlockEntity;
+import appeng.blockentity.crafting.PatternProviderBlockEntity;
+import appeng.client.render.BlockHighlightHandler;
 import appeng.core.sync.network.NetworkHandler;
 import appeng.core.sync.packets.BlockHighlightPacket;
 import appeng.core.sync.packets.CraftingStatusPacket;
-import appeng.helpers.patternprovider.PatternProviderLogicHost;
+import appeng.helpers.patternprovider.PatternProviderLogic;
 import appeng.me.cluster.implementations.CraftingCPUCluster;
 import appeng.me.service.CraftingService;
 import appeng.menu.AEBaseMenu;
@@ -94,7 +96,6 @@ public class CraftingCPUMenu extends AEBaseMenu {
         }
 
         registerClientAction(ACTION_CANCEL_CRAFTING, this::cancelCrafting);
-        registerClientAction("highlight_block", CompoundTag.class, this::highlight);
     }
 
     protected void setCPU(ICraftingCPU c) {
@@ -177,35 +178,29 @@ public class CraftingCPUMenu extends AEBaseMenu {
         return this.grid;
     }
 
-    public void highlight(CompoundTag tag) {
-        if (isClientSide()) {
-            this.sendClientAction("highlight_block", tag);
-            return;
-        }
-
+    public void highlight(AEKey what) {
         if (isServerSide() && grid != null) {
             CraftingService service = (CraftingService) grid.getCraftingService();
-            AEKey what = AEKey.fromTagGeneric(tag);
             var patterns = service.getCraftingFor(what);
-            Set<BlockEntity> positions = new HashSet<>();
+            Set<BlockEntity> bePositions = new HashSet<>();
             for (var pattern : patterns) {
                 var provider = service.getProviders(pattern);
                 for (var providerPos : provider) {
-                    if (providerPos instanceof PatternProviderLogicHost host) {
-                        var node = host.getBlockEntity();
-                        if (node != null) {
-                            positions.add(node);
-                        }
+                    if (providerPos instanceof PatternProviderLogic host) {
+                        var be = host.host.getBlockEntity();
+                        if (be != null)
+                            bePositions.add(be);
                     }
                 }
             }
-            if (!positions.isEmpty()) {
-                for (var pos : positions) {
+            if (!bePositions.isEmpty()) {
+                for (var pos : bePositions) {
+                    var ppBe = (PatternProviderBlockEntity) pos;
                     var packet = new BlockHighlightPacket(
-                            pos.getBlockPos(), pos.getLevel().dimension(),
-                            System.currentTimeMillis()
-                                    + (long) (600 * pos.getBlockPos().distSqr(this.getPlayer().getOnPos())));
-                    NetworkHandler.instance().sendToServer(packet);
+                            ppBe.getBlockPos(),
+                            ppBe.getLevel().dimension(),
+                            BlockHighlightHandler.getTime(ppBe.getBlockPos(), this.getPlayer().getOnPos()));
+                    NetworkHandler.instance().sendTo(packet, (ServerPlayer) this.getPlayer());
                 }
             }
         }
