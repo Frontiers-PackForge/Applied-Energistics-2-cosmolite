@@ -18,6 +18,7 @@
 
 package appeng.client.gui.me.crafting;
 
+import appeng.core.sync.packets.BlockHighlightPacket;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import net.minecraft.client.gui.screens.Screen;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 
 import net.minecraft.ChatFormatting;
@@ -184,4 +186,15 @@ public class CraftingCPUScreen<T extends CraftingCPUMenu> extends AEBaseScreen<T
                 sortedEntries);
     }
 
+    @Override
+    public boolean mouseClicked(double xCoord, double yCoord, int btn) {
+        if (btn == 0 && Screen.hasShiftDown()) {
+            var hovered = table.getHoveredStack();
+            if (hovered != null) {
+                menu.highlight(hovered.stack().what().toTagGeneric());
+                return true;
+            }
+        }
+        return super.mouseClicked(xCoord, yCoord, btn);
+    }
 }

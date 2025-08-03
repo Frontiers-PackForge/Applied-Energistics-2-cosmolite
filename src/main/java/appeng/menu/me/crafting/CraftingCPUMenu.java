@@ -18,12 +18,16 @@
 
 package appeng.menu.me.crafting;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Consumer;
 
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import appeng.api.config.CpuSelectionMode;
 import appeng.api.networking.IGrid;
@@ -32,8 +36,12 @@ import appeng.api.networking.security.IActionHost;
 import appeng.api.stacks.AEKey;
 import appeng.api.stacks.KeyCounter;
 import appeng.blockentity.crafting.CraftingBlockEntity;
+import appeng.core.sync.network.NetworkHandler;
+import appeng.core.sync.packets.BlockHighlightPacket;
 import appeng.core.sync.packets.CraftingStatusPacket;
+import appeng.helpers.patternprovider.PatternProviderLogicHost;
 import appeng.me.cluster.implementations.CraftingCPUCluster;
+import appeng.me.service.CraftingService;
 import appeng.menu.AEBaseMenu;
 import appeng.menu.guisync.GuiSync;
 import appeng.menu.implementations.MenuTypeBuilder;
@@ -81,12 +89,12 @@ public class CraftingCPUMenu extends AEBaseMenu {
         if (te instanceof CraftingBlockEntity) {
             this.setCPU(((CraftingBlockEntity) te).getCluster());
         }
-
         if (this.getGrid() == null && isServerSide()) {
             this.setValidMenu(false);
         }
 
         registerClientAction(ACTION_CANCEL_CRAFTING, this::cancelCrafting);
+        registerClientAction("highlight_block", CompoundTag.class, this::highlight);
     }
 
     protected void setCPU(ICraftingCPU c) {
@@ -169,4 +177,37 @@ public class CraftingCPUMenu extends AEBaseMenu {
         return this.grid;
     }
 
+    public void highlight(CompoundTag tag) {
+        if (isClientSide()) {
+            this.sendClientAction("highlight_block", tag);
+            return;
+        }
+
+        if (isServerSide() && grid != null) {
+            CraftingService service = (CraftingService) grid.getCraftingService();
+            AEKey what = AEKey.fromTagGeneric(tag);
+            var patterns = service.getCraftingFor(what);
+            Set<BlockEntity> positions = new HashSet<>();
+            for (var pattern : patterns) {
+                var provider = service.getProviders(pattern);
+                for (var providerPos : provider) {
+                    if (providerPos instanceof PatternProviderLogicHost host) {
+                        var node = host.getBlockEntity();
+                        if (node != null) {
+                            positions.add(node);
+                        }
+                    }
+                }
+            }
+            if (!positions.isEmpty()) {
+                for (var pos : positions) {
+                    var packet = new BlockHighlightPacket(
+                            pos.getBlockPos(), pos.getLevel().dimension(),
+                            System.currentTimeMillis()
+                                    + (long) (600 * pos.getBlockPos().distSqr(this.getPlayer().getOnPos())));
+                    NetworkHandler.instance().sendToServer(packet);
+                }
+            }
+        }
+    }
 }
