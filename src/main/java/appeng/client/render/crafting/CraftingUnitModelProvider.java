@@ -67,9 +67,11 @@ public class CraftingUnitModelProvider extends AbstractCraftingUnitModelProvider
         return switch (type) {
             case UNIT -> new UnitBakedModel(ringCorner, ringSideHor, ringSideVer,
                     spriteGetter.apply(UNIT_BASE));
-            case ACCELERATOR, STORAGE_1K, STORAGE_4K, STORAGE_16K, STORAGE_64K, STORAGE_256K, SINGULARITY -> new LightBakedModel(
-                    ringCorner, ringSideHor, ringSideVer, spriteGetter.apply(LIGHT_BASE),
-                    this.getLightMaterial(spriteGetter));
+            case ACCELERATOR, STORAGE_1K, STORAGE_4K, STORAGE_16K, STORAGE_64K, STORAGE_256K,
+                    SINGULARITY ->
+                new LightBakedModel(
+                        ringCorner, ringSideHor, ringSideVer, spriteGetter.apply(LIGHT_BASE),
+                        this.getLightMaterial(spriteGetter));
             case MONITOR -> new MonitorBakedModel(ringCorner, ringSideHor, ringSideVer,
                     spriteGetter.apply(UNIT_BASE), spriteGetter.apply(MONITOR_BASE),
                     spriteGetter.apply(MONITOR_LIGHT_DARK),
