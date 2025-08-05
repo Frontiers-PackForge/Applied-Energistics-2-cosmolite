@@ -84,8 +84,14 @@ public class CraftingCpuLogic {
     public ICraftingSubmitResult trySubmitJob(IGrid grid, ICraftingPlan plan, IActionSource src,
             @Nullable ICraftingRequester requester) {
         // Already have a job.
-        if (this.job != null)
-            return CraftingSubmitResult.CPU_BUSY;
+        if (this.job != null) {
+            if (!plan.finalOutput().what().equals(this.job.finalOutput.what())) {
+                return CraftingSubmitResult.CPU_BUSY;
+            }
+            if (this.job.currentJobSize + plan.bytes() > cluster.getAvailableStorage()) {
+                return CraftingSubmitResult.CPU_TOO_SMALL;
+            }
+        }
         // Check that the node is active.
         if (!cluster.isActive())
             return CraftingSubmitResult.CPU_OFFLINE;
@@ -107,7 +113,11 @@ public class CraftingCpuLogic {
                 .orElse(null);
         var craftId = UUID.randomUUID();
         var linkCpu = new CraftingLink(CraftingCpuHelper.generateLinkData(craftId, requester == null, false), cluster);
-        this.job = new ExecutingCraftingJob(plan, this::postChange, linkCpu, playerId);
+        if (this.job == null) {
+            this.job = new ExecutingCraftingJob(plan, this::postChange, linkCpu, playerId);
+        } else {
+            this.job.mergePlan(plan);
+        }
         cluster.updateOutput(plan.finalOutput());
         cluster.markDirty();
 
@@ -209,9 +219,20 @@ public class CraftingCpuLogic {
                         PowerMultiplier.CONFIG) < patternPower - 0.01)
                     break;
 
+                var bytes = 0L;
+                for (var patternInputs : craftingContainer) {
+                    if (patternInputs != null) {
+                        for (var input : patternInputs) {
+                            //match byte size from ICraftingSimulationState
+                            bytes += (long) ((double) input.getLongValue() / input.getKey().getType().getAmountPerByte() * 8);
+                        }
+                    }
+                }
+
                 if (provider.pushPattern(details, craftingContainer)) {
                     energyService.extractAEPower(patternPower, Actionable.MODULATE, PowerMultiplier.CONFIG);
                     pushedPatterns++;
+                    job.freeBytes(bytes);
 
                     for (var expectedOutput : expectedOutputs) {
                         job.waitingFor.insert(expectedOutput.getKey(), expectedOutput.getLongValue(),
@@ -229,6 +250,8 @@ public class CraftingCpuLogic {
                     task.getValue().value--;
                     if (task.getValue().value <= 0) {
                         it.remove();
+                        //task removed means node removed. 8 byte for each node as in CraftingCalculation
+                        job.freeBytes(8);
                         continue taskLoop;
                     }
 
@@ -409,6 +432,10 @@ public class CraftingCpuLogic {
 
     public ExecutingCraftingJob getJob() {
         return this.job;
+    }
+
+    public long getCurrentJobSize() {
+        return this.job.currentJobSize;
     }
 
     @Nullable

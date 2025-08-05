@@ -48,6 +48,7 @@ public class ExecutingCraftingJob {
     private static final String NBT_REMAINING_AMOUNT = "remainingAmount";
     private static final String NBT_TASKS = "tasks";
     private static final String NBT_CRAFTING_PROGRESS = "#craftingProgress";
+    private static final String NBT_CURRENT_JOB_SIZE = "currentJobSize";
 
     final CraftingLink link;
     final ListCraftingInventory waitingFor;
@@ -55,8 +56,35 @@ public class ExecutingCraftingJob {
     final ElapsedTimeTracker timeTracker;
     GenericStack finalOutput;
     long remainingAmount;
+    long currentJobSize;
     @Nullable
     Integer playerId;
+
+    public void mergePlan(ICraftingPlan plan) {
+        this.finalOutput = new GenericStack(finalOutput.what(), finalOutput.amount() + plan.finalOutput().amount());
+        this.remainingAmount += plan.finalOutput().amount();
+        for (var entry : plan.emittedItems()) {
+            waitingFor.insert(entry.getKey(), entry.getLongValue(), Actionable.MODULATE);
+            timeTracker.addMaxItems(entry.getLongValue(), entry.getKey().getType());
+        }
+        for (var task : plan.patternTimes().entrySet()) {
+            tasks.compute(task.getKey(), (p, v) -> {
+                if (v == null) {
+                    v = new TaskProgress();
+                }
+                v.value += task.getValue();
+                return v;
+            });
+            for (var output : task.getKey().getOutputs()) {
+                var amount = output.amount() * task.getValue() * output.what().getAmountPerUnit();
+                timeTracker.addMaxItems(amount, output.what().getType());
+            }
+        }
+    }
+
+    public void freeBytes(long i) {
+        this.currentJobSize -= i;
+    }
 
     @FunctionalInterface
     interface CraftingDifferenceListener {
@@ -84,6 +112,7 @@ public class ExecutingCraftingJob {
         }
         this.link = link;
         this.playerId = playerId;
+        this.currentJobSize = plan.bytes();
     }
 
     ExecutingCraftingJob(CompoundTag data, CraftingDifferenceListener postCraftingDifference, CraftingCpuLogic cpu) {
@@ -115,6 +144,7 @@ public class ExecutingCraftingJob {
                 this.tasks.put(details, tp);
             }
         }
+        this.currentJobSize = data.getLong(NBT_CURRENT_JOB_SIZE);
     }
 
     CompoundTag writeToNBT() {
@@ -141,6 +171,7 @@ public class ExecutingCraftingJob {
         if (this.playerId != null) {
             data.putInt(NBT_PLAYER_ID, this.playerId);
         }
+        data.putLong(NBT_CURRENT_JOB_SIZE, this.currentJobSize);
 
         return data;
     }

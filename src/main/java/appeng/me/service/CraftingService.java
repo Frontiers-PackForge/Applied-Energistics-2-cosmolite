@@ -382,8 +382,14 @@ public class CraftingService implements ICraftingService, IGridServiceProvider {
                 continue;
             }
             if (cpu.isBusy()) {
-                busy++;
-                continue;
+                if (!cpu.craftingLogic.getFinalJobOutput().what().equals(job.finalOutput().what())) {
+                    busy++;
+                    continue;
+                }
+                if (cpu.getAvailableStorage() < job.bytes() + cpu.craftingLogic.getCurrentJobSize()) {
+                    tooSmall++;
+                    continue;
+                }
             }
             if (cpu.getAvailableStorage() < job.bytes()) {
                 tooSmall++;
