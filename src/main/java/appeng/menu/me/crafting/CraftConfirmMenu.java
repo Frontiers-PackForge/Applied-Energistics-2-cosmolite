@@ -103,7 +103,7 @@ public class CraftConfirmMenu extends AEBaseMenu implements ISubMenu {
     @GuiSync(8)
     public SyncableSubmitResult submitError = NO_ERROR;
     @GuiSync(9)
-    public GenericStack stackToCraft;
+    public GenericStack currentlyCraftingStack;
 
     private CraftingPlanSummary plan;
 
@@ -255,7 +255,7 @@ public class CraftConfirmMenu extends AEBaseMenu implements ISubMenu {
             return true;
         }
         if (c.isBusy()) {
-            if (craftMatches(c)) {
+            if (this.plan.crafting().matches(c.getJobStatus().crafting())) {
                 if (c instanceof CraftingCPUCluster cpuCluster) {
                     if (cpuCluster.craftingLogic.isSameRequester(null)) {
                         return c.getAvailableStorage() >= this.plan.usedBytes() + cpuCluster.craftingLogic.getCurrentJobSize();
@@ -266,16 +266,10 @@ public class CraftConfirmMenu extends AEBaseMenu implements ISubMenu {
         }
         return c.getAvailableStorage() >= this.plan.usedBytes();
     }
-    public boolean craftMatches (ICraftingCPU c) {
-        if (plan != null) {
-            return this.plan.crafting().matches(c.getJobStatus().crafting());
-        }
-        return false;
-    }
 
-    public boolean selectedMatches () {
+    public boolean craftingMatchesSelectedCPU() {
         if (plan != null) {
-            return this.plan.crafting().matches(this.stackToCraft);
+            return this.plan.crafting().matches(this.currentlyCraftingStack);
         }
         return false;
     }
@@ -332,7 +326,7 @@ public class CraftConfirmMenu extends AEBaseMenu implements ISubMenu {
             cpuCoProcessors = 0;
             cpuName = null;
             selectedCpu = null;
-            stackToCraft = null;
+            currentlyCraftingStack = null;
         } else {
             cpuBytesAvail = cpuRecord.getSize();
             cpuCoProcessors = cpuRecord.getProcessors();
@@ -340,9 +334,9 @@ public class CraftConfirmMenu extends AEBaseMenu implements ISubMenu {
             selectedCpu = cpuRecord.getCpu();
             CraftingJobStatus jobStatus = selectedCpu.getJobStatus();
             if (jobStatus == null) {
-                stackToCraft = null;
+                currentlyCraftingStack = null;
             } else {
-                stackToCraft = jobStatus.crafting();
+                currentlyCraftingStack = jobStatus.crafting();
             }
         }
     }

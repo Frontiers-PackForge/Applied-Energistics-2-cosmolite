@@ -353,7 +353,7 @@ public class CraftingService implements ICraftingService, IGridServiceProvider {
             cpuCluster = (CraftingCPUCluster) target;
         } else {
             var unsuitableCpusResult = new MutableObject<UnsuitableCpus>();
-            cpuCluster = findSuitableCraftingCPU(job, prioritizePower, src, unsuitableCpusResult, requestingMachine);
+            cpuCluster = findSuitableCraftingCPU(job, prioritizePower, src, requestingMachine, unsuitableCpusResult);
             if (cpuCluster == null) {
                 var unsuitableCpus = unsuitableCpusResult.getValue();
                 // If no CPUs were unsuitable, but we couldn't find one, that means there aren't any
@@ -370,7 +370,7 @@ public class CraftingService implements ICraftingService, IGridServiceProvider {
 
     @Nullable
     private CraftingCPUCluster findSuitableCraftingCPU(ICraftingPlan job, boolean prioritizePower, IActionSource src,
-            MutableObject<UnsuitableCpus> unsuitableCpus, ICraftingRequester requestingMachine) {
+            ICraftingRequester requestingMachine, MutableObject<UnsuitableCpus> unsuitableCpus) {
         var validCpusClusters = new ArrayList<CraftingCPUCluster>(this.craftingCPUClusters.size());
         int offline = 0;
         int busy = 0;

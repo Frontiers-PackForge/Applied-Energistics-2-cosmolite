@@ -175,7 +175,7 @@ public class CraftingLink implements ICraftingLink {
         this.canceled = canceled;
     }
 
-    public ICraftingRequester getRequester() {
+    ICraftingRequester getRequester() {
         return this.req;
     }
 

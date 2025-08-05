@@ -95,7 +95,7 @@ public class CraftConfirmScreen extends AEBaseScreen<CraftConfirmMenu> {
             } else {
                 cpuDetails = GuiText.ConfirmCraftNoCpu.text();
             }
-            if (menu.selectedMatches()) {
+            if (menu.craftingMatchesSelectedCPU()) {
                 this.start.setMessage(GuiText.Merge.text());
             } else {
                 this.start.setMessage(GuiText.Start.text());
