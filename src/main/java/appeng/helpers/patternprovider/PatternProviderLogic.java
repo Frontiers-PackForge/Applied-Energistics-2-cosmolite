@@ -401,7 +401,7 @@ public class PatternProviderLogic implements InternalInventoryHost, ICraftingPro
 
     private void onPushPatternSuccess(IPatternDetails pattern) {
         resetCraftingLock();
-        tryCancelCraft(pattern);
+        tryAutoCompleteCraft(pattern);
 
         var lockMode = configManager.getSetting(Settings.LOCK_CRAFTING_MODE);
         switch (lockMode) {
@@ -424,7 +424,7 @@ public class PatternProviderLogic implements InternalInventoryHost, ICraftingPro
         }
     }
 
-    private void tryCancelCraft(IPatternDetails pattern) {
+    private void tryAutoCompleteCraft(IPatternDetails pattern) {
         if (!upgrades.isInstalled(AEItems.AUTO_COMPLETE_CARD))
             return;
         getGrid().getCraftingService().getCpus().stream()
@@ -601,9 +601,9 @@ public class PatternProviderLogic implements InternalInventoryHost, ICraftingPro
                     this.host.getBlockEntity().getBlockPos());
         }
 
-        for (var is : this.upgrades) {
-            if (!is.isEmpty()) {
-                drops.add(is);
+        for (var upgrade : this.upgrades) {
+            if (!upgrade.isEmpty()) {
+                drops.add(upgrade);
             }
         }
 
