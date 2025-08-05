@@ -22,7 +22,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-import appeng.crafting.CraftingLinkNexus;
 import com.google.common.base.Preconditions;
 
 import org.jetbrains.annotations.Nullable;
@@ -48,6 +47,7 @@ import appeng.core.AELog;
 import appeng.core.sync.network.NetworkHandler;
 import appeng.core.sync.packets.CraftingJobStatusPacket;
 import appeng.crafting.CraftingLink;
+import appeng.crafting.CraftingLinkNexus;
 import appeng.crafting.inv.ListCraftingInventory;
 import appeng.hooks.ticking.TickHandler;
 import appeng.me.cluster.implementations.CraftingCPUCluster;
@@ -227,8 +227,9 @@ public class CraftingCpuLogic {
                 for (var patternInputs : craftingContainer) {
                     if (patternInputs != null) {
                         for (var input : patternInputs) {
-                            //match byte size from ICraftingSimulationState
-                            bytes += (long) ((double) input.getLongValue() / input.getKey().getType().getAmountPerByte() * 8);
+                            // match byte size from ICraftingSimulationState
+                            bytes += (long) ((double) input.getLongValue() / input.getKey().getType().getAmountPerByte()
+                                    * 8);
                         }
                     }
                 }
@@ -254,7 +255,7 @@ public class CraftingCpuLogic {
                     task.getValue().value--;
                     if (task.getValue().value <= 0) {
                         it.remove();
-                        //task removed means node removed. 8 byte for each node as in CraftingCalculation
+                        // task removed means node removed. 8 byte for each node as in CraftingCalculation
                         job.freeBytes(8);
                         continue taskLoop;
                     }

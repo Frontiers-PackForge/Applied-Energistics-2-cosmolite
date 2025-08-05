@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
-import appeng.api.stacks.GenericStack;
 import com.google.common.collect.ImmutableList;
 
 import net.minecraft.network.FriendlyByteBuf;
@@ -41,7 +40,8 @@ import appeng.api.stacks.AEKey;
  * @param usedBytes
  * @param simulation
  */
-public record CraftingPlanSummary(long usedBytes, boolean simulation, List<CraftingPlanSummaryEntry> entries, AEKey crafting) {
+public record CraftingPlanSummary(long usedBytes, boolean simulation, List<CraftingPlanSummaryEntry> entries,
+        AEKey crafting) {
 
     public void write(FriendlyByteBuf buffer) {
         buffer.writeVarLong(usedBytes);
