@@ -91,6 +91,9 @@ public class CraftingCpuLogic {
             if (this.job.currentJobSize + plan.bytes() > cluster.getAvailableStorage()) {
                 return CraftingSubmitResult.CPU_TOO_SMALL;
             }
+            if (!cluster.craftingLogic.isSameRequester(requester)) {
+                return CraftingSubmitResult.CPU_BUSY;
+            }
         }
         // Check that the node is active.
         if (!cluster.isActive())
@@ -473,6 +476,13 @@ public class CraftingCpuLogic {
             return this.job.link;
         }
         return null;
+    }
+
+    public boolean isSameRequester(ICraftingRequester requester) {
+        if (this.job != null) {
+            return this.job.link.getTie().getRequest().getRequester() == requester;
+        }
+        return false;
     }
 
     public ListCraftingInventory getInventory() {

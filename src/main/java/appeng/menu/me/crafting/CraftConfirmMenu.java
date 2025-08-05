@@ -22,6 +22,14 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Future;
 
+import appeng.api.networking.crafting.CalculationStrategy;
+import appeng.api.networking.crafting.CraftingJobStatus;
+import appeng.api.networking.crafting.CraftingSubmitErrorCode;
+import appeng.api.networking.crafting.ICraftingCPU;
+import appeng.api.networking.crafting.ICraftingPlan;
+import appeng.api.networking.crafting.ICraftingService;
+import appeng.api.networking.crafting.ICraftingSubmitResult;
+import appeng.api.networking.crafting.UnsuitableCpus;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.network.FriendlyByteBuf;
@@ -34,13 +42,6 @@ import net.minecraft.world.level.Level;
 
 import appeng.api.networking.IGrid;
 import appeng.api.networking.IGridNode;
-import appeng.api.networking.crafting.CalculationStrategy;
-import appeng.api.networking.crafting.CraftingSubmitErrorCode;
-import appeng.api.networking.crafting.ICraftingCPU;
-import appeng.api.networking.crafting.ICraftingPlan;
-import appeng.api.networking.crafting.ICraftingService;
-import appeng.api.networking.crafting.ICraftingSubmitResult;
-import appeng.api.networking.crafting.UnsuitableCpus;
 import appeng.api.networking.security.IActionHost;
 import appeng.api.networking.security.IActionSource;
 import appeng.api.stacks.AEKey;

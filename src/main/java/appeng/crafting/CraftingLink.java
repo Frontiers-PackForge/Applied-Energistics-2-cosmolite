@@ -175,8 +175,12 @@ public class CraftingLink implements ICraftingLink {
         this.canceled = canceled;
     }
 
-    ICraftingRequester getRequester() {
+    public ICraftingRequester getRequester() {
         return this.req;
+    }
+
+    public CraftingLinkNexus getTie() {
+        return tie;
     }
 
     ICraftingCPU getCpu() {
