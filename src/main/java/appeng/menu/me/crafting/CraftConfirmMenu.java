@@ -100,6 +100,8 @@ public class CraftConfirmMenu extends AEBaseMenu implements ISubMenu {
     public Component cpuName;
     @GuiSync(8)
     public SyncableSubmitResult submitError = NO_ERROR;
+    @GuiSync(9)
+    public GenericStack stackToCraft;
 
     private CraftingPlanSummary plan;
 
@@ -250,7 +252,14 @@ public class CraftConfirmMenu extends AEBaseMenu implements ISubMenu {
         if (this.plan == null) {
             return true;
         }
-        return c.getAvailableStorage() >= this.plan.usedBytes() && !c.isBusy();
+        return c.getAvailableStorage() >= this.plan.usedBytes();
+    }
+
+    public boolean craftMatches () {
+        if (stackToCraft != null && plan != null) {
+            return stackToCraft.what().equals(this.plan.crafting());
+        }
+        return false;
     }
 
     public void startJob() {
@@ -305,11 +314,18 @@ public class CraftConfirmMenu extends AEBaseMenu implements ISubMenu {
             cpuCoProcessors = 0;
             cpuName = null;
             selectedCpu = null;
+            stackToCraft = null;
         } else {
             cpuBytesAvail = cpuRecord.getSize();
             cpuCoProcessors = cpuRecord.getProcessors();
             cpuName = cpuRecord.getName();
             selectedCpu = cpuRecord.getCpu();
+            CraftingJobStatus jobStatus = selectedCpu.getJobStatus();
+            if (jobStatus == null) {
+                stackToCraft = null;
+            } else {
+                stackToCraft = jobStatus.crafting();
+            }
         }
     }
 

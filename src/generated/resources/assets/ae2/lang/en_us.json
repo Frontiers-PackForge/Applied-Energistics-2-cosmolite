@@ -374,6 +374,7 @@
   "gui.ae2.MENetworkStorage": "ME Network Storage",
   "gui.ae2.Magenta": "Magenta",
   "gui.ae2.MaxPower": "Max Power: %s",
+  "gui.ae2.Merge": "Merge",
   "gui.ae2.Missing": "Missing: %s",
   "gui.ae2.MolecularAssembler": "Molecular Assembler",
   "gui.ae2.MultipleOutputs": "%1$d%% second, %2$d%% third output.",

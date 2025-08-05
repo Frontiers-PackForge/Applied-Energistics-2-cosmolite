@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
+import appeng.api.stacks.GenericStack;
 import com.google.common.collect.ImmutableList;
 
 import net.minecraft.network.FriendlyByteBuf;
@@ -40,7 +41,7 @@ import appeng.api.stacks.AEKey;
  * @param usedBytes
  * @param simulation
  */
-public record CraftingPlanSummary(long usedBytes, boolean simulation, List<CraftingPlanSummaryEntry> entries) {
+public record CraftingPlanSummary(long usedBytes, boolean simulation, List<CraftingPlanSummaryEntry> entries, AEKey crafting) {
 
     public void write(FriendlyByteBuf buffer) {
         buffer.writeVarLong(usedBytes);
@@ -49,6 +50,7 @@ public record CraftingPlanSummary(long usedBytes, boolean simulation, List<Craft
         for (CraftingPlanSummaryEntry entry : entries) {
             entry.write(buffer);
         }
+        AEKey.writeKey(buffer, crafting);
     }
 
     public static CraftingPlanSummary read(FriendlyByteBuf buffer) {
@@ -60,8 +62,9 @@ public record CraftingPlanSummary(long usedBytes, boolean simulation, List<Craft
         for (int i = 0; i < entryCount; i++) {
             entries.add(CraftingPlanSummaryEntry.read(buffer));
         }
+        AEKey crafting = AEKey.readKey(buffer);
 
-        return new CraftingPlanSummary(bytesUsed, simulation, entries.build());
+        return new CraftingPlanSummary(bytesUsed, simulation, entries.build(), crafting);
     }
 
     private static class KeyStats {
@@ -131,7 +134,7 @@ public record CraftingPlanSummary(long usedBytes, boolean simulation, List<Craft
 
         Collections.sort(entries);
 
-        return new CraftingPlanSummary(job.bytes(), job.simulation(), List.copyOf(entries));
+        return new CraftingPlanSummary(job.bytes(), job.simulation(), List.copyOf(entries), job.finalOutput().what());
 
     }
 

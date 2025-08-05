@@ -135,6 +135,7 @@ public enum GuiText implements LocalizationEnum {
     MENetworkStorage("ME Network Storage"),
     Magenta("Magenta"),
     MaxPower("Max Power: %s"),
+    Merge("Merge"),
     Missing("Missing: %s"),
     MolecularAssembler("Molecular Assembler"),
     MultipleOutputs("%1$d%% second, %2$d%% third output."),
