@@ -30,6 +30,7 @@ import appeng.api.networking.crafting.ICraftingPlan;
 import appeng.api.networking.crafting.ICraftingService;
 import appeng.api.networking.crafting.ICraftingSubmitResult;
 import appeng.api.networking.crafting.UnsuitableCpus;
+import appeng.me.cluster.implementations.CraftingCPUCluster;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.network.FriendlyByteBuf;
@@ -253,12 +254,28 @@ public class CraftConfirmMenu extends AEBaseMenu implements ISubMenu {
         if (this.plan == null) {
             return true;
         }
+        if (c.isBusy()) {
+            if (craftMatches(c)) {
+                if (c instanceof CraftingCPUCluster cpuCluster) {
+                    if (cpuCluster.craftingLogic.isSameRequester(null)) {
+                        return c.getAvailableStorage() >= this.plan.usedBytes() + cpuCluster.craftingLogic.getCurrentJobSize();
+                    }
+                }
+            }
+            return false;
+        }
         return c.getAvailableStorage() >= this.plan.usedBytes();
     }
+    public boolean craftMatches (ICraftingCPU c) {
+        if (plan != null) {
+            return this.plan.crafting().matches(c.getJobStatus().crafting());
+        }
+        return false;
+    }
 
-    public boolean craftMatches () {
-        if (stackToCraft != null && plan != null) {
-            return stackToCraft.what().equals(this.plan.crafting());
+    public boolean selectedMatches () {
+        if (plan != null) {
+            return this.plan.crafting().matches(this.stackToCraft);
         }
         return false;
     }

@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 
+import appeng.crafting.CraftingLinkNexus;
 import com.google.common.base.Preconditions;
 
 import org.jetbrains.annotations.Nullable;
@@ -480,7 +481,11 @@ public class CraftingCpuLogic {
 
     public boolean isSameRequester(ICraftingRequester requester) {
         if (this.job != null) {
-            return this.job.link.getTie().getRequest().getRequester() == requester;
+            CraftingLinkNexus tie = this.job.link.getTie();
+            if (tie == null) {
+                return requester == null;
+            }
+            return tie.isRequester(requester);
         }
         return false;
     }

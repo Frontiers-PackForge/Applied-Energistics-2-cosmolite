@@ -381,16 +381,17 @@ public class CraftingService implements ICraftingService, IGridServiceProvider {
                 offline++;
                 continue;
             }
+            boolean mayMerge = false;
             if (cpu.isBusy()) {
-                if (!cpu.craftingLogic.getFinalJobOutput().what().equals(job.finalOutput().what())) {
-                    busy++;
-                    continue;
-                } else if (!cpu.craftingLogic.isSameRequester(requestingMachine)) {
-                    busy++;
-                    continue;
+                if (cpu.craftingLogic.getFinalJobOutput().what().equals(job.finalOutput().what())) {
+                    if (cpu.craftingLogic.isSameRequester(requestingMachine)) {
+                        if (cpu.getAvailableStorage() >= job.bytes() + cpu.craftingLogic.getCurrentJobSize()) {
+                            mayMerge = true;
+                        }
+                    }
                 }
-                if (cpu.getAvailableStorage() < job.bytes() + cpu.craftingLogic.getCurrentJobSize()) {
-                    tooSmall++;
+                if (!mayMerge) {
+                    busy++;
                     continue;
                 }
             }
