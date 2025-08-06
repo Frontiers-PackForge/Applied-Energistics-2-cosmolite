@@ -71,6 +71,7 @@ import appeng.menu.slot.DisabledSlot;
 import appeng.menu.slot.FakeSlot;
 import appeng.menu.slot.InaccessibleSlot;
 import appeng.menu.slot.RestrictedInputSlot;
+import appeng.parts.AEBasePart;
 import appeng.util.ConfigMenuInventory;
 
 public abstract class AEBaseMenu extends AbstractContainerMenu {
@@ -309,6 +310,12 @@ public abstract class AEBaseMenu extends AbstractContainerMenu {
                     && this.blockEntity.getLevel().getBlockEntity(this.blockEntity.getBlockPos()) != this.blockEntity) {
                 this.setValidMenu(false);
             }
+            if (this.part instanceof AEBasePart basePart) {
+                var host = basePart.getHost();
+                if (host == null || !host.isInWorld() || host.getPart(basePart.getSide()) != basePart) {
+                    setValidMenu(false);
+                }
+            }
 
             if (dataSync.hasChanges()) {
                 sendPacketToClient(new GuiDataSyncPacket(containerId, dataSync::writeUpdate));
@@ -322,7 +329,7 @@ public abstract class AEBaseMenu extends AbstractContainerMenu {
      * Check if a given slot is considered to be "on the player side" for the purposes of shift-clicking items back and
      * forth between the opened menu and the player's inventory.
      */
-    private boolean isPlayerSideSlot(Slot slot) {
+    public boolean isPlayerSideSlot(Slot slot) {
         if (slot.container == playerInventory) {
             return true;
         }
@@ -331,6 +338,7 @@ public abstract class AEBaseMenu extends AbstractContainerMenu {
         return slotSemantic == SlotSemantics.PLAYER_INVENTORY
                 || slotSemantic == SlotSemantics.PLAYER_HOTBAR
                 || slotSemantic == SlotSemantics.TOOLBOX
+                || slotSemantic == SlotSemantics.PATTERNBOX
                 // The crafting grid in the crafting terminal also shift-clicks into the network
                 || slotSemantic == SlotSemantics.CRAFTING_GRID;
     }

@@ -64,6 +64,7 @@ import appeng.items.storage.ViewCellItem;
 import appeng.items.tools.GuideItem;
 import appeng.items.tools.MemoryCardItem;
 import appeng.items.tools.NetworkToolItem;
+import appeng.items.tools.PatternBoxItem;
 import appeng.items.tools.fluix.FluixAxeItem;
 import appeng.items.tools.fluix.FluixHoeItem;
 import appeng.items.tools.fluix.FluixPickaxeItem;
@@ -172,6 +173,7 @@ public final class AEItems {
     ///
 
     public static final ItemDefinition<NetworkToolItem> NETWORK_TOOL = item("Network Tool", AEItemIds.NETWORK_TOOL, p -> new NetworkToolItem(p.stacksTo(1)));
+    public static final ItemDefinition<PatternBoxItem> PATTERN_BOX = item("Pattern Box", AEItemIds.PATTERN_BOX, p -> new PatternBoxItem(p.stacksTo(1)));
     public static final ItemDefinition<MemoryCardItem> MEMORY_CARD = item("Memory Card", AEItemIds.MEMORY_CARD, p -> new MemoryCardItem(p.stacksTo(1)));
 
     public static final ItemDefinition<FacadeItem> FACADE = item("Cable Facade", AEItemIds.FACADE, FacadeItem::new);
@@ -221,6 +223,7 @@ public final class AEItems {
     public static final ItemDefinition<Item> CRAFTING_CARD = item("Crafting Card", AEItemIds.CRAFTING_CARD, Upgrades::createUpgradeCardItem);
     public static final ItemDefinition<Item> EQUAL_DISTRIBUTION_CARD = item("Equal Distribution Card", AEItemIds.EQUAL_DISTRIBUTION_CARD, Upgrades::createUpgradeCardItem);
     public static final ItemDefinition<EnergyCardItem> ENERGY_CARD = item("Energy Card", AEItemIds.ENERGY_CARD, p -> new EnergyCardItem(p, 1));
+    public static final ItemDefinition<Item> AUTO_COMPLETE_CARD = item("Auto Complete Card", AEItemIds.AUTO_COMPLETE_CARD, Upgrades::createUpgradeCardItem);
     public static final ItemDefinition<MaterialItem> SPATIAL_2_CELL_COMPONENT = item("2³ Spatial Component", AEItemIds.SPATIAL_2_CELL_COMPONENT, MaterialItem::new);
     public static final ItemDefinition<MaterialItem> SPATIAL_16_CELL_COMPONENT = item("16³ Spatial Component", AEItemIds.SPATIAL_16_CELL_COMPONENT, MaterialItem::new);
     public static final ItemDefinition<MaterialItem> SPATIAL_128_CELL_COMPONENT = item("128³ Spatial Component", AEItemIds.SPATIAL_128_CELL_COMPONENT, MaterialItem::new);

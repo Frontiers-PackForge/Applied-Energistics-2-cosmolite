@@ -37,6 +37,7 @@ import appeng.api.util.AEColor;
 @SuppressWarnings("unused")
 public final class AEItemIds {
     public static final ResourceLocation NETWORK_TOOL = id("network_tool");
+    public static final ResourceLocation PATTERN_BOX = id("pattern_box");
     public static final ResourceLocation VIEW_CELL = id("view_cell");
     public static final ResourceLocation MEMORY_CARD = id("memory_card");
 
@@ -226,6 +227,7 @@ public final class AEItemIds {
     public static final ResourceLocation CRAFTING_CARD = id("crafting_card");
     public static final ResourceLocation ENERGY_CARD = id("energy_card");
     public static final ResourceLocation EQUAL_DISTRIBUTION_CARD = id("equal_distribution_card");
+    public static final ResourceLocation AUTO_COMPLETE_CARD = id("auto_complete_card");
     public static final ResourceLocation SPATIAL_2_CELL_COMPONENT = id("spatial_cell_component_2");
     public static final ResourceLocation SPATIAL_16_CELL_COMPONENT = id("spatial_cell_component_16");
     public static final ResourceLocation SPATIAL_128_CELL_COMPONENT = id("spatial_cell_component_128");
