@@ -33,11 +33,11 @@ import appeng.client.gui.style.ScreenStyle;
 import appeng.core.localization.GuiText;
 
 /**
- * A 3x9 pattern panel attached to the player inventory.
+ * A 3x3 pattern panel attached to the player inventory.
  */
 public class ToolboxPanel implements ICompositeWidget {
 
-    // Backdrop for the 3x9 toolbox offered by the network-tool
+    // Backdrop for the 3x3 toolbox offered by the network-tool
     private final Blitter background;
 
     private final Component toolbeltName;
