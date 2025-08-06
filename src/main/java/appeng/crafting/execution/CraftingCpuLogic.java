@@ -407,6 +407,10 @@ public class CraftingCpuLogic {
         return this.job != null;
     }
 
+    public ExecutingCraftingJob getJob() {
+        return this.job;
+    }
+
     @Nullable
     public GenericStack getFinalJobOutput() {
         return this.job != null ? this.job.finalOutput : null;
@@ -530,6 +534,7 @@ public class CraftingCpuLogic {
                             job.finalOutput.what(),
                             job.finalOutput.amount(),
                             job.remainingAmount,
+                            job.timeTracker.getElapsedTime(),
                             status),
                     connectedPlayer);
         }

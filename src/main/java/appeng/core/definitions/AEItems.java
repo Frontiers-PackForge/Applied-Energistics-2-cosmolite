@@ -176,10 +176,10 @@ public final class AEItems {
 
     public static final ItemDefinition<FacadeItem> FACADE = item("Cable Facade", AEItemIds.FACADE, FacadeItem::new);
     public static final ItemDefinition<MaterialItem> BLANK_PATTERN = item("Blank Pattern", AEItemIds.BLANK_PATTERN, MaterialItem::new);
-    public static final ItemDefinition<CraftingPatternItem> CRAFTING_PATTERN = item("Crafting Pattern", AEItemIds.CRAFTING_PATTERN, p -> new CraftingPatternItem(p.stacksTo(1)));
-    public static final ItemDefinition<ProcessingPatternItem> PROCESSING_PATTERN = item("Processing Pattern", AEItemIds.PROCESSING_PATTERN, p -> new ProcessingPatternItem(p.stacksTo(1)));
-    public static final ItemDefinition<SmithingTablePatternItem> SMITHING_TABLE_PATTERN = item("Smithing Table Pattern", AEItemIds.SMITHING_TABLE_PATTERN, p -> new SmithingTablePatternItem(p.stacksTo(1)));
-    public static final ItemDefinition<StonecuttingPatternItem> STONECUTTING_PATTERN = item("Stonecutting Pattern", AEItemIds.STONECUTTING_PATTERN, p -> new StonecuttingPatternItem(p.stacksTo(1)));
+    public static final ItemDefinition<CraftingPatternItem> CRAFTING_PATTERN = item("Crafting Pattern", AEItemIds.CRAFTING_PATTERN, CraftingPatternItem::new);
+    public static final ItemDefinition<ProcessingPatternItem> PROCESSING_PATTERN = item("Processing Pattern", AEItemIds.PROCESSING_PATTERN, ProcessingPatternItem::new);
+    public static final ItemDefinition<SmithingTablePatternItem> SMITHING_TABLE_PATTERN = item("Smithing Table Pattern", AEItemIds.SMITHING_TABLE_PATTERN, SmithingTablePatternItem::new);
+    public static final ItemDefinition<StonecuttingPatternItem> STONECUTTING_PATTERN = item("Stonecutting Pattern", AEItemIds.STONECUTTING_PATTERN, StonecuttingPatternItem::new);
 
     public static final ColoredItemDefinition<PaintBallItem> COLORED_PAINT_BALL = createColoredItems("Paint Ball", AEItemIds.COLORED_PAINT_BALL, (p, color) -> new PaintBallItem(p, color, false));
     public static final ColoredItemDefinition<PaintBallItem> COLORED_LUMEN_PAINT_BALL = createColoredItems("Lumen Paint Ball", AEItemIds.COLORED_LUMEN_PAINT_BALL, (p, color) -> new PaintBallItem(p, color, true));
@@ -221,6 +221,7 @@ public final class AEItems {
     public static final ItemDefinition<Item> CRAFTING_CARD = item("Crafting Card", AEItemIds.CRAFTING_CARD, Upgrades::createUpgradeCardItem);
     public static final ItemDefinition<Item> EQUAL_DISTRIBUTION_CARD = item("Equal Distribution Card", AEItemIds.EQUAL_DISTRIBUTION_CARD, Upgrades::createUpgradeCardItem);
     public static final ItemDefinition<EnergyCardItem> ENERGY_CARD = item("Energy Card", AEItemIds.ENERGY_CARD, p -> new EnergyCardItem(p, 1));
+    public static final ItemDefinition<Item> AUTO_COMPLETE_CARD = item("Auto Complete Card", AEItemIds.AUTO_COMPLETE_CARD, Upgrades::createUpgradeCardItem);
     public static final ItemDefinition<MaterialItem> SPATIAL_2_CELL_COMPONENT = item("2³ Spatial Component", AEItemIds.SPATIAL_2_CELL_COMPONENT, MaterialItem::new);
     public static final ItemDefinition<MaterialItem> SPATIAL_16_CELL_COMPONENT = item("16³ Spatial Component", AEItemIds.SPATIAL_16_CELL_COMPONENT, MaterialItem::new);
     public static final ItemDefinition<MaterialItem> SPATIAL_128_CELL_COMPONENT = item("128³ Spatial Component", AEItemIds.SPATIAL_128_CELL_COMPONENT, MaterialItem::new);
