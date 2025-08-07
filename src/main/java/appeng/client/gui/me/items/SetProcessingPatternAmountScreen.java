@@ -83,6 +83,7 @@ public class SetProcessingPatternAmountScreen<C extends PatternEncodingTermMenu>
 
         // The screen JSON includes the toolbox, but we don't actually have a need for it here
         setSlotsHidden(SlotSemantics.TOOLBOX, true);
+        setSlotsHidden(SlotSemantics.PATTERNBOX, true);
     }
 
     private void confirm() {
@@ -99,6 +100,6 @@ public class SetProcessingPatternAmountScreen<C extends PatternEncodingTermMenu>
     }
 
     private long getMaxAmount() {
-        return Integer.MAX_VALUE;
+        return Long.MAX_VALUE;
     }
 }

@@ -23,6 +23,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -60,6 +62,7 @@ import appeng.client.gui.AEBaseScreen;
 import appeng.client.gui.style.PaletteColor;
 import appeng.client.gui.style.ScreenStyle;
 import appeng.client.gui.widgets.AETextField;
+import appeng.client.gui.widgets.PatternBoxPanel;
 import appeng.client.gui.widgets.Scrollbar;
 import appeng.client.gui.widgets.ServerSettingToggleButton;
 import appeng.client.gui.widgets.SettingToggleButton;
@@ -70,6 +73,7 @@ import appeng.core.AppEng;
 import appeng.core.localization.GuiText;
 import appeng.core.sync.network.NetworkHandler;
 import appeng.core.sync.packets.InventoryActionPacket;
+import appeng.core.sync.packets.QuickMovePatternPacket;
 import appeng.helpers.InventoryAction;
 import appeng.menu.implementations.PatternAccessTermMenu;
 
@@ -156,6 +160,10 @@ public class PatternAccessTermScreen<C extends PatternAccessTermMenu> extends AE
                 ShowPatternProviders.VISIBLE);
 
         this.addToLeftToolbar(showPatternProviders);
+
+        if (menu.getPatternBox().isPresent()) {
+            this.widgets.add("patternbox", new PatternBoxPanel(style, menu.getPatternBox().getName()));
+        }
 
         this.searchField = widgets.addTextField("search");
         this.searchField.setResponder(str -> this.refreshList());
@@ -322,6 +330,20 @@ public class PatternAccessTermScreen<C extends PatternAccessTermMenu> extends AE
                 NetworkHandler.instance().sendToServer(p);
             }
 
+            return;
+        }
+        if (clickType == ClickType.QUICK_MOVE && menu.isPlayerSideSlot(slot)) {
+            Set<Long> visiblePatternContainers = new LinkedHashSet<>();
+            for (var row : this.rows) {
+                if (row instanceof SlotsRow slotsRow) {
+                    visiblePatternContainers.add(slotsRow.container.getServerId());
+                }
+            }
+
+            int clickedSlot = slot.getContainerSlot();
+            var packet = new QuickMovePatternPacket(
+                    menu.containerId, clickedSlot, List.copyOf(visiblePatternContainers));
+            NetworkHandler.instance().sendToServer(packet);
             return;
         }
 

@@ -113,6 +113,12 @@ public class CraftingRecipes extends AE2RecipeProvider {
                 .define('b', AEItems.ADVANCED_CARD)
                 .unlockedBy("has_advanced_card", has(AEItems.ADVANCED_CARD))
                 .save(consumer, AppEng.makeId("materials/cardenergy"));
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, AEItems.AUTO_COMPLETE_CARD)
+                .requires(AEItems.ADVANCED_CARD)
+                .requires(AEItems.CRAFTING_CARD)
+                .unlockedBy("has_advanced_card", has(AEItems.ADVANCED_CARD))
+                .unlockedBy("has_crafting_card", has(AEItems.CRAFTING_CARD))
+                .save(consumer, AppEng.makeId("materials/auto_complete_card"));
 
         // ====================================================
         // Misc Materials
@@ -892,6 +898,16 @@ public class CraftingRecipes extends AE2RecipeProvider {
                 .unlockedBy("has_quartz_wrench", has(ConventionTags.QUARTZ_WRENCH))
                 .unlockedBy("has_calculation_processor", has(AEItems.CALCULATION_PROCESSOR))
                 .save(consumer, AppEng.makeId("tools/network_tool"));
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, AEItems.PATTERN_BOX)
+                .pattern("cb")
+                .pattern("be")
+                .define('c', ConventionTags.CHEST)
+                .define('b', AEItems.BLANK_PATTERN)
+                .define('e', AEItems.ENGINEERING_PROCESSOR)
+                .unlockedBy("has_chest", has(ConventionTags.CHEST))
+                .unlockedBy("has_blank_pattern", has(AEItems.BLANK_PATTERN))
+                .save(consumer, AppEng.makeId("tools/pattern_box"));
 
         addPaintBalls(consumer);
 
