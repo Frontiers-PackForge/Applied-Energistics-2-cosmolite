@@ -146,7 +146,7 @@ public class ExecutingCraftingJob {
         }
         this.currentJobSize = data.getLong(NBT_CURRENT_JOB_SIZE);
         if (currentJobSize == 0) {
-            //will be zero on first run so recalculate the bytes already used for this job
+            // will be zero on first run so recalculate the bytes already used for this job
             currentJobSize += (tasks.size() + 1) * 8L;
             for (Map.Entry<IPatternDetails, TaskProgress> iPatternDetailsTaskProgressEntry : tasks.entrySet()) {
                 long times = iPatternDetailsTaskProgressEntry.getValue().value;
@@ -155,7 +155,7 @@ public class ExecutingCraftingJob {
                     currentJobSize += output.amount() * times;
                 }
             }
-            cpu.getInventory().list.forEach((k) ->  {
+            cpu.getInventory().list.forEach((k) -> {
                 // match byte size from ICraftingSimulationState
                 currentJobSize += (long) ((double) k.getLongValue() / k.getKey().getType().getAmountPerByte() * 8);
             });
