@@ -40,7 +40,7 @@ public class NumberUtil {
         if (requested <= 0)
             return Component.literal("0%").withStyle(ChatFormatting.GREEN);
 
-        double percentage = hasMissing ? available / requested + 1 : available / requested;
+        double percentage = available / requested + (hasMissing ? 1 : 0);
         String percentageText = formatNumber(percentage * 100) + "%";
 
         if (percentage > 1.0) {
