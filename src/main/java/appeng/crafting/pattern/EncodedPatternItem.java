@@ -210,9 +210,9 @@ public abstract class EncodedPatternItem extends AEBaseItem {
         var what = stack.what();
         var displayName = what.getDisplayName().plainCopy();
         if (type == AEKeyType.items()) {
-            displayName.withStyle(isInput ? ChatFormatting.GREEN : ChatFormatting.AQUA);
+            displayName.withStyle(isInput ? ChatFormatting.GREEN : ChatFormatting.YELLOW);
         } else {
-            displayName.withStyle(isInput ? ChatFormatting.GOLD : ChatFormatting.BLUE);
+            displayName.withStyle(isInput ? ChatFormatting.AQUA : ChatFormatting.BLUE);
         }
         var amountInfo = what.formatAmount(stack.amount(), AmountFormat.FULL);
         return Component.literal(amountInfo + " §7x ").append(displayName);
