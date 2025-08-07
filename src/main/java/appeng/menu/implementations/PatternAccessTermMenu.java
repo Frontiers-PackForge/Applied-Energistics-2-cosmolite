@@ -18,7 +18,6 @@
 
 package appeng.menu.implementations;
 
-import appeng.menu.PatternBoxMenu;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.IdentityHashMap;
@@ -58,6 +57,7 @@ import appeng.core.sync.packets.PatternAccessTerminalPacket;
 import appeng.helpers.InventoryAction;
 import appeng.helpers.patternprovider.PatternContainer;
 import appeng.menu.AEBaseMenu;
+import appeng.menu.PatternBoxMenu;
 import appeng.menu.guisync.GuiSync;
 import appeng.parts.reporting.PatternAccessTerminalPart;
 import appeng.util.inv.AppEngInternalInventory;
