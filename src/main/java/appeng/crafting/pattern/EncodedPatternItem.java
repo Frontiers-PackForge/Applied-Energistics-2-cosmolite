@@ -119,19 +119,22 @@ public abstract class EncodedPatternItem extends AEBaseItem {
 
             var invalid = new InvalidPatternHelper(stack);
 
-            var label = (invalid.isCraftable() ? GuiText.Crafts.text() : GuiText.Produces.text()).withStyle(ChatFormatting.DARK_AQUA);
+            var label = (invalid.isCraftable() ? GuiText.Crafts.text() : GuiText.Produces.text())
+                    .withStyle(ChatFormatting.DARK_AQUA);
             var ingredients = Component.empty().append(GuiText.Ingredients.text().withStyle(ChatFormatting.DARK_GREEN));
 
             boolean first = true;
             for (var output : invalid.getOutputs()) {
-                if (first) lines.add(label);
+                if (first)
+                    lines.add(label);
                 lines.add(Component.literal("  ").append(output.getFormattedToolTip()));
                 first = false;
             }
 
             first = true;
             for (var input : invalid.getInputs()) {
-                if (first) lines.add(ingredients);
+                if (first)
+                    lines.add(ingredients);
                 lines.add(Component.literal("  ").append(input.getFormattedToolTip()));
                 first = false;
             }
@@ -166,7 +169,8 @@ public abstract class EncodedPatternItem extends AEBaseItem {
             if (anOut == null) {
                 continue;
             }
-            if (first) lines.add(label);
+            if (first)
+                lines.add(label);
 
             lines.add(Component.literal("  ").append(getStackComponent(anOut, false)));
             first = false;
@@ -181,7 +185,8 @@ public abstract class EncodedPatternItem extends AEBaseItem {
             var primaryInputTemplate = anIn.getPossibleInputs()[0];
             var primaryInput = new GenericStack(primaryInputTemplate.what(),
                     primaryInputTemplate.amount() * anIn.getMultiplier());
-            if (first) lines.add(ingredients);
+            if (first)
+                lines.add(ingredients);
 
             lines.add(Component.literal("  ").append(getStackComponent(primaryInput, true)));
             first = false;
