@@ -18,6 +18,7 @@
 
 package appeng.menu.implementations;
 
+import appeng.menu.PatternBoxMenu;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.IdentityHashMap;
@@ -69,6 +70,7 @@ import appeng.util.inv.filter.IAEItemFilter;
 public class PatternAccessTermMenu extends AEBaseMenu {
 
     private final IConfigurableObject host;
+    private final PatternBoxMenu patternBox;
     @GuiSync(1)
     public ShowPatternProviders showPatternProviders = ShowPatternProviders.VISIBLE;
 
@@ -106,6 +108,7 @@ public class PatternAccessTermMenu extends AEBaseMenu {
         if (bindInventory) {
             this.createPlayerInventorySlots(ip);
         }
+        this.patternBox = new PatternBoxMenu(this);
     }
 
     @SuppressWarnings("unchecked")
@@ -115,6 +118,7 @@ public class PatternAccessTermMenu extends AEBaseMenu {
             return;
         }
 
+        this.patternBox.tick();
         showPatternProviders = this.host.getConfigManager().getSetting(Settings.TERMINAL_SHOW_PATTERN_PROVIDERS);
 
         super.broadcastChanges();
@@ -477,5 +481,9 @@ public class PatternAccessTermMenu extends AEBaseMenu {
             return machineClass.asSubclass(PatternContainer.class);
         }
         return null;
+    }
+
+    public PatternBoxMenu getPatternBox() {
+        return this.patternBox;
     }
 }

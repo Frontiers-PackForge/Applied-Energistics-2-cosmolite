@@ -18,6 +18,7 @@
 
 package appeng.client.gui.me.patternaccess;
 
+import appeng.client.gui.widgets.PatternBoxPanel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -159,6 +160,10 @@ public class PatternAccessTermScreen<C extends PatternAccessTermMenu> extends AE
                 ShowPatternProviders.VISIBLE);
 
         this.addToLeftToolbar(showPatternProviders);
+
+        if (menu.getPatternBox().isPresent()) {
+            this.widgets.add("patternbox", new PatternBoxPanel(style, menu.getPatternBox().getName()));
+        }
 
         this.searchField = widgets.addTextField("search");
         this.searchField.setResponder(str -> this.refreshList());
