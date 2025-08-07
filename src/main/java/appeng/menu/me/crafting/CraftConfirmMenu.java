@@ -257,10 +257,8 @@ public class CraftConfirmMenu extends AEBaseMenu implements ISubMenu {
         if (c.isBusy()) {
             if (this.plan.crafting().matches(c.getJobStatus().crafting())) {
                 if (c instanceof CraftingCPUCluster cpuCluster) {
-                    if (cpuCluster.craftingLogic.isSameRequester(null)) {
-                        return c.getAvailableStorage() >= this.plan.usedBytes()
-                                + cpuCluster.craftingLogic.getCurrentJobSize();
-                    }
+                    return c.getAvailableStorage() >= this.plan.usedBytes()
+                            + cpuCluster.craftingLogic.getCurrentJobSize();
                 }
             }
             return false;
