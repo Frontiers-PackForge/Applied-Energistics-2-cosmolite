@@ -63,6 +63,24 @@ ae2_version=15.4.7-cosmolite.8
 
 An example string would be `appeng:appliedenergistics2-forge:15.4.7-cosmolite.8`.
 
+## Contributing
+
+Contributions are always welcome and appreciated!
+
+Before contributing major changes, you should probably discuss them with us first,
+to waste noone's time.
+You can either open an issue or ping `kolja_` or `ghostipedia` in the [Cosmic Frontiers Discord](https://discord.gg/cQ2hNbsNMd)
+
+Still want to contribute? Great!
+
+### Getting started:
+
+1. [Fork the repository](https://github.com/Frontiers-PackForge/Applied-Energistics-2-cosmolite/fork)
+2. Open a new [pull request](https://github.com/Frontiers-PackForge/Applied-Energistics-2-cosmolite/pulls) targeting the `forge/1.20.1` branch 
+  * Build check failing? You might have forgotten to run the `spotlessApply` task
+3. Changes requested by maintainers? Do your best to solve them
+4. Pull request merged? Congrats and thank you for your contribution!
+
 ## License
 
 * Applied Energistics 2 API
