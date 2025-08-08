@@ -1,3 +1,5 @@
+[![Latest Release](https://img.shields.io/github/v/release/Frontiers-PackForge/Applied-Energistics-2-cosmolite?style=flat-square&label=Release)](https://github.com/AppliedEnergistics/Applied-Energistics-2/releases)
+
 # Applied Energistics 2 - Cosmic Frontiers
 ## A Version of AE2 for the Cosmic Frontiers modpack, unlimiting, combining, and upgrading many features required for the modpack to fully function. Akin to GTNH-AE2
 
@@ -16,6 +18,50 @@ A Mod about Matter, Energy and using them to conquer the world..
 * [Website](https://appliedenergistics.org/)
 * [Players Guide](https://guide.appliedenergistics.org/)
 * [GitHub] You are here.
+
+## Applied Energistics 2 API
+
+The API for Applied Energistics 2. It is open source to discuss changes, improve documentation, and provide better add-on support in general.
+
+### Working with the mod
+
+Thanks to [GTCEu](https://github.com/GregTechCEu) for graciously providing us with a Maven repository.
+
+First of all, you need to add the following repository to your build.gradle:
+
+```groovy
+repositories {
+    maven {
+        name "GTCEu Maven"
+        url "https://maven.gtceu.com/"
+        content {
+            includeGroup 'appeng'
+        }
+    }
+}
+```
+
+Then you can add the dependency to your build.gradle:
+
+```groovy
+dependencies {
+    // For ModDevGradle Users
+    modImplementation "appeng:appliedenergistics2-forge:$ae2_version"
+    // For ForgeGradle Users
+    implementation fg.deobf("appeng:appliedenergistics2-forge:$ae2_version")
+}
+```
+<br>
+
+[![Latest version](https://img.shields.io/github/v/release/Frontiers-PackForge/Applied-Energistics-2-cosmolite?style=flat-square&label=Release)](https://github.com/AppliedEnergistics/Applied-Energistics-2/releases)
+
+For versioning, add an entry to your `gradle.properties` file, example:
+
+```properties
+ae2_version=15.4.7-cosmolite.8
+```
+
+An example string would be `appeng:appliedenergistics2-forge:15.4.7-cosmolite.8`.
 
 ## License
 
