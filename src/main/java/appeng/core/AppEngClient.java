@@ -18,6 +18,8 @@
 
 package appeng.core;
 
+import appeng.client.render.PatternKeyClientTooltipComponent;
+import appeng.crafting.pattern.PatternKeyTooltipComponent;
 import java.util.Objects;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -237,6 +239,7 @@ public class AppEngClient extends AppEngBase {
 
     private void registerClientTooltipComponents(RegisterClientTooltipComponentFactoriesEvent event) {
         event.register(StorageCellTooltipComponent.class, StorageCellClientTooltipComponent::new);
+        event.register(PatternKeyTooltipComponent.class, PatternKeyClientTooltipComponent::new);
     }
 
     private void clientSetup(FMLClientSetupEvent event) {

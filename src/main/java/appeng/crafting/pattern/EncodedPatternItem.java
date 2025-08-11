@@ -18,10 +18,13 @@
 
 package appeng.crafting.pattern;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.WeakHashMap;
 
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.ChatFormatting;
@@ -112,7 +115,10 @@ public abstract class EncodedPatternItem extends AEBaseItem {
             return;
         }
 
+        List<Component> keyRenderer = new ArrayList<>();
+
         var details = decode(stack, level, false);
+        /*
         if (details == null) {
             // TODO: needs update for new pattern logic
             stack.setHoverName(GuiText.InvalidPattern.text().copy().withStyle(ChatFormatting.RED));
@@ -126,16 +132,16 @@ public abstract class EncodedPatternItem extends AEBaseItem {
             boolean first = true;
             for (var output : invalid.getOutputs()) {
                 if (first)
-                    lines.add(label);
-                lines.add(Component.literal("  ").append(output.getFormattedToolTip()));
+                    keyRenderer.add(label);
+                keyRenderer.add(Component.literal("  ").append(output.getFormattedToolTip()));
                 first = false;
             }
 
             first = true;
             for (var input : invalid.getInputs()) {
                 if (first)
-                    lines.add(ingredients);
-                lines.add(Component.literal("  ").append(input.getFormattedToolTip()));
+                    keyRenderer.add(ingredients);
+                keyRenderer.add(Component.literal("  ").append(input.getFormattedToolTip()));
                 first = false;
             }
 
@@ -143,7 +149,7 @@ public abstract class EncodedPatternItem extends AEBaseItem {
                 var canSubstitute = invalid.canSubstitute() ? GuiText.Yes.text() : GuiText.No.text();
                 var substitutionLabel = GuiText.Substitute.text(canSubstitute);
 
-                lines.add(substitutionLabel);
+                keyRenderer.add(substitutionLabel);
             }
 
             return;
@@ -170,9 +176,9 @@ public abstract class EncodedPatternItem extends AEBaseItem {
                 continue;
             }
             if (first)
-                lines.add(label);
+                keyRenderer.add(label);
 
-            lines.add(Component.literal("  ").append(getStackComponent(anOut, false)));
+            keyRenderer.add(Component.literal("  ").append(getStackComponent(anOut, false)));
             first = false;
         }
 
@@ -186,9 +192,9 @@ public abstract class EncodedPatternItem extends AEBaseItem {
             var primaryInput = new GenericStack(primaryInputTemplate.what(),
                     primaryInputTemplate.amount() * anIn.getMultiplier());
             if (first)
-                lines.add(ingredients);
+                keyRenderer.add(ingredients);
 
-            lines.add(Component.literal("  ").append(getStackComponent(primaryInput, true)));
+            keyRenderer.add(Component.literal("  ").append(getStackComponent(primaryInput, true)));
             first = false;
         }
 
@@ -201,13 +207,17 @@ public abstract class EncodedPatternItem extends AEBaseItem {
             var substitutionLabel = GuiText.Substitute.text(canSubstitute);
             var fluidSubstitutionLabel = GuiText.FluidSubstitutions.text(canSubstituteFluids);
 
-            lines.add(substitutionLabel);
-            lines.add(fluidSubstitutionLabel);
+            keyRenderer.add(substitutionLabel);
+            keyRenderer.add(fluidSubstitutionLabel);
         }
 
-        if (!author.isEmpty()) {
-            lines.add(GuiText.EncodedBy.text(author).withStyle(ChatFormatting.LIGHT_PURPLE));
+
+        if (!details.getAuthor().isEmpty()) {
+            keyRenderer.add(GuiText.EncodedBy.text(details.getAuthor()).withStyle(ChatFormatting.LIGHT_PURPLE));
         }
+        */
+
+        lines.addAll(keyRenderer);
     }
 
     protected static Component getStackComponent(GenericStack stack, boolean isInput) {
@@ -261,4 +271,33 @@ public abstract class EncodedPatternItem extends AEBaseItem {
 
     @Nullable
     public abstract IPatternDetails decode(AEItemKey what, Level level);
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public Optional<TooltipComponent> getTooltipImage(ItemStack stack) {
+        if (!stack.hasTag()) return Optional.empty();
+        Object obj = "";
+        System.out.println((String) obj);
+
+        var details = decode(stack, AppEng.instance().getClientLevel(), false);
+        if (details == null) return Optional.empty();
+        
+        var isCrafting = details instanceof AECraftingPattern;
+        var substitute = isCrafting && ((AECraftingPattern) details).canSubstitute;
+        var substituteFluids = isCrafting && ((AECraftingPattern) details).canSubstituteFluids;
+        var author = details.getAuthor();
+        
+        var inputs = new ArrayList<GenericStack>();
+        var outputs = new ArrayList<GenericStack>();
+        
+        for (var entry : details.getOutputs()) {
+            outputs.add(new GenericStack(entry.what(), entry.amount()));
+        }
+        for (var entry : details.getInputs()) {
+            inputs.add(new GenericStack(entry.getPossibleInputs()[0].what(), entry.getMultiplier()));
+        }
+        
+        return Optional.of(new PatternKeyTooltipComponent(inputs, outputs, author, isCrafting, substitute, substituteFluids, false));
+    }
+
 }
