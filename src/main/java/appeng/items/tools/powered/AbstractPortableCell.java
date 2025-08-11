@@ -38,6 +38,7 @@ import appeng.core.AELog;
 import appeng.core.localization.PlayerMessages;
 import appeng.hooks.AEToolItem;
 import appeng.items.contents.PortableCellMenuHost;
+import appeng.items.storage.StorageTier;
 import appeng.items.tools.powered.powersink.AEBasePoweredItem;
 import appeng.me.helpers.PlayerSource;
 import appeng.menu.MenuOpener;
@@ -175,7 +176,8 @@ public abstract class AbstractPortableCell extends AEBasePoweredItem
 
     @Override
     public IUpgradeInventory getUpgrades(ItemStack is) {
-        return UpgradeInventories.forItem(is, 2, this::onUpgradesChanged);
+        var tier = StorageTier.fromItem(is.getItem());
+        return UpgradeInventories.forItem(is, tier == null ? 0 : tier.index(), this::onUpgradesChanged);
     }
 
     public void onUpgradesChanged(ItemStack stack, IUpgradeInventory upgrades) {

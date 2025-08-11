@@ -103,7 +103,8 @@ public class PortableCellItem extends AbstractPortableCell implements IBasicCell
 
     @Override
     public IUpgradeInventory getUpgrades(ItemStack is) {
-        return UpgradeInventories.forItem(is, this.keyType == AEKeyType.items() ? 4 : 3, super::onUpgradesChanged);
+        var tier = StorageTier.fromItem(is.getItem());
+        return UpgradeInventories.forItem(is, tier == null ? 0 : tier.index(), super::onUpgradesChanged);
     }
 
     @Override

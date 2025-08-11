@@ -1,6 +1,10 @@
 package appeng.items.storage;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Supplier;
+
+import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
@@ -8,6 +12,21 @@ import net.minecraft.world.item.Item;
 import appeng.api.ids.AEItemIds;
 
 public record StorageTier(int index, String namePrefix, int bytes, double idleDrain, Supplier<Item> componentSupplier) {
+
+    private static final Set<StorageTier> REGISTERED_TIERS = new HashSet<>();
+
+    public StorageTier {
+        REGISTERED_TIERS.add(this);
+    }
+
+    @Nullable
+    public static StorageTier fromItem(Item item) {
+        return REGISTERED_TIERS.stream()
+                .filter(tier -> tier.componentSupplier.get() == item)
+                .findFirst()
+                .orElse(null);
+    }
+
     public static final StorageTier SIZE_1K = new StorageTier(1, "1k", 1024, 0.5,
             () -> BuiltInRegistries.ITEM.get(AEItemIds.CELL_COMPONENT_1K));
     public static final StorageTier SIZE_4K = new StorageTier(2, "4k", 4096, 1.0,

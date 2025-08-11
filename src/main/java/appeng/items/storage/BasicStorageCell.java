@@ -122,7 +122,8 @@ public class BasicStorageCell extends AEBaseItem implements IBasicCellItem, AETo
 
     @Override
     public IUpgradeInventory getUpgrades(ItemStack is) {
-        return UpgradeInventories.forItem(is, keyType == AEKeyType.items() ? 4 : 3);
+        var tier = StorageTier.fromItem(is.getItem());
+        return UpgradeInventories.forItem(is, tier == null ? 0 : tier.index());
     }
 
     @Override
