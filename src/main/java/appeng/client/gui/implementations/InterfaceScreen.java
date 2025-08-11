@@ -42,6 +42,7 @@ public class InterfaceScreen<C extends InterfaceMenu> extends UpgradeableScreen<
 
     private final SettingToggleButton<FuzzyMode> fuzzyMode;
     private final List<Button> amountButtons = new ArrayList<>();
+    private final ServerSettingToggleButton<appeng.api.config.YesNo> showInInterfaceTerminalButton;
 
     public InterfaceScreen(C menu, Inventory playerInventory, Component title,
             ScreenStyle style) {
@@ -51,6 +52,11 @@ public class InterfaceScreen<C extends InterfaceMenu> extends UpgradeableScreen<
         addToLeftToolbar(this.fuzzyMode);
 
         widgets.addOpenPriorityButton();
+
+        this.showInInterfaceTerminalButton = new ServerSettingToggleButton<>(
+                Settings.INTERFACE_ACCESS_TERMINAL,
+                appeng.api.config.YesNo.YES);
+        addToLeftToolbar(this.showInInterfaceTerminalButton);
 
         var configSlots = menu.getSlots(SlotSemantics.CONFIG);
         for (int i = 0; i < configSlots.size(); i++) {
@@ -72,6 +78,8 @@ public class InterfaceScreen<C extends InterfaceMenu> extends UpgradeableScreen<
 
         this.fuzzyMode.set(menu.getFuzzyMode());
         this.fuzzyMode.setVisibility(menu.hasUpgrade(AEItems.FUZZY_CARD));
+
+        this.showInInterfaceTerminalButton.set(menu.getShowInInterfaceAccessTerminal());
 
         var configSlots = menu.getSlots(SlotSemantics.CONFIG);
         for (int i = 0; i < amountButtons.size(); i++) {

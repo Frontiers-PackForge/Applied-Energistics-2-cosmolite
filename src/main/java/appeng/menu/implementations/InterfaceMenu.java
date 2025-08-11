@@ -23,10 +23,12 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
 
 import appeng.api.config.Settings;
+import appeng.api.config.YesNo;
 import appeng.api.util.IConfigManager;
 import appeng.client.gui.implementations.InterfaceScreen;
 import appeng.helpers.InterfaceLogicHost;
 import appeng.menu.SlotSemantics;
+import appeng.menu.guisync.GuiSync;
 import appeng.menu.slot.AppEngSlot;
 import appeng.menu.slot.FakeSlot;
 
@@ -34,6 +36,8 @@ import appeng.menu.slot.FakeSlot;
  * @see InterfaceScreen
  */
 public class InterfaceMenu extends UpgradeableMenu<InterfaceLogicHost> {
+    @GuiSync(10)
+    public YesNo showInInterfaceAccessTerminal = YesNo.YES;
 
     public static final String ACTION_OPEN_SET_AMOUNT = "setAmount";
 
@@ -62,6 +66,18 @@ public class InterfaceMenu extends UpgradeableMenu<InterfaceLogicHost> {
     @Override
     protected void loadSettingsFromHost(IConfigManager cm) {
         this.setFuzzyMode(cm.getSetting(Settings.FUZZY_MODE));
+    }
+
+    @Override
+    public void broadcastChanges() {
+        if (isServerSide()) {
+            showInInterfaceAccessTerminal = getHost().getConfigManager().getSetting(Settings.INTERFACE_ACCESS_TERMINAL);
+        }
+        super.broadcastChanges();
+    }
+
+    public YesNo getShowInInterfaceAccessTerminal() {
+        return showInInterfaceAccessTerminal;
     }
 
     /**

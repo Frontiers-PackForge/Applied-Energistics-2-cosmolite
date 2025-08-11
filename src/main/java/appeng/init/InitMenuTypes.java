@@ -34,6 +34,7 @@ import appeng.menu.implementations.FormationPlaneMenu;
 import appeng.menu.implementations.IOBusMenu;
 import appeng.menu.implementations.IOPortMenu;
 import appeng.menu.implementations.InscriberMenu;
+import appeng.menu.implementations.InterfaceAccessTermMenu;
 import appeng.menu.implementations.InterfaceMenu;
 import appeng.menu.implementations.MolecularAssemblerMenu;
 import appeng.menu.implementations.PatternAccessTermMenu;
@@ -85,6 +86,7 @@ public final class InitMenuTypes {
                 IOPortMenu.TYPE,
                 InscriberMenu.TYPE,
                 InterfaceMenu.TYPE,
+                InterfaceAccessTermMenu.TYPE,
                 MEStorageMenu.TYPE,
                 MEStorageMenu.PORTABLE_FLUID_CELL_TYPE,
                 MEStorageMenu.PORTABLE_ITEM_CELL_TYPE,

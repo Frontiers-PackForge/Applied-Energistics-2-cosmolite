@@ -60,6 +60,7 @@ import appeng.client.gui.me.crafting.CraftConfirmScreen;
 import appeng.client.gui.me.crafting.CraftingCPUScreen;
 import appeng.client.gui.me.crafting.CraftingStatusScreen;
 import appeng.client.gui.me.crafting.SetStockAmountScreen;
+import appeng.client.gui.me.interfaceaccess.InterfaceAccessTermScreen;
 import appeng.client.gui.me.items.CraftingTermScreen;
 import appeng.client.gui.me.items.PatternBoxScreen;
 import appeng.client.gui.me.items.PatternEncodingTermScreen;
@@ -78,6 +79,7 @@ import appeng.menu.implementations.FormationPlaneMenu;
 import appeng.menu.implementations.IOBusMenu;
 import appeng.menu.implementations.IOPortMenu;
 import appeng.menu.implementations.InscriberMenu;
+import appeng.menu.implementations.InterfaceAccessTermMenu;
 import appeng.menu.implementations.InterfaceMenu;
 import appeng.menu.implementations.MolecularAssemblerMenu;
 import appeng.menu.implementations.PatternAccessTermMenu;
@@ -184,6 +186,9 @@ public final class InitScreens {
         InitScreens.<PatternAccessTermMenu, PatternAccessTermScreen<PatternAccessTermMenu>>register(
                 PatternAccessTermMenu.TYPE, PatternAccessTermScreen::new,
                 "/screens/terminals/pattern_access_terminal.json");
+        InitScreens.<InterfaceAccessTermMenu, InterfaceAccessTermScreen<InterfaceAccessTermMenu>>register(
+                InterfaceAccessTermMenu.TYPE, InterfaceAccessTermScreen::new,
+                "/screens/terminals/interface_access_terminal.json");
         // spotless:on
     }
 

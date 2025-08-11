@@ -21,6 +21,8 @@ package appeng.helpers;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
+import appeng.api.config.Settings;
+import appeng.api.config.YesNo;
 import appeng.api.upgrades.IUpgradeInventory;
 import appeng.api.upgrades.IUpgradeableObject;
 import appeng.api.util.IConfigManager;
@@ -71,6 +73,13 @@ public interface InterfaceLogicHost extends IConfigurableObject, IUpgradeableObj
 
     default GenericStackInv getStorage() {
         return getInterfaceLogic().getStorage();
+    }
+
+    /**
+     * Whether this interface should be shown in the Interface Access Terminal.
+     */
+    default boolean isVisibleInInterfaceTerminal() {
+        return getInterfaceLogic().getConfigManager().getSetting(Settings.INTERFACE_ACCESS_TERMINAL) == YesNo.YES;
     }
 
     default void openMenu(Player player, MenuLocator locator) {

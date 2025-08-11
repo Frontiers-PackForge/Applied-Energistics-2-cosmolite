@@ -274,6 +274,13 @@ public class SettingToggleButton<T extends Enum<T>> extends IconButton {
                     ButtonToolTips.InterfaceTerminalDisplayMode,
                     ButtonToolTips.ShowNonFullProviders);
 
+            registerApp(Icon.PATTERN_ACCESS_SHOW, Settings.INTERFACE_ACCESS_TERMINAL, YesNo.YES,
+                    ButtonToolTips.InterfaceAccessTerminal,
+                    ButtonToolTips.InterfaceAccessTerminalShow);
+            registerApp(Icon.PATTERN_ACCESS_HIDE, Settings.INTERFACE_ACCESS_TERMINAL, YesNo.NO,
+                    ButtonToolTips.InterfaceAccessTerminal,
+                    ButtonToolTips.InterfaceAccessTerminalHide);
+
             registerApp(Icon.UNLOCKED, Settings.LOCK_CRAFTING_MODE, LockCraftingMode.NONE,
                     ButtonToolTips.LockCraftingMode,
                     ButtonToolTips.LockCraftingModeNone);

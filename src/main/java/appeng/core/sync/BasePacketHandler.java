@@ -27,6 +27,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import appeng.core.sync.packets.AssemblerAnimationPacket;
 import appeng.core.sync.packets.BlockHighlightPacket;
 import appeng.core.sync.packets.BlockTransitionEffectPacket;
+import appeng.core.sync.packets.ClearInterfaceAccessTerminalPacket;
 import appeng.core.sync.packets.ClearPatternAccessTerminalPacket;
 import appeng.core.sync.packets.ColorApplicatorSelectColorPacket;
 import appeng.core.sync.packets.CompassRequestPacket;
@@ -40,6 +41,7 @@ import appeng.core.sync.packets.CraftingStatusPacket;
 import appeng.core.sync.packets.FillCraftingGridFromRecipePacket;
 import appeng.core.sync.packets.GuiDataSyncPacket;
 import appeng.core.sync.packets.HotkeyPacket;
+import appeng.core.sync.packets.InterfaceAccessTerminalPacket;
 import appeng.core.sync.packets.InventoryActionPacket;
 import appeng.core.sync.packets.ItemTransitionEffectPacket;
 import appeng.core.sync.packets.LightningPacket;
@@ -101,6 +103,9 @@ public class BasePacketHandler {
 
         PATTERN_PROVIDER_CLEAR(ClearPatternAccessTerminalPacket.class, ClearPatternAccessTerminalPacket::new),
         PATTERN_PROVIDER_UPDATE(PatternAccessTerminalPacket.class, PatternAccessTerminalPacket::new),
+
+        INTERFACE_TERMINAL_CLEAR(ClearInterfaceAccessTerminalPacket.class, ClearInterfaceAccessTerminalPacket::new),
+        INTERFACE_TERMINAL_UPDATE(InterfaceAccessTerminalPacket.class, InterfaceAccessTerminalPacket::new),
 
         QUICK_MOVE_PATTERN(QuickMovePatternPacket.class, QuickMovePatternPacket::new),
 

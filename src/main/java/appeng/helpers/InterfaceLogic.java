@@ -38,6 +38,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import appeng.api.config.Actionable;
 import appeng.api.config.FuzzyMode;
 import appeng.api.config.Settings;
+import appeng.api.config.YesNo;
 import appeng.api.networking.GridFlags;
 import appeng.api.networking.IGridNode;
 import appeng.api.networking.IManagedGridNode;
@@ -120,6 +121,8 @@ public class InterfaceLogic implements ICraftingRequester, IUpgradeableObject, I
         this.upgrades = UpgradeInventories.forMachine(is, 1, this::onUpgradesChanged);
         this.craftingTracker = new MultiCraftingTracker(this, slots);
         this.cm.registerSetting(Settings.FUZZY_MODE, FuzzyMode.IGNORE_ALL);
+        // Controls visibility in the Interface Access Terminal
+        this.cm.registerSetting(Settings.INTERFACE_ACCESS_TERMINAL, YesNo.YES);
         this.plannedWork = new GenericStack[slots];
 
         getConfig().useRegisteredCapacities();
