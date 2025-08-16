@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.WeakHashMap;
 
-import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.ChatFormatting;
@@ -34,6 +33,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -48,6 +48,7 @@ import appeng.api.stacks.AEItemKey;
 import appeng.api.stacks.AEKeyType;
 import appeng.api.stacks.AmountFormat;
 import appeng.api.stacks.GenericStack;
+import appeng.core.AEConfig;
 import appeng.core.AppEng;
 import appeng.core.definitions.AEItems;
 import appeng.core.localization.GuiText;
@@ -56,6 +57,8 @@ import appeng.items.misc.WrappedGenericStack;
 import appeng.util.InteractionUtil;
 
 public abstract class EncodedPatternItem extends AEBaseItem {
+    public static final boolean FANCY_TOOLTIPS = AEConfig.instance().isFancyPatternTooltips();
+
     // rather simple client side caching.
     private static final Map<ItemStack, ItemStack> SIMPLE_CACHE = new WeakHashMap<>();
 
@@ -109,7 +112,7 @@ public abstract class EncodedPatternItem extends AEBaseItem {
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, Level level, List<Component> lines,
             TooltipFlag advancedTooltips) {
-        if (!stack.hasTag()) {
+        if (!stack.hasTag() || FANCY_TOOLTIPS) {
             // This can be called very early to index tooltips for search. In those cases,
             // there is no encoded pattern present.
             return;
@@ -118,7 +121,6 @@ public abstract class EncodedPatternItem extends AEBaseItem {
         List<Component> keyRenderer = new ArrayList<>();
 
         var details = decode(stack, level, false);
-        /*
         if (details == null) {
             // TODO: needs update for new pattern logic
             stack.setHoverName(GuiText.InvalidPattern.text().copy().withStyle(ChatFormatting.RED));
@@ -211,11 +213,9 @@ public abstract class EncodedPatternItem extends AEBaseItem {
             keyRenderer.add(fluidSubstitutionLabel);
         }
 
-
         if (!details.getAuthor().isEmpty()) {
             keyRenderer.add(GuiText.EncodedBy.text(details.getAuthor()).withStyle(ChatFormatting.LIGHT_PURPLE));
         }
-        */
 
         lines.addAll(keyRenderer);
     }
@@ -275,29 +275,30 @@ public abstract class EncodedPatternItem extends AEBaseItem {
     @Override
     @OnlyIn(Dist.CLIENT)
     public Optional<TooltipComponent> getTooltipImage(ItemStack stack) {
-        if (!stack.hasTag()) return Optional.empty();
-        Object obj = "";
-        System.out.println((String) obj);
+        if (!stack.hasTag() || !FANCY_TOOLTIPS)
+            return Optional.empty();
 
         var details = decode(stack, AppEng.instance().getClientLevel(), false);
-        if (details == null) return Optional.empty();
-        
+        if (details == null)
+            return Optional.empty();
+
         var isCrafting = details instanceof AECraftingPattern;
         var substitute = isCrafting && ((AECraftingPattern) details).canSubstitute;
         var substituteFluids = isCrafting && ((AECraftingPattern) details).canSubstituteFluids;
         var author = details.getAuthor();
-        
+
         var inputs = new ArrayList<GenericStack>();
         var outputs = new ArrayList<GenericStack>();
-        
+
         for (var entry : details.getOutputs()) {
             outputs.add(new GenericStack(entry.what(), entry.amount()));
         }
         for (var entry : details.getInputs()) {
             inputs.add(new GenericStack(entry.getPossibleInputs()[0].what(), entry.getMultiplier()));
         }
-        
-        return Optional.of(new PatternKeyTooltipComponent(inputs, outputs, author, isCrafting, substitute, substituteFluids, false));
+
+        return Optional.of(new PatternKeyTooltipComponent(inputs, outputs, author, isCrafting, substitute,
+                substituteFluids, false));
     }
 
 }

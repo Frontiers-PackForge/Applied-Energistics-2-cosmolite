@@ -242,7 +242,7 @@ public class CraftConfirmMenu extends AEBaseMenu implements ISubMenu {
 
     private IGrid getGrid() {
         final IActionHost h = (IActionHost) this.getTarget();
-        final IGridNode a    = h.getActionableNode();
+        final IGridNode a = h.getActionableNode();
         return a != null ? a.getGrid() : null;
     }
 

@@ -1,12 +1,7 @@
 package appeng.client.render;
 
-import appeng.api.client.AEKeyRendering;
-import appeng.api.stacks.AmountFormat;
-import appeng.api.stacks.GenericStack;
-import appeng.client.gui.me.common.StackSizeRenderer;
-import appeng.client.gui.style.PaletteColor;
-import appeng.core.localization.GuiText;
-import appeng.crafting.pattern.PatternKeyTooltipComponent;
+import org.joml.Matrix4f;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -14,7 +9,13 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
-import org.joml.Matrix4f;
+
+import appeng.api.client.AEKeyRendering;
+import appeng.api.stacks.AmountFormat;
+import appeng.api.stacks.GenericStack;
+import appeng.client.gui.me.common.StackSizeRenderer;
+import appeng.core.localization.GuiText;
+import appeng.crafting.pattern.PatternKeyTooltipComponent;
 
 public class PatternKeyClientTooltipComponent implements ClientTooltipComponent {
     private final PatternKeyTooltipComponent tooltipComponent;
@@ -23,7 +24,7 @@ public class PatternKeyClientTooltipComponent implements ClientTooltipComponent 
     private static final int TEXT_PADDING = 20;
     private static final int TEXT_VERTICAL_OFFSET = 4;
     private static final int SECTION_SPACING = 12;
-    private static final int AUTHOR_VERTICAL_OFFSET = 8;
+    private static final int AUTHOR_VERTICAL_OFFSET = 6;
     private static final int TOOLTIP_PADDING = 6;
     private static final int INITIAL_IMAGE_OFFSET = 8;
 
@@ -35,25 +36,22 @@ public class PatternKeyClientTooltipComponent implements ClientTooltipComponent 
     public int getHeight() {
         int height = 0;
 
-        // Outputs section
         if (!tooltipComponent.outputs().isEmpty()) {
-            height += TEXT_HEIGHT; // Section header
-            height += tooltipComponent.outputs().size() * LINE_HEIGHT; // Output items
+            height += TEXT_HEIGHT;
+            height += tooltipComponent.outputs().size() * LINE_HEIGHT;
         }
 
-        // Inputs section
         if (!tooltipComponent.inputs().isEmpty()) {
-            height += TEXT_HEIGHT; // Section header
-            height += tooltipComponent.inputs().size() * LINE_HEIGHT; // Input items
+            height += TEXT_HEIGHT;
+            height += tooltipComponent.inputs().size() * LINE_HEIGHT;
         }
 
-        // Substitution info for crafting patterns
         if (tooltipComponent.isCrafting()) {
-            height += TEXT_HEIGHT; // Substitute info
-            height += TEXT_HEIGHT; // Fluid substitution info
+            height += TEXT_HEIGHT;
+            height += TEXT_HEIGHT;
         }
         if (!tooltipComponent.author().isEmpty()) {
-            height += TEXT_HEIGHT; // Encoded by
+            height += TEXT_HEIGHT;
         }
 
         return height + TOOLTIP_PADDING;
@@ -63,10 +61,6 @@ public class PatternKeyClientTooltipComponent implements ClientTooltipComponent 
     public int getWidth(Font font) {
         int width = 0;
 
-        // Calculate width needed for text + items
-        // Each item takes 16 pixels, plus some padding for text
-
-        // Outputs
         if (!tooltipComponent.outputs().isEmpty()) {
             var outputsLabel = (tooltipComponent.isCrafting() ? GuiText.Crafts.text() : GuiText.Produces.text())
                     .withStyle(ChatFormatting.DARK_AQUA);
@@ -78,7 +72,6 @@ public class PatternKeyClientTooltipComponent implements ClientTooltipComponent 
             }
         }
 
-        // Inputs
         if (!tooltipComponent.inputs().isEmpty()) {
             var inputsLabel = GuiText.Ingredients.text().withStyle(ChatFormatting.DARK_GREEN);
             width = Math.max(width, font.width(inputsLabel) + TEXT_PADDING);
@@ -102,7 +95,6 @@ public class PatternKeyClientTooltipComponent implements ClientTooltipComponent 
     public void renderText(Font font, int x, int y, Matrix4f matrix4f, MultiBufferSource.BufferSource bufferSource) {
         int currentY = y;
 
-        // Outputs section
         var outputs = tooltipComponent.outputs();
         if (!outputs.isEmpty()) {
             var outputsLabel = (tooltipComponent.isCrafting() ? GuiText.Crafts.text() : GuiText.Produces.text())
@@ -113,14 +105,16 @@ public class PatternKeyClientTooltipComponent implements ClientTooltipComponent 
 
             for (var output : outputs) {
                 var text = getStackText(output, false);
-                font.drawInBatch(text, x + TEXT_PADDING, currentY + TEXT_VERTICAL_OFFSET, -1, false, matrix4f, bufferSource,
+                font.drawInBatch(text, x + TEXT_PADDING, currentY + TEXT_VERTICAL_OFFSET, -1, false, matrix4f,
+                        bufferSource,
                         Font.DisplayMode.SEE_THROUGH, 0, 0);
-                if (outputs.indexOf(output) < outputs.size() - 1) currentY += LINE_HEIGHT;
-                else currentY += SECTION_SPACING;
+                if (outputs.indexOf(output) < outputs.size() - 1)
+                    currentY += LINE_HEIGHT;
+                else
+                    currentY += 14;
             }
         }
 
-        // Inputs section
         var inputs = tooltipComponent.inputs();
         if (!inputs.isEmpty()) {
             var inputsLabel = GuiText.Ingredients.text().withStyle(ChatFormatting.DARK_GREEN);
@@ -130,14 +124,16 @@ public class PatternKeyClientTooltipComponent implements ClientTooltipComponent 
 
             for (var input : inputs) {
                 var text = getStackText(input, true);
-                font.drawInBatch(text, x + TEXT_PADDING, currentY + TEXT_VERTICAL_OFFSET, -1, false, matrix4f, bufferSource,
+                font.drawInBatch(text, x + TEXT_PADDING, currentY + TEXT_VERTICAL_OFFSET, -1, false, matrix4f,
+                        bufferSource,
                         Font.DisplayMode.SEE_THROUGH, 0, 0);
-                if (inputs.indexOf(input) < inputs.size() - 1) currentY += LINE_HEIGHT;
-                else currentY += SECTION_SPACING;
+                if (inputs.indexOf(input) < inputs.size() - 1)
+                    currentY += LINE_HEIGHT;
+                else
+                    currentY += SECTION_SPACING;
             }
         }
 
-        // Substitution info for crafting patterns
         if (tooltipComponent.isCrafting()) {
             var yes = GuiText.Yes.text().withStyle(ChatFormatting.GREEN);
             var no = GuiText.No.text().withStyle(ChatFormatting.RED);
@@ -151,7 +147,8 @@ public class PatternKeyClientTooltipComponent implements ClientTooltipComponent 
                     Font.DisplayMode.SEE_THROUGH, 0, 0);
             currentY += TEXT_HEIGHT;
 
-            font.drawInBatch(fluidSubstitutionLabel, x, currentY + TEXT_VERTICAL_OFFSET, -1, false, matrix4f, bufferSource,
+            font.drawInBatch(fluidSubstitutionLabel, x, currentY + TEXT_VERTICAL_OFFSET, -1, false, matrix4f,
+                    bufferSource,
                     Font.DisplayMode.SEE_THROUGH, 0, 0);
             currentY += TEXT_HEIGHT;
         }
@@ -166,42 +163,31 @@ public class PatternKeyClientTooltipComponent implements ClientTooltipComponent 
     public void renderImage(Font font, int x, int y, GuiGraphics guiGraphics) {
         int currentY = y;
 
-        // Title line - no icon needed
         currentY += INITIAL_IMAGE_OFFSET;
         var showAmounts = tooltipComponent.showAmounts();
 
-        // Outputs section
         if (!tooltipComponent.outputs().isEmpty()) {
             for (var output : tooltipComponent.outputs()) {
-                // Render the item/fluid icon
-                var text = font.width(getStackText(output, false));
                 AEKeyRendering.drawInGui(Minecraft.getInstance(), guiGraphics, x, currentY, output.what());
-
-                // Render amount on top if enabled
                 if (showAmounts) {
                     var amtText = output.what().formatAmount(output.amount(), AmountFormat.SLOT);
                     StackSizeRenderer.renderSizeLabel(guiGraphics, font, x, currentY, amtText, false);
                 }
-
                 currentY += LINE_HEIGHT;
             }
         }
 
-        // Inputs section
+        currentY += 2;
+
         if (!tooltipComponent.inputs().isEmpty()) {
-            currentY += SECTION_SPACING; // Section header
+            currentY += SECTION_SPACING;
 
             for (var input : tooltipComponent.inputs()) {
-                // Render the item/fluid icon
-                var text = font.width(getStackText(input, true));
                 AEKeyRendering.drawInGui(Minecraft.getInstance(), guiGraphics, x, currentY, input.what());
-
-                // Render amount on top if enabled
                 if (showAmounts) {
                     var amtText = input.what().formatAmount(input.amount(), AmountFormat.SLOT);
                     StackSizeRenderer.renderSizeLabel(guiGraphics, font, x, currentY, amtText, false);
                 }
-
                 currentY += LINE_HEIGHT;
             }
         }

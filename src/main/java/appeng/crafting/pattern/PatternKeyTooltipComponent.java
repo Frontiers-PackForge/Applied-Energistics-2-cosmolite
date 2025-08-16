@@ -1,9 +1,10 @@
 package appeng.crafting.pattern;
 
-import appeng.api.stacks.GenericStack;
 import java.util.List;
-import java.util.Set;
+
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
+
+import appeng.api.stacks.GenericStack;
 
 public record PatternKeyTooltipComponent(
         List<GenericStack> inputs,
@@ -13,5 +14,4 @@ public record PatternKeyTooltipComponent(
         boolean canSubstitute,
         boolean canSubstituteFluids,
         boolean showAmounts) implements TooltipComponent {
-
 }
