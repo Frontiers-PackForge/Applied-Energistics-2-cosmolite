@@ -68,8 +68,8 @@ public final class PendingCraftingJobs {
                 // Only toast if no terminal is open (i.e. REI/JEI or no screen at all)
                 // and a wireless terminal is in the player inv, also check if the job is following
                 var minecraft = Minecraft.getInstance();
-                if (AEConfig.instance().isNotifyForFinishedCraftingJobs()
-                        && !(minecraft.screen instanceof MEStorageScreen<?>) && isFollowing
+                if ((AEConfig.instance().isNotifyForFinishedCraftingJobs() || isFollowing)
+                        && !(minecraft.screen instanceof MEStorageScreen<?>)
                         && minecraft.player != null && hasNotificationEnablingItem(minecraft.player)) {
                     minecraft.getToasts().addToast(new FinishedJobToast(what, requestedAmount));
                     var amount = Component.literal(NumberUtil.formatNumber(requestedAmount))

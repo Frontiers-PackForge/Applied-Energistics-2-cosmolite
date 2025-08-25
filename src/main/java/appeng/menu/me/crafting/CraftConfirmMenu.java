@@ -88,7 +88,7 @@ public class CraftConfirmMenu extends AEBaseMenu implements ISubMenu {
     public boolean autoStart = false;
 
     @GuiSync(4)
-    public boolean isFollowing = false;
+    public boolean isFollowing = true;
 
     // Indicates whether any CPUs are available
     @GuiSync(6)

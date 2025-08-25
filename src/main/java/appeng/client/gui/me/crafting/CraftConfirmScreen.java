@@ -29,6 +29,7 @@ import appeng.client.gui.AEBaseScreen;
 import appeng.client.gui.StackWithBounds;
 import appeng.client.gui.style.ScreenStyle;
 import appeng.client.gui.widgets.Scrollbar;
+import appeng.core.AEConfig;
 import appeng.core.localization.GuiText;
 import appeng.menu.me.crafting.CraftConfirmMenu;
 import appeng.menu.me.crafting.CraftingPlanSummary;
@@ -45,15 +46,18 @@ public class CraftConfirmScreen extends AEBaseScreen<CraftConfirmMenu> {
     private final Button start, startWithFollow;
     private final Button selectCPU;
     private final Scrollbar scrollbar;
+    private final boolean isNotifyForFinishedCraftingJobs;
 
     public CraftConfirmScreen(CraftConfirmMenu menu, Inventory playerInventory, Component title,
             ScreenStyle style) {
         super(menu, playerInventory, title, style);
+        this.isNotifyForFinishedCraftingJobs = AEConfig.instance().isNotifyForFinishedCraftingJobs();
         this.table = new CraftConfirmTableRenderer(this, 9, 19);
 
         this.scrollbar = widgets.addScrollBar("scrollbar");
 
-        this.start = widgets.addButton("start", GuiText.Start.text(), () -> this.start(false));
+        this.start = widgets.addButton("start", GuiText.Start.text(),
+                () -> this.start(isNotifyForFinishedCraftingJobs));
         this.start.active = false;
 
         this.startWithFollow = widgets.addButton("startWithFollow", GuiText.StartWithFollow.text(),
@@ -83,6 +87,7 @@ public class CraftConfirmScreen extends AEBaseScreen<CraftConfirmMenu> {
         var start = !this.menu.hasNoCPU() && planIsStartable;
         this.start.active = start;
         this.startWithFollow.active = start;
+        this.startWithFollow.visible = start && !isNotifyForFinishedCraftingJobs;
         this.selectCPU.active = planIsStartable;
 
         // Show additional status about the selected CPU and plan when the planning is done
@@ -150,7 +155,7 @@ public class CraftConfirmScreen extends AEBaseScreen<CraftConfirmMenu> {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int p_keyPressed_3_) {
         if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
-            this.start(false);
+            this.start(isNotifyForFinishedCraftingJobs);
             return true;
         }
         return super.keyPressed(keyCode, scanCode, p_keyPressed_3_);
