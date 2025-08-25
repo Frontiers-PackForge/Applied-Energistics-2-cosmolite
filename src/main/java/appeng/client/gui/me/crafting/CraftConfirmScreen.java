@@ -87,7 +87,7 @@ public class CraftConfirmScreen extends AEBaseScreen<CraftConfirmMenu> {
         var start = !this.menu.hasNoCPU() && planIsStartable;
         this.start.active = start;
         this.startWithFollow.active = start;
-        this.startWithFollow.visible = start && !isNotifyForFinishedCraftingJobs;
+        this.startWithFollow.visible = !isNotifyForFinishedCraftingJobs;
         this.selectCPU.active = planIsStartable;
 
         // Show additional status about the selected CPU and plan when the planning is done
