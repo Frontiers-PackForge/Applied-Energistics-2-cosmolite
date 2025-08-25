@@ -42,7 +42,7 @@ public class CraftConfirmScreen extends AEBaseScreen<CraftConfirmMenu> {
 
     private final CraftConfirmTableRenderer table;
 
-    private final Button start;
+    private final Button start, startWithFollow;
     private final Button selectCPU;
     private final Scrollbar scrollbar;
 
@@ -53,8 +53,12 @@ public class CraftConfirmScreen extends AEBaseScreen<CraftConfirmMenu> {
 
         this.scrollbar = widgets.addScrollBar("scrollbar");
 
-        this.start = widgets.addButton("start", GuiText.Start.text(), this::start);
+        this.start = widgets.addButton("start", GuiText.Start.text(), () -> this.start(false));
         this.start.active = false;
+
+        this.startWithFollow = widgets.addButton("startWithFollow", GuiText.StartWithFollow.text(),
+                () -> this.start(true));
+        this.startWithFollow.active = false;
 
         this.selectCPU = widgets.addButton("selectCpu", getNextCpuButtonLabel(), this::selectNextCpu);
         this.selectCPU.active = false;
@@ -76,7 +80,9 @@ public class CraftConfirmScreen extends AEBaseScreen<CraftConfirmMenu> {
 
         CraftingPlanSummary plan = menu.getPlan();
         boolean planIsStartable = plan != null && !plan.simulation();
-        this.start.active = !this.menu.hasNoCPU() && planIsStartable;
+        var start = !this.menu.hasNoCPU() && planIsStartable;
+        this.start.active = start;
+        this.startWithFollow.active = start;
         this.selectCPU.active = planIsStartable;
 
         // Show additional status about the selected CPU and plan when the planning is done
@@ -144,7 +150,7 @@ public class CraftConfirmScreen extends AEBaseScreen<CraftConfirmMenu> {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int p_keyPressed_3_) {
         if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
-            this.start();
+            this.start(false);
             return true;
         }
         return super.keyPressed(keyCode, scanCode, p_keyPressed_3_);
@@ -154,8 +160,7 @@ public class CraftConfirmScreen extends AEBaseScreen<CraftConfirmMenu> {
         getMenu().cycleSelectedCPU(!isHandlingRightClick());
     }
 
-    private void start() {
-        getMenu().startJob();
+    private void start(boolean isFollowing) {
+        getMenu().startJob(isFollowing);
     }
-
 }

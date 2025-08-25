@@ -81,7 +81,7 @@ public class CraftAmountScreen extends AEBaseScreen<CraftAmountMenu> {
         if (amount <= 0) {
             return;
         }
-        menu.confirm(amount, craftMissingAmount, hasShiftDown());
+        menu.confirm(amount, craftMissingAmount, hasShiftDown(), hasControlDown());
     }
 
 }
