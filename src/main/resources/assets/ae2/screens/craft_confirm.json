@@ -32,6 +32,19 @@
       "width": 180,
       "height": 20
     },
+    "selectCpuScrollbar": {
+      "left": -16,
+      "top": 23,
+      "width": 12,
+      "height": 137
+    },
+    "selectCpuList": {
+      "$comment": "List of available crafting CPU and their status",
+      "left": -94,
+      "top": 4,
+      "width": 94,
+      "height": 164
+    },
     "start": {
       "left": 162,
       "bottom": 25,
@@ -43,6 +56,20 @@
       "bottom": 25,
       "width": 50,
       "height": 20
+    }
+  },
+  "images": {
+    "cpuList": {
+      "texture": "guis/cpu_selector.png",
+      "textureWidth": 256,
+      "textureHeight": 256,
+      "srcRect": [0, 0, 94, 164]
+    },
+    "cpuListButton": {
+      "texture": "guis/cpu_selector.png",
+      "textureWidth": 256,
+      "textureHeight": 256,
+      "srcRect": [100, 0, 67, 22]
     }
   }
 }

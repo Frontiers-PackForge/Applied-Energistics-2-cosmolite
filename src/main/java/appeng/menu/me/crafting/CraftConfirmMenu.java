@@ -18,6 +18,9 @@
 
 package appeng.menu.me.crafting;
 
+import appeng.api.crafting.ICPUSelectionListProvider;
+import com.google.common.collect.ImmutableSet;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Future;
@@ -62,7 +65,7 @@ import appeng.menu.locator.MenuLocator;
 /**
  * @see appeng.client.gui.me.crafting.CraftConfirmScreen
  */
-public class CraftConfirmMenu extends AEBaseMenu implements ISubMenu {
+public class CraftConfirmMenu extends AEBaseMenu implements ISubMenu, ICPUSelectionListProvider {
 
     private static final String ACTION_BACK = "back";
     private static final String ACTION_CYCLE_CPU = "cycleCpu";
@@ -105,6 +108,22 @@ public class CraftConfirmMenu extends AEBaseMenu implements ISubMenu {
 
     private final ISubMenuHost host;
 
+    private static final CraftingCpuList EMPTY_CPU_LIST = new CraftingCpuList(Collections.emptyList());
+
+    private static final String ACTION_SELECT_CPU = "selectCpu";
+
+    private int nextCpuSerial = 1;
+
+    private ImmutableSet<ICraftingCPU> lastCpuSet = ImmutableSet.of();
+
+    private int lastUpdate = 0;
+
+    @GuiSync(9)
+    public CraftingCpuList cpuList = EMPTY_CPU_LIST;
+
+    @GuiSync(10)
+    private int selectedCpuSerial = -1;
+
     /**
      * List of stacks to craft, once this request is through. This is currently used when requesting multiple
      * ingredients of a recipe in REI at the same time via ctrl+click.
@@ -127,6 +146,7 @@ public class CraftConfirmMenu extends AEBaseMenu implements ISubMenu {
         registerClientAction(ACTION_CYCLE_CPU, Boolean.class, this::cycleSelectedCPU);
         registerClientAction(ACTION_START_JOB, this::startJob);
         registerClientAction(ACTION_REPLAN, this::replan);
+        registerClientAction(ACTION_SELECT_CPU, Integer.class, this::selectCpu);
     }
 
     /**
@@ -201,16 +221,43 @@ public class CraftConfirmMenu extends AEBaseMenu implements ISubMenu {
 
     @Override
     public void broadcastChanges() {
-        if (isClientSide()) {
+        var grid = this.getGrid();
+        // Close the screen if the grid no longer exists
+        if (isClientSide() || grid == null) {
+            this.setValidMenu(false);
+            lastUpdate = 20;
+            if (!lastCpuSet.isEmpty()) {
+                cpuList = EMPTY_CPU_LIST;
+                lastCpuSet = ImmutableSet.of();
+            }
             return;
         }
 
-        var grid = this.getGrid();
+        if (!lastCpuSet.equals(grid.getCraftingService().getCpus())
+        || ++lastUpdate >= 20) {
+            lastCpuSet = grid.getCraftingService().getCpus();
+            cpuList = createCpuList();
+        }
 
-        // Close the screen if the grid no longer exists
-        if (grid == null) {
-            this.setValidMenu(false);
-            return;
+        if (selectedCpuSerial != -1) {
+            if (cpuList.cpus().stream().noneMatch(c -> c.serial() == selectedCpuSerial)) {
+                selectCpu(-1);
+            }
+        }
+
+        // Select a suitable CPU if none is selected
+        if (selectedCpuSerial == -1) {
+            // Try busy CPUs first
+            for (var cpu : cpuList.cpus()) {
+                if (cpu.currentJob() != null) {
+                    selectCpu(cpu.serial());
+                    break;
+                }
+            }
+            // If we couldn't find a busy one, just select the first
+            if (selectedCpuSerial == -1 && !cpuList.cpus().isEmpty()) {
+                selectCpu(cpuList.cpus().get(0).serial());
+            }
         }
 
         this.cpuCycler.detectAndSendChanges(grid);
@@ -402,6 +449,48 @@ public class CraftConfirmMenu extends AEBaseMenu implements ISubMenu {
 
     public void clearError() {
         this.submitError = NO_ERROR;
+    }
+
+    @Override
+    public void selectCpu(int serial) {
+        if (isClientSide()) {
+            selectedCpuSerial = serial;
+            sendClientAction(ACTION_SELECT_CPU, serial);
+        } else {
+            ICraftingCPU newSelectedCpu = null;
+            if (serial != -1) {
+                for (var cpu : lastCpuSet) {
+                    if (cpuSerialMap.getOrDefault(cpu, -1) == serial) {
+                        newSelectedCpu = cpu;
+                        break;
+                    }
+                }
+            }
+
+            if (newSelectedCpu != selectedCpu) {
+                this.selectedCpuSerial = getOrAssignCpuSerial(newSelectedCpu);
+            }
+        }
+    }
+
+    @Override
+    public CraftingCpuList getCpuList() {
+        return cpuList;
+    }
+
+    @Override
+    public int getSelectedCpuSerial() {
+        return selectedCpuSerial;
+    }
+
+    @Override
+    public int incrNextCpuSerial() {
+        return nextCpuSerial++;
+    }
+
+    @Override
+    public ImmutableSet<ICraftingCPU> getLastCpuSet() {
+        return lastCpuSet;
     }
 
     // Helper to sync the crafting result error

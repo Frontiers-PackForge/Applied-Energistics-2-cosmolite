@@ -1,5 +1,6 @@
 package appeng.client.gui.widgets;
 
+import appeng.api.crafting.ICPUSelectionListProvider;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
@@ -34,7 +35,7 @@ public class CPUSelectionList implements ICompositeWidget {
 
     private final Blitter background;
     private final Blitter buttonBg;
-    private final CraftingStatusMenu menu;
+    private final ICPUSelectionListProvider menu;
     private final Color textColor;
     private final int selectedColor;
     private final Scrollbar scrollbar;
@@ -42,7 +43,7 @@ public class CPUSelectionList implements ICompositeWidget {
     // Relative to the origin of the current screen (not window)
     private Rect2i bounds = new Rect2i(0, 0, 0, 0);
 
-    public CPUSelectionList(CraftingStatusMenu menu, Scrollbar scrollbar, ScreenStyle style) {
+    public CPUSelectionList(ICPUSelectionListProvider menu, Scrollbar scrollbar, ScreenStyle style) {
         this.menu = menu;
         this.scrollbar = scrollbar;
         this.background = style.getImage("cpuList");
@@ -149,12 +150,12 @@ public class CPUSelectionList implements ICompositeWidget {
             // Clicked right between two buttons
             return null;
         }
-        if (relY < 0 || buttonIdx >= menu.cpuList.cpus().size()) {
+        if (relY < 0 || buttonIdx >= menu.getCpuList().cpus().size()) {
             // Clicked above first or below last button
             return null;
         }
 
-        var cpus = menu.cpuList.cpus();
+        var cpus = menu.getCpuList().cpus();
         if (buttonIdx >= 0 && buttonIdx < cpus.size()) {
             return cpus.get(buttonIdx);
         }
@@ -164,7 +165,7 @@ public class CPUSelectionList implements ICompositeWidget {
 
     @Override
     public void updateBeforeRender() {
-        var hiddenRows = Math.max(0, menu.cpuList.cpus().size() - ROWS);
+        var hiddenRows = Math.max(0, menu.getCpuList().cpus().size() - ROWS);
         scrollbar.setRange(0, hiddenRows, ROWS / 3);
     }
 
@@ -185,9 +186,9 @@ public class CPUSelectionList implements ICompositeWidget {
         var pose = guiGraphics.pose();
 
         var font = Minecraft.getInstance().font;
-        var cpus = menu.cpuList.cpus().subList(
-                Mth.clamp(scrollbar.getCurrentScroll(), 0, menu.cpuList.cpus().size()),
-                Mth.clamp(scrollbar.getCurrentScroll() + ROWS, 0, menu.cpuList.cpus().size()));
+        var cpus = menu.getCpuList().cpus().subList(
+                Mth.clamp(scrollbar.getCurrentScroll(), 0, menu.getCpuList().cpus().size()),
+                Mth.clamp(scrollbar.getCurrentScroll() + ROWS, 0, menu.getCpuList().cpus().size()));
         for (var cpu : cpus) {
             int color = -1;
             if (cpu.serial() == menu.getSelectedCpuSerial()) {

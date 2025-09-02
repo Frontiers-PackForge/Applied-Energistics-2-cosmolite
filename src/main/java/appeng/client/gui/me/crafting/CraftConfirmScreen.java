@@ -18,6 +18,7 @@
 
 package appeng.client.gui.me.crafting;
 
+import appeng.client.gui.widgets.CPUSelectionList;
 import org.lwjgl.glfw.GLFW;
 
 import net.minecraft.client.gui.GuiGraphics;
@@ -60,6 +61,9 @@ public class CraftConfirmScreen extends AEBaseScreen<CraftConfirmMenu> {
         this.selectCPU.active = false;
 
         widgets.addButton("cancel", GuiText.Cancel.text(), menu::goBack);
+
+        var scrollbar = widgets.addScrollBar("selectCpuScrollbar");
+        widgets.add("selectCpuList", new CPUSelectionList(menu, scrollbar, style));
     }
 
     @Override

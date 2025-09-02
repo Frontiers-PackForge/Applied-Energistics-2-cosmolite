@@ -18,6 +18,7 @@
 
 package appeng.menu.me.crafting;
 
+import appeng.api.crafting.ICPUSelectionListProvider;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -46,14 +47,9 @@ import appeng.menu.implementations.MenuTypeBuilder;
 /**
  * @see appeng.client.gui.me.crafting.CraftingStatusScreen
  */
-public class CraftingStatusMenu extends CraftingCPUMenu implements ISubMenu {
+public class CraftingStatusMenu extends CraftingCPUMenu implements ISubMenu, ICPUSelectionListProvider {
 
     private static final CraftingCpuList EMPTY_CPU_LIST = new CraftingCpuList(Collections.emptyList());
-
-    private static final Comparator<CraftingCpuListEntry> CPU_COMPARATOR = Comparator
-            .comparing((CraftingCpuListEntry e) -> e.name() == null)
-            .thenComparing(e -> e.name() != null ? e.name().getString() : "")
-            .thenComparingInt(CraftingCpuListEntry::serial);
 
     private static final String ACTION_SELECT_CPU = "selectCpu";
 
@@ -61,7 +57,6 @@ public class CraftingStatusMenu extends CraftingCPUMenu implements ISubMenu {
             .create(CraftingStatusMenu::new, ITerminalHost.class)
             .build("craftingstatus");
 
-    private final WeakHashMap<ICraftingCPU, Integer> cpuSerialMap = new WeakHashMap<>();
 
     private int nextCpuSerial = 1;
 
@@ -141,32 +136,6 @@ public class CraftingStatusMenu extends CraftingCPUMenu implements ISubMenu {
         super.broadcastChanges();
     }
 
-    private CraftingCpuList createCpuList() {
-        var entries = new ArrayList<CraftingCpuListEntry>(lastCpuSet.size());
-        for (var cpu : lastCpuSet) {
-            var serial = getOrAssignCpuSerial(cpu);
-            var status = cpu.getJobStatus();
-            var progress = 0f;
-            if (status != null && status.totalItems() > 0) {
-                progress = (float) (status.progress() / (double) status.totalItems());
-            }
-            entries.add(new CraftingCpuListEntry(
-                    serial,
-                    cpu.getAvailableStorage(),
-                    cpu.getCoProcessors(),
-                    cpu.getName(),
-                    cpu.getSelectionMode(),
-                    status != null ? status.crafting() : null,
-                    progress,
-                    status != null ? status.elapsedTimeNanos() : 0));
-        }
-        entries.sort(CPU_COMPARATOR);
-        return new CraftingCpuList(entries);
-    }
-
-    private int getOrAssignCpuSerial(ICraftingCPU cpu) {
-        return cpuSerialMap.computeIfAbsent(cpu, ignored -> nextCpuSerial++);
-    }
 
     @Override
     public boolean allowConfiguration() {
@@ -194,66 +163,22 @@ public class CraftingStatusMenu extends CraftingCPUMenu implements ISubMenu {
         }
     }
 
+    @Override
+    public CraftingCpuList getCpuList() {
+        return cpuList;
+    }
+
     public int getSelectedCpuSerial() {
         return selectedCpuSerial;
     }
 
-    public record CraftingCpuList(List<CraftingCpuListEntry> cpus) implements PacketWritable {
-        public CraftingCpuList(FriendlyByteBuf data) {
-            this(readFromPacket(data));
-        }
-
-        private static List<CraftingCpuListEntry> readFromPacket(FriendlyByteBuf data) {
-            var count = data.readInt();
-            var result = new ArrayList<CraftingCpuListEntry>(count);
-            for (int i = 0; i < count; i++) {
-                result.add(CraftingCpuListEntry.readFromPacket(data));
-            }
-            return result;
-        }
-
-        @Override
-        public void writeToPacket(FriendlyByteBuf data) {
-            data.writeInt(cpus.size());
-            for (var entry : cpus) {
-                entry.writeToPacket(data);
-            }
-        }
+    @Override
+    public ImmutableSet<ICraftingCPU> getLastCpuSet() {
+        return lastCpuSet;
     }
 
-    public record CraftingCpuListEntry(
-            int serial,
-            long storage,
-            int coProcessors,
-            Component name,
-            CpuSelectionMode mode,
-            GenericStack currentJob,
-            float progress,
-            long elapsedTimeNanos) {
-        public static CraftingCpuListEntry readFromPacket(FriendlyByteBuf data) {
-            return new CraftingCpuListEntry(
-                    data.readInt(),
-                    data.readLong(),
-                    data.readInt(),
-                    data.readBoolean() ? data.readComponent() : null,
-                    data.readEnum(CpuSelectionMode.class),
-                    GenericStack.readBuffer(data),
-                    data.readFloat(),
-                    data.readVarLong());
-        }
-
-        public void writeToPacket(FriendlyByteBuf data) {
-            data.writeInt(serial);
-            data.writeLong(storage);
-            data.writeInt(coProcessors);
-            data.writeBoolean(name != null);
-            if (name != null) {
-                data.writeComponent(name);
-            }
-            data.writeEnum(mode);
-            GenericStack.writeBuffer(currentJob, data);
-            data.writeFloat(progress);
-            data.writeVarLong(elapsedTimeNanos);
-        }
+    @Override
+    public int incrNextCpuSerial() {
+        return nextCpuSerial++;
     }
 }
