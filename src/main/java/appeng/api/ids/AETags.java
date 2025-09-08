@@ -46,6 +46,17 @@ public final class AETags {
      */
     public static final TagKey<Block> SPATIAL_BLACKLIST = blockTag("ae2:blacklisted/spatial");
 
+
+    /**
+     * Contains items that are blacklisted from entering/being stored in the network.
+     */
+    public static final TagKey<Item> ITEM_STORAGE_BLACKLIST = itemTag("ae2:blacklisted/storage");
+
+    /**
+     * Contains fluids that are blacklisted from entering/being stored in the network.
+     */
+    public static final TagKey<Fluid> FLUID_STORAGE_BLACKLIST = fluidTag("ae2:blacklisted/storage");
+
     /**
      * Contains blocks that are blacklisted from being picked up by an item annihilation plane.
      */
