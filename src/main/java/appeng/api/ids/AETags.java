@@ -46,7 +46,6 @@ public final class AETags {
      */
     public static final TagKey<Block> SPATIAL_BLACKLIST = blockTag("ae2:blacklisted/spatial");
 
-
     /**
      * Contains items that are blacklisted from entering/being stored in the network.
      */
