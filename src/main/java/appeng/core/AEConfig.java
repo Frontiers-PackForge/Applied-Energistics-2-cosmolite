@@ -259,6 +259,14 @@ public final class AEConfig {
         CLIENT.clearExternalSearchOnOpen.set(enable);
     }
 
+    public boolean isShowCraftableIcon() {
+        return CLIENT.showCraftableIcon.get();
+    }
+
+    public void setShowCraftableIcon(boolean enable) {
+        CLIENT.showCraftableIcon.set(enable);
+    }
+
     public boolean isRememberLastSearch() {
         return CLIENT.rememberLastSearch.get();
     }
@@ -569,6 +577,7 @@ public final class AEConfig {
         public final BooleanOption syncWithExternalSearch;
         public final BooleanOption rememberLastSearch;
         public final BooleanOption autoFocusSearch;
+        public final BooleanOption showCraftableIcon;
 
         // Tooltip settings
         public final BooleanOption tooltipShowCellUpgrades;
@@ -618,6 +627,8 @@ public final class AEConfig {
                     "Remembers the last search term and restores it when the terminal opens");
             this.autoFocusSearch = search.addBoolean("autoFocusSearch", false,
                     "Automatically focuses the search field when the terminal opens");
+            this.showCraftableIcon = search.addBoolean("showCraftableIcon", true,
+                    "Show an icon on craftable items in the network");
 
             var tooltips = root.subsection("tooltips");
             this.tooltipShowCellUpgrades = tooltips.addBoolean("showCellUpgrades", true,

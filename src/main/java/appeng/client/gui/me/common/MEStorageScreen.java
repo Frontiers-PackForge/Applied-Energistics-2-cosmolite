@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Objects;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.systems.RenderSystem;
 
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
@@ -73,6 +74,7 @@ import appeng.client.gui.widgets.ToolboxPanel;
 import appeng.client.gui.widgets.UpgradesPanel;
 import appeng.core.AEConfig;
 import appeng.core.AELog;
+import appeng.core.definitions.AEItems;
 import appeng.core.localization.ButtonToolTips;
 import appeng.core.localization.GuiText;
 import appeng.core.localization.Tooltips;
@@ -588,6 +590,7 @@ public class MEStorageScreen<C extends MEStorageMenu>
                         var craftLabelText = useLargeFonts ? GuiText.LargeFontCraft.getLocal()
                                 : GuiText.SmallFontCraft.getLocal();
                         StackSizeRenderer.renderSizeLabel(guiGraphics, this.font, s.x, s.y, craftLabelText);
+                        drawCraftable(guiGraphics, s.x, s.y);
                     } else {
                         AmountFormat format = useLargeFonts ? AmountFormat.SLOT_LARGE_FONT
                                 : AmountFormat.SLOT;
@@ -595,6 +598,7 @@ public class MEStorageScreen<C extends MEStorageMenu>
                         StackSizeRenderer.renderSizeLabel(guiGraphics, this.font, s.x, s.y, text, useLargeFonts);
                         if (craftable) {
                             StackSizeRenderer.renderSizeLabel(guiGraphics, this.font, s.x - 11, s.y - 11, "+", false);
+                            drawCraftable(guiGraphics, s.x, s.y);
                         }
                     }
                 }
@@ -604,6 +608,23 @@ public class MEStorageScreen<C extends MEStorageMenu>
         }
 
         super.renderSlot(guiGraphics, s);
+    }
+
+    private void drawCraftable(GuiGraphics guiGraphics, int x, int y) {
+        if (!AEConfig.instance().isShowCraftableIcon())
+            return;
+        RenderSystem.disableBlend();
+        var pose = guiGraphics.pose();
+        pose.pushPose();
+        pose.scale(0.5f, 0.5f, 1.0f);
+        pose.translate(x, y, 200.0f);
+        AEKeyRendering.drawInGui(
+                minecraft,
+                guiGraphics,
+                x,
+                y,
+                AEItemKey.of(AEItems.CRAFTING_PATTERN));
+        pose.popPose();
     }
 
     /**

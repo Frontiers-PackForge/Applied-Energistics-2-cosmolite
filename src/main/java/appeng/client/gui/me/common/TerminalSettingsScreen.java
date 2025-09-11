@@ -22,6 +22,7 @@ public class TerminalSettingsScreen<C extends MEStorageMenu> extends AESubScreen
     private final AECheckbox useInternalSearchRadio;
     private final AECheckbox useExternalSearchRadio;
 
+    private final AECheckbox showCraftableIconCheckBox;
     private final AECheckbox rememberCheckbox;
     private final AECheckbox autoFocusCheckbox;
     private final AECheckbox syncWithExternalCheckbox;
@@ -61,6 +62,9 @@ public class TerminalSettingsScreen<C extends MEStorageMenu> extends AESubScreen
         useExternalSearchRadio.setRadio(true);
         useExternalSearchRadio.active = hasExternalSearch;
 
+        showCraftableIconCheckBox = widgets.addCheckbox("showCraftableIconCheckBox",
+                GuiText.SearchSettingsShowCraftableIcon.text(),
+                this::save);
         rememberCheckbox = widgets.addCheckbox("rememberCheckbox", GuiText.SearchSettingsRememberSearch.text(),
                 this::save);
         autoFocusCheckbox = widgets.addCheckbox("autoFocusCheckbox", GuiText.SearchSettingsAutoFocus.text(),
@@ -110,11 +114,13 @@ public class TerminalSettingsScreen<C extends MEStorageMenu> extends AESubScreen
 
         useInternalSearchRadio.setSelected(!config.isUseExternalSearch());
         useExternalSearchRadio.setSelected(config.isUseExternalSearch());
+        showCraftableIconCheckBox.setSelected(config.isShowCraftableIcon());
         rememberCheckbox.setSelected(config.isRememberLastSearch());
         autoFocusCheckbox.setSelected(config.isAutoFocusSearch());
         syncWithExternalCheckbox.setSelected(config.isSyncWithExternalSearch());
         clearExternalCheckbox.setSelected(config.isClearExternalSearchOnOpen());
 
+        showCraftableIconCheckBox.visible = useInternalSearchRadio.isSelected();
         rememberCheckbox.visible = useInternalSearchRadio.isSelected();
         autoFocusCheckbox.visible = useInternalSearchRadio.isSelected();
         syncWithExternalCheckbox.visible = useInternalSearchRadio.isSelected();
@@ -123,6 +129,7 @@ public class TerminalSettingsScreen<C extends MEStorageMenu> extends AESubScreen
     }
 
     private void save() {
+        config.setShowCraftableIcon(showCraftableIconCheckBox.isSelected());
         config.setUseExternalSearch(useExternalSearchRadio.isSelected());
         config.setRememberLastSearch(rememberCheckbox.isSelected());
         config.setAutoFocusSearch(autoFocusCheckbox.isSelected());
