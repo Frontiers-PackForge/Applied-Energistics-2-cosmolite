@@ -56,7 +56,7 @@ public class CraftingCPUScreen<T extends CraftingCPUMenu> extends AEBaseScreen<T
 
     private final CraftingStatusTableRenderer table;
 
-    private final Button cancel;
+    private final Button cancel, suspend;
 
     private final Scrollbar scrollbar;
 
@@ -72,6 +72,7 @@ public class CraftingCPUScreen<T extends CraftingCPUMenu> extends AEBaseScreen<T
         this.scrollbar = widgets.addScrollBar("scrollbar");
 
         this.cancel = this.widgets.addButton("cancel", GuiText.Cancel.text(), menu::cancelCrafting);
+        this.suspend = this.widgets.addButton("suspend", GuiText.Suspend.text(), menu::toggleScheduling);
 
         this.schedulingModeButton = new ServerSettingToggleButton<>(Settings.CPU_SELECTION_MODE,
                 CpuSelectionMode.ANY);
@@ -89,9 +90,9 @@ public class CraftingCPUScreen<T extends CraftingCPUMenu> extends AEBaseScreen<T
         // Update the dialog title with an ETA if possible
         Component title = this.getGuiDisplayName(GuiText.CraftingStatus.text());
         if (status != null) {
-            final long elapsedTime = status.getElapsedTime();
-            final double remainingItems = status.getRemainingItemCount();
-            final double startItems = status.getStartItemCount();
+            final long elapsedTime = status.elapsedTime();
+            final double remainingItems = status.remainingItemCount();
+            final double startItems = status.startItemCount();
             final long eta = (long) (elapsedTime / Math.max(1d, startItems - remainingItems)
                     * remainingItems);
 
@@ -108,19 +109,20 @@ public class CraftingCPUScreen<T extends CraftingCPUMenu> extends AEBaseScreen<T
         }
         setTextContent(TEXT_ID_DIALOG_TITLE, title);
 
-        final int size = this.status != null ? this.status.getEntries().size() : 0;
+        final int size = this.status != null ? this.status.entries().size() : 0;
         scrollbar.setRange(0, this.table.getScrollableRows(size), 1);
 
         this.schedulingModeButton.set(this.menu.getSchedulingMode());
     }
 
     private List<CraftingStatusEntry> getVisualEntries() {
-        return this.status != null ? status.getEntries() : Collections.emptyList();
+        return this.status != null ? status.entries() : Collections.emptyList();
     }
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float btn) {
         this.cancel.active = !getVisualEntries().isEmpty();
+        this.suspend.active = this.cancel.active;
 
         super.render(guiGraphics, mouseX, mouseY, btn);
     }
@@ -130,7 +132,7 @@ public class CraftingCPUScreen<T extends CraftingCPUMenu> extends AEBaseScreen<T
         super.drawFG(guiGraphics, offsetX, offsetY, mouseX, mouseY);
 
         if (status != null) {
-            this.table.render(guiGraphics, mouseX, mouseY, status.getEntries(), scrollbar.getCurrentScroll());
+            this.table.render(guiGraphics, mouseX, mouseY, status.entries(), scrollbar.getCurrentScroll());
         }
     }
 
@@ -146,45 +148,42 @@ public class CraftingCPUScreen<T extends CraftingCPUMenu> extends AEBaseScreen<T
 
     public void postUpdate(CraftingStatus status) {
         Map<Long, CraftingStatusEntry> entries;
-        if (this.status == null || status.isFullStatus()) {
+        if (this.status == null || status.fullStatus()) {
             // Start from scratch.
             // We can't just reuse the status because we have to filter out deleted entries.
             entries = new LinkedHashMap<>();
         } else {
             // Merge the status entries.
-            entries = new LinkedHashMap<>(this.status.getEntries().size());
-            for (CraftingStatusEntry entry : this.status.getEntries()) {
+            entries = new LinkedHashMap<>(this.status.entries().size());
+            for (CraftingStatusEntry entry : this.status.entries()) {
                 entries.put(entry.getSerial(), entry);
             }
         }
 
-        for (CraftingStatusEntry entry : status.getEntries()) {
+        for (CraftingStatusEntry entry : status.entries()) {
             if (entry.isDeleted()) {
                 entries.remove(entry.getSerial());
                 continue;
             }
 
-            CraftingStatusEntry existingEntry = entries.get(entry.getSerial());
-            if (existingEntry != null) {
-                entries.put(entry.getSerial(), new CraftingStatusEntry(
-                        existingEntry.getSerial(),
-                        existingEntry.getWhat(),
-                        entry.getStoredAmount(),
-                        entry.getActiveAmount(),
-                        entry.getPendingAmount()));
-            } else {
-                entries.put(entry.getSerial(), entry);
-            }
+            entries.merge(entry.getSerial(), entry, (a, b) -> new CraftingStatusEntry(
+                    a.getSerial(),
+                    a.getWhat(),
+                    b.getStoredAmount(),
+                    b.getActiveAmount(),
+                    b.getPendingAmount()));
         }
 
         List<CraftingStatusEntry> sortedEntries = new ArrayList<>(entries.values());
         Collections.sort(sortedEntries);
         this.status = new CraftingStatus(
                 true,
-                status.getElapsedTime(),
-                status.getRemainingItemCount(),
-                status.getStartItemCount(),
-                sortedEntries);
+                status.elapsedTime(),
+                status.remainingItemCount(),
+                status.startItemCount(),
+                sortedEntries,
+                status.suspended());
+        this.suspend.setMessage(status.suspended() ? GuiText.Resume.text() : GuiText.Suspend.text());
     }
 
     @Override
