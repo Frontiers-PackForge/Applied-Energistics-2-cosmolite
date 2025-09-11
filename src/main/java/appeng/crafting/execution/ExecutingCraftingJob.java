@@ -58,6 +58,7 @@ public class ExecutingCraftingJob {
     long remainingAmount;
     @Nullable
     Integer playerId;
+    boolean isFollowing;
     boolean suspended;
 
     @FunctionalInterface
@@ -66,7 +67,7 @@ public class ExecutingCraftingJob {
     }
 
     ExecutingCraftingJob(ICraftingPlan plan, CraftingDifferenceListener postCraftingDifference, CraftingLink link,
-            @Nullable Integer playerId) {
+            @Nullable Integer playerId, boolean isFollowing) {
         this.finalOutput = plan.finalOutput();
         this.remainingAmount = this.finalOutput.amount();
         this.waitingFor = new ListCraftingInventory(postCraftingDifference::onCraftingDifference);
@@ -86,6 +87,7 @@ public class ExecutingCraftingJob {
         }
         this.link = link;
         this.playerId = playerId;
+        this.isFollowing = isFollowing;
         this.suspended = false;
     }
 
