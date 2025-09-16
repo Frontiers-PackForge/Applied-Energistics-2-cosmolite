@@ -26,32 +26,86 @@ import com.google.common.collect.ImmutableList;
 import net.minecraft.network.FriendlyByteBuf;
 
 import appeng.crafting.execution.CraftingCpuLogic;
+import appeng.crafting.execution.ElapsedTimeTracker;
 import appeng.menu.me.common.IncrementalUpdateHelper;
 
 /**
  * Describes a currently running crafting job. A crafting status can either be a full update which replaces any
- * previously kept state on the client ({@link #fullStatus ()}, or an incremental update, which uses previously sent
+ * previously kept state on the client ({@link #isFullStatus()}, or an incremental update, which uses previously sent
  * {@link CraftingStatusEntry#getSerial() serials} to update entries on the client that were previously sent. To reduce
  * the packet size for updates, the {@link CraftingStatusEntry#getWhat() stack} for entries that were previously sent to
  * the client are set to {@code null}.
- *
- * @param fullStatus         True if this status update replaces any previous status information. Otherwise it should be
- *                           considered an incremental update.
- * @param elapsedTime
- * @param remainingItemCount
- * @param startItemCount
  */
-public record CraftingStatus(boolean fullStatus, long elapsedTime, long remainingItemCount, long startItemCount,
-        List<CraftingStatusEntry> entries, boolean suspended) {
+public class CraftingStatus {
 
-    public static final CraftingStatus EMPTY = new CraftingStatus(true, 0, 0, 0, Collections.emptyList(), false);
+    public static final CraftingStatus EMPTY = new CraftingStatus(true, 0, 0, 0, Collections.emptyList());
 
     /**
-     * Non-canonical record constructor so we don't break any existing code that made use of the old constructor.
+     * True if this status update replaces any previous status information. Otherwise it should be considered an
+     * incremental update.
      */
+    private final boolean fullStatus;
+
+    /**
+     * @see ElapsedTimeTracker
+     */
+    private final long elapsedTime;
+
+    /**
+     * @see ElapsedTimeTracker
+     */
+    private final long remainingItemCount;
+
+    /**
+     * @see ElapsedTimeTracker
+     */
+    private final long startItemCount;
+
+    private final List<CraftingStatusEntry> entries;
+
+    private final boolean suspended;
+
+    public CraftingStatus(boolean fullStatus, long elapsedTime, long remainingItemCount, long startItemCount,
+            List<CraftingStatusEntry> entries, boolean suspended) {
+        this.fullStatus = fullStatus;
+        this.elapsedTime = elapsedTime;
+        this.remainingItemCount = remainingItemCount;
+        this.startItemCount = startItemCount;
+        this.entries = ImmutableList.copyOf(entries);
+        this.suspended = suspended;
+    }
+
+    /**
+     * Alternate constructor so we don't break any existing code that made use of the old one.
+     */
+    @Deprecated
     public CraftingStatus(boolean fullStatus, long elapsedTime, long remainingItemCount, long startItemCount,
             List<CraftingStatusEntry> entries) {
         this(fullStatus, elapsedTime, remainingItemCount, startItemCount, entries, false);
+    }
+
+    public boolean isFullStatus() {
+        return fullStatus;
+    }
+
+    public long getElapsedTime() {
+        return elapsedTime;
+    }
+
+    public long getRemainingItemCount() {
+        return remainingItemCount;
+    }
+
+    public long getStartItemCount() {
+        return startItemCount;
+    }
+
+    public List<CraftingStatusEntry> getEntries() {
+        return entries;
+    }
+
+    public boolean isSuspended() {
+        return suspended;
     }
 
     public void write(FriendlyByteBuf buffer) {

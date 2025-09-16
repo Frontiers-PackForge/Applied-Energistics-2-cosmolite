@@ -167,7 +167,7 @@ public class CraftingCPUMenu extends AEBaseMenu {
                     || this.cachedSuspend != this.cpu.craftingLogic.isJobSuspended()) {
                 CraftingStatus status = CraftingStatus.create(this.incrementalUpdateHelper, this.cpu.craftingLogic);
                 this.incrementalUpdateHelper.commitChanges();
-                this.cachedSuspend = status.suspended();
+                this.cachedSuspend = status.isSuspended();
 
                 sendPacketToClient(new CraftingStatusPacket(containerId, status));
             }

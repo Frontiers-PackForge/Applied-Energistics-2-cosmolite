@@ -90,9 +90,9 @@ public class CraftingCPUScreen<T extends CraftingCPUMenu> extends AEBaseScreen<T
         // Update the dialog title with an ETA if possible
         Component title = this.getGuiDisplayName(GuiText.CraftingStatus.text());
         if (status != null) {
-            final long elapsedTime = status.elapsedTime();
-            final double remainingItems = status.remainingItemCount();
-            final double startItems = status.startItemCount();
+            final long elapsedTime = status.getElapsedTime();
+            final double remainingItems = status.getRemainingItemCount();
+            final double startItems = status.getStartItemCount();
             final long eta = (long) (elapsedTime / Math.max(1d, startItems - remainingItems)
                     * remainingItems);
 
@@ -109,14 +109,14 @@ public class CraftingCPUScreen<T extends CraftingCPUMenu> extends AEBaseScreen<T
         }
         setTextContent(TEXT_ID_DIALOG_TITLE, title);
 
-        final int size = this.status != null ? this.status.entries().size() : 0;
+        final int size = this.status != null ? this.status.getEntries().size() : 0;
         scrollbar.setRange(0, this.table.getScrollableRows(size), 1);
 
         this.schedulingModeButton.set(this.menu.getSchedulingMode());
     }
 
     private List<CraftingStatusEntry> getVisualEntries() {
-        return this.status != null ? status.entries() : Collections.emptyList();
+        return this.status != null ? status.getEntries() : Collections.emptyList();
     }
 
     @Override
@@ -132,7 +132,7 @@ public class CraftingCPUScreen<T extends CraftingCPUMenu> extends AEBaseScreen<T
         super.drawFG(guiGraphics, offsetX, offsetY, mouseX, mouseY);
 
         if (status != null) {
-            this.table.render(guiGraphics, mouseX, mouseY, status.entries(), scrollbar.getCurrentScroll());
+            this.table.render(guiGraphics, mouseX, mouseY, status.getEntries(), scrollbar.getCurrentScroll());
         }
     }
 
@@ -148,19 +148,19 @@ public class CraftingCPUScreen<T extends CraftingCPUMenu> extends AEBaseScreen<T
 
     public void postUpdate(CraftingStatus status) {
         Map<Long, CraftingStatusEntry> entries;
-        if (this.status == null || status.fullStatus()) {
+        if (this.status == null || status.isFullStatus()) {
             // Start from scratch.
             // We can't just reuse the status because we have to filter out deleted entries.
             entries = new LinkedHashMap<>();
         } else {
             // Merge the status entries.
-            entries = new LinkedHashMap<>(this.status.entries().size());
-            for (CraftingStatusEntry entry : this.status.entries()) {
+            entries = new LinkedHashMap<>(this.status.getEntries().size());
+            for (CraftingStatusEntry entry : this.status.getEntries()) {
                 entries.put(entry.getSerial(), entry);
             }
         }
 
-        for (CraftingStatusEntry entry : status.entries()) {
+        for (CraftingStatusEntry entry : status.getEntries()) {
             if (entry.isDeleted()) {
                 entries.remove(entry.getSerial());
                 continue;
@@ -178,12 +178,12 @@ public class CraftingCPUScreen<T extends CraftingCPUMenu> extends AEBaseScreen<T
         Collections.sort(sortedEntries);
         this.status = new CraftingStatus(
                 true,
-                status.elapsedTime(),
-                status.remainingItemCount(),
-                status.startItemCount(),
+                status.getElapsedTime(),
+                status.getRemainingItemCount(),
+                status.getStartItemCount(),
                 sortedEntries,
-                status.suspended());
-        this.suspend.setMessage(status.suspended() ? GuiText.Resume.text() : GuiText.Suspend.text());
+                status.isSuspended());
+        this.suspend.setMessage(status.isSuspended() ? GuiText.Resume.text() : GuiText.Suspend.text());
     }
 
     @Override
