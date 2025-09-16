@@ -166,12 +166,12 @@ public class CraftingCPUScreen<T extends CraftingCPUMenu> extends AEBaseScreen<T
                 continue;
             }
 
-            entries.merge(entry.getSerial(), entry, (a, b) -> new CraftingStatusEntry(
-                    a.getSerial(),
-                    a.getWhat(),
-                    b.getStoredAmount(),
-                    b.getActiveAmount(),
-                    b.getPendingAmount()));
+            entries.merge(entry.getSerial(), entry, (newEntry, existingEntry) -> new CraftingStatusEntry(
+                    newEntry.getSerial(),
+                    newEntry.getWhat(),
+                    existingEntry.getStoredAmount(),
+                    existingEntry.getActiveAmount(),
+                    existingEntry.getPendingAmount()));
         }
 
         List<CraftingStatusEntry> sortedEntries = new ArrayList<>(entries.values());
