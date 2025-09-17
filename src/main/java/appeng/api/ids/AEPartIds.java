@@ -270,6 +270,7 @@ public final class AEPartIds {
     public static final ResourceLocation FLUID_P2P_TUNNEL = id("fluid_p2p_tunnel");
     public static final ResourceLocation FE_P2P_TUNNEL = id("fe_p2p_tunnel");
     public static final ResourceLocation LIGHT_P2P_TUNNEL = id("light_p2p_tunnel");
+    public static final ResourceLocation PATTERN_P2P_TUNNEL = id("pattern_p2p_tunnel");
 
     private static ResourceLocation id(String id) {
         return new ResourceLocation(AEConstants.MOD_ID, id);

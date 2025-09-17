@@ -61,6 +61,7 @@ import appeng.parts.p2p.FluidP2PTunnelPart;
 import appeng.parts.p2p.ItemP2PTunnelPart;
 import appeng.parts.p2p.LightP2PTunnelPart;
 import appeng.parts.p2p.MEP2PTunnelPart;
+import appeng.parts.p2p.PatternP2PTunnelPart;
 import appeng.parts.p2p.RedstoneP2PTunnelPart;
 import appeng.parts.reporting.ConversionMonitorPart;
 import appeng.parts.reporting.CraftingTerminalPart;
@@ -114,6 +115,7 @@ public final class AEParts {
     public static final ItemDefinition<PartItem<FluidP2PTunnelPart>> FLUID_P2P_TUNNEL = createPart("Fluid P2P Tunnel", AEPartIds.FLUID_P2P_TUNNEL, FluidP2PTunnelPart.class, FluidP2PTunnelPart::new);
     public static final ItemDefinition<PartItem<FEP2PTunnelPart>> FE_P2P_TUNNEL = createPart("Energy P2P Tunnel", AEPartIds.FE_P2P_TUNNEL, FEP2PTunnelPart.class, FEP2PTunnelPart::new);
     public static final ItemDefinition<PartItem<LightP2PTunnelPart>> LIGHT_P2P_TUNNEL = createPart("Light P2P Tunnel", AEPartIds.LIGHT_P2P_TUNNEL, LightP2PTunnelPart.class, LightP2PTunnelPart::new);
+    public static final ItemDefinition<PartItem<PatternP2PTunnelPart>> PATTERN_P2P_TUNNEL = createPart("Pattern P2P Tunnel", AEPartIds.PATTERN_P2P_TUNNEL, PatternP2PTunnelPart.class, PatternP2PTunnelPart::new);
     // spotless:on
 
     private static <T extends IPart> ItemDefinition<PartItem<T>> createPart(
