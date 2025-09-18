@@ -178,9 +178,17 @@ public class CraftConfirmScreen extends AEBaseScreen<CraftConfirmMenu> {
     }
 
     private void exportCraft() {
+        CraftingPlanSummary plan = menu.getPlan();
         var jso = new JsonObject();
         var jsa = new JsonArray();
-        for (var entry : menu.getPlan().entries()) {
+        var cpuStats = new JsonObject();
+        cpuStats.addProperty("name", menu.cpuName.getString());
+        cpuStats.addProperty("isFollowing", menu.isFollowing);
+        cpuStats.addProperty("availableBytes", menu.getCpuAvailableBytes());
+        cpuStats.addProperty("coProcessors", menu.getCpuCoProcessors());
+        cpuStats.addProperty("usedBytes", plan.usedBytes());
+        jso.add("cpu", cpuStats);
+        for (var entry : plan.entries()) {
             var newObj = new JsonObject();
             newObj.addProperty("what", entry.what().getId().toString());
             newObj.addProperty("missingAmount", entry.missingAmount());
@@ -190,6 +198,6 @@ public class CraftConfirmScreen extends AEBaseScreen<CraftConfirmMenu> {
             jsa.add(newObj);
         }
         jso.add("entries", jsa);
-        CraftExporter.exportCraft(jso, getPlayer());
+        CraftExporter.exportCraft(jso, getPlayer(), CraftExporter.ExportType.CRAFTING_PLAN);
     }
 }

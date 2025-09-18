@@ -19,9 +19,9 @@ import appeng.core.AELog;
 import appeng.core.localization.PlayerMessages;
 
 public class CraftExporter {
-    public static void exportCraft(JsonObject jso, LocalPlayer player) {
+    public static void exportCraft(JsonObject jso, LocalPlayer player, ExportType type) {
         String date = DateTimeFormatter.ofPattern("yyy-MM-dd.mm.ss").format(LocalDateTime.now());
-        var file = new File(Minecraft.getInstance().gameDirectory + "/ae2/exports/craft_" + date + ".json");
+        var file = new File(Minecraft.getInstance().gameDirectory + "/ae2/exports/" + type.type + date + ".json");
         file.getParentFile().mkdirs();
         try {
             var writer = new FileWriter(file);
@@ -33,5 +33,16 @@ public class CraftExporter {
         var component = Component.literal(file.getName()).withStyle(ChatFormatting.UNDERLINE).withStyle(
                 (s) -> s.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, file.getAbsolutePath())));
         player.displayClientMessage(PlayerMessages.CraftExported.text(component), false);
+    }
+
+    public enum ExportType {
+        CRAFTING_STATUS("status_"),
+        CRAFTING_PLAN("plan_");
+
+        public final String type;
+
+        ExportType(String type) {
+            this.type = type;
+        }
     }
 }

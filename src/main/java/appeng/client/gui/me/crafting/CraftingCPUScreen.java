@@ -213,6 +213,12 @@ public class CraftingCPUScreen<T extends CraftingCPUMenu> extends AEBaseScreen<T
     protected void exportCraft() {
         var jso = new JsonObject();
         var jsa = new JsonArray();
+        var currentStatus = new JsonObject();
+        currentStatus.addProperty("elapsedTime", status.getElapsedTime());
+        currentStatus.addProperty("remainingItemCount", status.getRemainingItemCount());
+        currentStatus.addProperty("startItemCount", status.getStartItemCount());
+        currentStatus.addProperty("suspended", status.isSuspended());
+        jso.add("status", currentStatus);
         for (var entry : status.getEntries()) {
             var newObj = new JsonObject();
             newObj.addProperty("what", entry.getWhat().getId().toString());
@@ -223,6 +229,6 @@ public class CraftingCPUScreen<T extends CraftingCPUMenu> extends AEBaseScreen<T
             jsa.add(newObj);
         }
         jso.add("entries", jsa);
-        CraftExporter.exportCraft(jso, getPlayer());
+        CraftExporter.exportCraft(jso, getPlayer(), CraftExporter.ExportType.CRAFTING_PLAN);
     }
 }
