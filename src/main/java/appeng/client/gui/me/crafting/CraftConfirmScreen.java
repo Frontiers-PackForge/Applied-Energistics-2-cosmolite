@@ -182,7 +182,8 @@ public class CraftConfirmScreen extends AEBaseScreen<CraftConfirmMenu> {
         var jso = new JsonObject();
         var jsa = new JsonArray();
         var cpuStats = new JsonObject();
-        cpuStats.addProperty("name", menu.cpuName.getString());
+        cpuStats.addProperty("name",
+                menu.cpuName != null ? menu.cpuName.getString() : GuiText.Automatic.getEnglishText());
         cpuStats.addProperty("isFollowing", menu.isFollowing);
         cpuStats.addProperty("availableBytes", menu.getCpuAvailableBytes());
         cpuStats.addProperty("coProcessors", menu.getCpuCoProcessors());

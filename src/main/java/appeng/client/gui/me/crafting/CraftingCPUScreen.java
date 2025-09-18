@@ -229,6 +229,6 @@ public class CraftingCPUScreen<T extends CraftingCPUMenu> extends AEBaseScreen<T
             jsa.add(newObj);
         }
         jso.add("entries", jsa);
-        CraftExporter.exportCraft(jso, getPlayer(), CraftExporter.ExportType.CRAFTING_PLAN);
+        CraftExporter.exportCraft(jso, getPlayer(), CraftExporter.ExportType.CRAFTING_STATUS);
     }
 }
