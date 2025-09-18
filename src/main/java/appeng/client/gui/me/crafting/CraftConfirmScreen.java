@@ -18,6 +18,9 @@
 
 package appeng.client.gui.me.crafting;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
 import org.lwjgl.glfw.GLFW;
 
 import net.minecraft.client.gui.GuiGraphics;
@@ -25,12 +28,15 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 
+import appeng.api.config.ActionItems;
 import appeng.client.gui.AEBaseScreen;
 import appeng.client.gui.StackWithBounds;
 import appeng.client.gui.style.ScreenStyle;
+import appeng.client.gui.widgets.ActionButton;
 import appeng.client.gui.widgets.Scrollbar;
 import appeng.core.AEConfig;
 import appeng.core.localization.GuiText;
+import appeng.helpers.CraftExporter;
 import appeng.menu.me.crafting.CraftConfirmMenu;
 import appeng.menu.me.crafting.CraftingPlanSummary;
 import appeng.util.NumberUtil;
@@ -66,6 +72,8 @@ public class CraftConfirmScreen extends AEBaseScreen<CraftConfirmMenu> {
 
         this.selectCPU = widgets.addButton("selectCpu", getNextCpuButtonLabel(), this::selectNextCpu);
         this.selectCPU.active = false;
+
+        this.addToLeftToolbar(new ActionButton(ActionItems.EXPORT_CRAFT, this::exportCraft));
 
         widgets.addButton("cancel", GuiText.Cancel.text(), menu::goBack);
     }
@@ -167,5 +175,21 @@ public class CraftConfirmScreen extends AEBaseScreen<CraftConfirmMenu> {
 
     private void start(boolean isFollowing) {
         getMenu().startJob(isFollowing);
+    }
+
+    private void exportCraft() {
+        var jso = new JsonObject();
+        var jsa = new JsonArray();
+        for (var entry : menu.getPlan().entries()) {
+            var newObj = new JsonObject();
+            newObj.addProperty("what", entry.what().getId().toString());
+            newObj.addProperty("missingAmount", entry.missingAmount());
+            newObj.addProperty("storedAmount", entry.storedAmount());
+            newObj.addProperty("craftAmount", entry.craftAmount());
+            newObj.addProperty("availableAmount", entry.availableAmount());
+            jsa.add(newObj);
+        }
+        jso.add("entries", jsa);
+        CraftExporter.exportCraft(jso, getPlayer());
     }
 }
