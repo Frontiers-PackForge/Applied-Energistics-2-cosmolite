@@ -400,6 +400,6 @@ public final class AEItemKey extends AEKey {
 
     @Override
     public int getRegistryId() {
-        return BuiltInRegistries.ITEM.getId(stack.getItem());
+        return BuiltInRegistries.ITEM.getId(item);
     }
 }
