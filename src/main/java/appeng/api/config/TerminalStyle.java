@@ -30,7 +30,7 @@ public enum TerminalStyle {
     TALL(3),
     FULL(4);
 
-    private final int multiplier;
+    public final int multiplier;
 
     TerminalStyle(int multiplier) {
         this.multiplier = multiplier;

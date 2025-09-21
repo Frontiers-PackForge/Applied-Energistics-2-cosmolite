@@ -25,6 +25,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
 import appeng.api.client.AEKeyRendering;
+import appeng.api.config.TerminalStyle;
 import appeng.api.stacks.AEKey;
 import appeng.api.stacks.AmountFormat;
 import appeng.api.util.AEColor;
@@ -37,8 +38,8 @@ public class CraftingStatusTableRenderer extends AbstractTableRenderer<CraftingS
 
     private static final int BACKGROUND_ALPHA = 0x5A000000;
 
-    public CraftingStatusTableRenderer(AEBaseScreen<?> screen, int x, int y) {
-        super(screen, x, y, 6);
+    public CraftingStatusTableRenderer(AEBaseScreen<?> screen, int x, int y, TerminalStyle style) {
+        super(screen, x, y, style.multiplier > 1 ? style.multiplier * 5 : 6);
     }
 
     @Override

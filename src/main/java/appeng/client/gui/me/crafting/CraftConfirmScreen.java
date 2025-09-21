@@ -25,10 +25,13 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 
+import appeng.api.config.Settings;
+import appeng.api.config.TerminalStyle;
 import appeng.client.gui.AEBaseScreen;
 import appeng.client.gui.StackWithBounds;
 import appeng.client.gui.style.ScreenStyle;
 import appeng.client.gui.widgets.Scrollbar;
+import appeng.client.gui.widgets.SettingToggleButton;
 import appeng.core.AEConfig;
 import appeng.core.localization.GuiText;
 import appeng.menu.me.crafting.CraftConfirmMenu;
@@ -41,7 +44,7 @@ import appeng.util.NumberUtil;
  */
 public class CraftConfirmScreen extends AEBaseScreen<CraftConfirmMenu> {
 
-    private final CraftConfirmTableRenderer table;
+    private CraftConfirmTableRenderer table;
 
     private final Button start, startWithFollow;
     private final Button selectCPU;
@@ -51,8 +54,13 @@ public class CraftConfirmScreen extends AEBaseScreen<CraftConfirmMenu> {
     public CraftConfirmScreen(CraftConfirmMenu menu, Inventory playerInventory, Component title,
             ScreenStyle style) {
         super(menu, playerInventory, title, style);
+
+        var screenStyle = config.getTerminalStyle();
+        this.addToLeftToolbar(
+                new SettingToggleButton<>(Settings.TERMINAL_STYLE, screenStyle, this::toggleTerminalStyle));
+
         this.isNotifyForFinishedCraftingJobs = AEConfig.instance().isNotifyForFinishedCraftingJobs();
-        this.table = new CraftConfirmTableRenderer(this, 9, 19);
+        this.table = new CraftConfirmTableRenderer(this, 9, 19, screenStyle);
 
         this.scrollbar = widgets.addScrollBar("scrollbar");
 
@@ -167,5 +175,16 @@ public class CraftConfirmScreen extends AEBaseScreen<CraftConfirmMenu> {
 
     private void start(boolean isFollowing) {
         getMenu().startJob(isFollowing);
+    }
+
+    private void toggleTerminalStyle(SettingToggleButton<TerminalStyle> btn, boolean backwards) {
+        appeng.api.config.TerminalStyle next = btn.getNextValue(backwards);
+        config.setTerminalStyle(next);
+        btn.set(next);
+        this.table = new CraftConfirmTableRenderer(this, 9, 19, next);
+        try {
+            this.imageHeight = this.style.getTerminalStyle().getScreenHeight(next.multiplier * 5);
+        } catch (NullPointerException ignored) {
+        }
     }
 }

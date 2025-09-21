@@ -42,6 +42,7 @@ import appeng.client.gui.style.ScreenStyle;
 import appeng.client.gui.widgets.Scrollbar;
 import appeng.client.gui.widgets.ServerSettingToggleButton;
 import appeng.client.gui.widgets.SettingToggleButton;
+import appeng.core.AELog;
 import appeng.core.localization.GuiText;
 import appeng.core.sync.network.NetworkHandler;
 import appeng.core.sync.packets.BlockHighlightPacket;
@@ -54,7 +55,7 @@ import appeng.menu.me.crafting.CraftingStatusEntry;
  */
 public class CraftingCPUScreen<T extends CraftingCPUMenu> extends AEBaseScreen<T> {
 
-    private final CraftingStatusTableRenderer table;
+    private CraftingStatusTableRenderer table;
 
     private final Button cancel, suspend;
 
@@ -67,7 +68,11 @@ public class CraftingCPUScreen<T extends CraftingCPUMenu> extends AEBaseScreen<T
     public CraftingCPUScreen(T menu, Inventory playerInventory, Component title, ScreenStyle style) {
         super(menu, playerInventory, title, style);
 
-        this.table = new CraftingStatusTableRenderer(this, 9, 19);
+        var screenStyle = config.getTerminalStyle();
+        this.addToLeftToolbar(
+                new SettingToggleButton<>(Settings.TERMINAL_STYLE, screenStyle, this::toggleTerminalStyle));
+
+        this.table = new CraftingStatusTableRenderer(this, 9, 19, screenStyle);
 
         this.scrollbar = widgets.addScrollBar("scrollbar");
 
@@ -197,5 +202,19 @@ public class CraftingCPUScreen<T extends CraftingCPUMenu> extends AEBaseScreen<T
             }
         }
         return super.mouseClicked(xCoord, yCoord, btn);
+    }
+
+    private void toggleTerminalStyle(SettingToggleButton<appeng.api.config.TerminalStyle> btn, boolean backwards) {
+        appeng.api.config.TerminalStyle next = btn.getNextValue(backwards);
+        config.setTerminalStyle(next);
+        btn.set(next);
+        this.table = new CraftingStatusTableRenderer(this, 9, 19, next);
+        try {
+            var isdk = this.style.getTerminalStyle().getBottom();
+            if (isdk != null) {
+                AELog.info("TerminalStyle: " + isdk.getClass().getName());
+            }
+        } catch (NullPointerException ignored) {
+        }
     }
 }

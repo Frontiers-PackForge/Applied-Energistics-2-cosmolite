@@ -32,5 +32,27 @@
       "width": 12,
       "height": 137
     }
+  },
+  "terminalStyle": {
+    "header": {
+      "texture": "guis/craftingcpu.png",
+      "srcRect": [0, 0, 238, 18]
+    },
+    "firstRow": {
+      "texture": "guis/craftingcpu.png",
+      "srcRect": [0, 18, 238, 24]
+    },
+    "row": {
+      "texture": "guis/craftingcpu.png",
+      "srcRect": [0, 42, 238, 23]
+    },
+    "lastRow": {
+      "texture": "guis/craftingcpu.png",
+      "srcRect": [0, 134, 238, 23]
+    },
+    "bottom": {
+      "texture": "guis/craftingcpu.png",
+      "srcRect": [0, 157, 238, 27]
+    }
   }
 }

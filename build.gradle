@@ -314,6 +314,7 @@ legacyForge {
         }
         client {
             client()
+            jvmArgument("-XX:+AllowEnhancedClassRedefinition")
         }
         gametestWorld {
             client()

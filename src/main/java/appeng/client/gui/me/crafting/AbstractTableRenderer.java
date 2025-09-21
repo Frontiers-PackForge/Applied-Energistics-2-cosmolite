@@ -31,6 +31,7 @@ import appeng.api.stacks.AEKey;
 import appeng.api.stacks.GenericStack;
 import appeng.client.gui.AEBaseScreen;
 import appeng.client.gui.StackWithBounds;
+import appeng.client.gui.style.Blitter;
 import appeng.client.gui.style.PaletteColor;
 
 /**
@@ -77,6 +78,11 @@ public abstract class AbstractTableRenderer<T> {
         StackWithBounds hovered = null;
 
         var pose = guiGraphics.pose();
+        /*
+         * Blitter.texture("guis/craftingcpu.png") .src(0, 65, 238, 23) .dest(mouseX, mouseY) .blit(guiGraphics);
+         */
+        int cellX = 0;
+        int cellY = 0;
 
         for (int row = 0; row < this.rows; row++) {
             for (int col = 0; col < COLS; col++) {
@@ -87,8 +93,24 @@ public abstract class AbstractTableRenderer<T> {
 
                 T entry = entries.get(i);
 
-                int cellX = x + col * (CELL_WIDTH + CELL_BORDER);
-                int cellY = y + row * (CELL_HEIGHT + CELL_BORDER);
+                cellX = x + col * (CELL_WIDTH + CELL_BORDER);
+                cellY = rows * 15 - row * (CELL_HEIGHT + CELL_BORDER);
+
+                if (col % COLS == 0) {
+                    pose.translate(0, 0, 1);
+                    Blitter.texture("guis/craftingcpu.png")
+                            .src(0, 42, 238, 23)
+                            .dest(cellX - 9, cellY)
+                            .blit(guiGraphics);
+                }
+                pose.translate(0, 0, 10);
+
+                if (col == 0 && row == rows - 1) {
+                    Blitter.texture("guis/craftingcpu.png")
+                            .src(0, 0, 238, 19)
+                            .dest(cellX - 9, cellY - CELL_HEIGHT + 4)
+                            .blit(guiGraphics);
+                }
 
                 int background = getEntryBackgroundColor(entry);
                 if (background != 0) {

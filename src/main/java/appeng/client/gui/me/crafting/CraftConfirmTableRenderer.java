@@ -24,6 +24,7 @@ import java.util.List;
 import net.minecraft.network.chat.Component;
 
 import appeng.api.client.AEKeyRendering;
+import appeng.api.config.TerminalStyle;
 import appeng.api.stacks.AEKey;
 import appeng.api.stacks.AmountFormat;
 import appeng.client.gui.AEBaseScreen;
@@ -33,8 +34,8 @@ import appeng.util.NumberUtil;
 
 public class CraftConfirmTableRenderer extends AbstractTableRenderer<CraftingPlanSummaryEntry> {
 
-    public CraftConfirmTableRenderer(AEBaseScreen<?> screen, int x, int y) {
-        super(screen, x, y, 5);
+    public CraftConfirmTableRenderer(AEBaseScreen<?> screen, int x, int y, TerminalStyle style) {
+        super(screen, x, y, style.multiplier * 5);
     }
 
     @Override
