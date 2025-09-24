@@ -211,24 +211,24 @@ public class CraftingCPUScreen<T extends CraftingCPUMenu> extends AEBaseScreen<T
     }
 
     protected void exportCraft() {
-        var jso = new JsonObject();
-        var jsa = new JsonArray();
+        var exportObject = new JsonObject();
         var currentStatus = new JsonObject();
         currentStatus.addProperty("elapsedTime", status.getElapsedTime());
         currentStatus.addProperty("remainingItemCount", status.getRemainingItemCount());
         currentStatus.addProperty("startItemCount", status.getStartItemCount());
         currentStatus.addProperty("suspended", status.isSuspended());
-        jso.add("status", currentStatus);
+        exportObject.add("status", currentStatus);
+        var entryArray = new JsonArray();
         for (var entry : status.getEntries()) {
-            var newObj = new JsonObject();
-            newObj.addProperty("what", entry.getWhat().getId().toString());
-            newObj.addProperty("serial", entry.getSerial());
-            newObj.addProperty("storedAmount", entry.getStoredAmount());
-            newObj.addProperty("activeAmount", entry.getActiveAmount());
-            newObj.addProperty("pendingAmount", entry.getPendingAmount());
-            jsa.add(newObj);
+            var entryObject = new JsonObject();
+            entryObject.addProperty("what", entry.getWhat().getId().toString());
+            entryObject.addProperty("serial", entry.getSerial());
+            entryObject.addProperty("storedAmount", entry.getStoredAmount());
+            entryObject.addProperty("activeAmount", entry.getActiveAmount());
+            entryObject.addProperty("pendingAmount", entry.getPendingAmount());
+            entryArray.add(entryObject);
         }
-        jso.add("entries", jsa);
-        CraftExporter.exportCraft(jso, getPlayer(), CraftExporter.ExportType.CRAFTING_STATUS);
+        exportObject.add("entries", entryArray);
+        CraftExporter.exportCraft(exportObject, getPlayer(), CraftExporter.ExportType.CRAFTING_STATUS);
     }
 }

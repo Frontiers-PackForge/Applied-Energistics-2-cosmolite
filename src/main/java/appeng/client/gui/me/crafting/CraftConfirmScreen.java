@@ -179,8 +179,7 @@ public class CraftConfirmScreen extends AEBaseScreen<CraftConfirmMenu> {
 
     private void exportCraft() {
         CraftingPlanSummary plan = menu.getPlan();
-        var jso = new JsonObject();
-        var jsa = new JsonArray();
+        var exportObject = new JsonObject();
         var cpuStats = new JsonObject();
         cpuStats.addProperty("name",
                 menu.cpuName != null ? menu.cpuName.getString() : GuiText.Automatic.getEnglishText());
@@ -188,17 +187,18 @@ public class CraftConfirmScreen extends AEBaseScreen<CraftConfirmMenu> {
         cpuStats.addProperty("availableBytes", menu.getCpuAvailableBytes());
         cpuStats.addProperty("coProcessors", menu.getCpuCoProcessors());
         cpuStats.addProperty("usedBytes", plan.usedBytes());
-        jso.add("cpu", cpuStats);
+        exportObject.add("cpu", cpuStats);
+        var entryArray = new JsonArray();
         for (var entry : plan.entries()) {
-            var newObj = new JsonObject();
-            newObj.addProperty("what", entry.what().getId().toString());
-            newObj.addProperty("missingAmount", entry.missingAmount());
-            newObj.addProperty("storedAmount", entry.storedAmount());
-            newObj.addProperty("craftAmount", entry.craftAmount());
-            newObj.addProperty("availableAmount", entry.availableAmount());
-            jsa.add(newObj);
+            var entryObject = new JsonObject();
+            entryObject.addProperty("what", entry.what().getId().toString());
+            entryObject.addProperty("missingAmount", entry.missingAmount());
+            entryObject.addProperty("storedAmount", entry.storedAmount());
+            entryObject.addProperty("craftAmount", entry.craftAmount());
+            entryObject.addProperty("availableAmount", entry.availableAmount());
+            entryArray.add(entryObject);
         }
-        jso.add("entries", jsa);
-        CraftExporter.exportCraft(jso, getPlayer(), CraftExporter.ExportType.CRAFTING_PLAN);
+        exportObject.add("entries", entryArray);
+        CraftExporter.exportCraft(exportObject, getPlayer(), CraftExporter.ExportType.CRAFTING_PLAN);
     }
 }
