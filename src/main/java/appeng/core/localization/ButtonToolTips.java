@@ -32,6 +32,8 @@ public enum ButtonToolTips implements LocalizationEnum {
     BlockPlacementNo("Blocks will be dropped as item."),
     BlockPlacementYes("Blocks will be placed as block."),
     Blocking("Do not push crafting ingredients if inventory contains a pattern input."),
+    BlockingAll("Blocks if target contains anything"),
+    BlockingSmart("Allows same pattern to be pushed"),
     Clear("Clear"),
     ClearSettings("Clear Config/Settings"),
     CondenserOutput("ME Condenser - Output"),
@@ -95,6 +97,7 @@ public enum ButtonToolTips implements LocalizationEnum {
     InscriberSidenessSeparate(
             "Automation can access slots from specific sides. Top and bottom slots can be extracted from."),
     InterfaceBlockingMode("Blocking Mode"),
+    InterfaceBlockingModeExtra("Extra Blocking Mode"),
     InterfaceCraftingMode("Crafting Mode"),
     InterfaceSetStockAmount("Set amount to stock"),
     InterfaceTerminalDisplayMode("Display Mode"),
