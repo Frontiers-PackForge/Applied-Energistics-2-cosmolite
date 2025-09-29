@@ -670,8 +670,10 @@ public class MEStorageScreen<C extends MEStorageMenu>
                     .add(ButtonToolTips.Serial.text(entry.getSerial()).withStyle(ChatFormatting.DARK_GRAY));
         }
 
-        if (entry.getWhat().isTagged(AETags.ITEM_STORAGE_BLACKLIST) || entry.getWhat().isTagged(AETags.FLUID_STORAGE_BLACKLIST)) {
-            currentToolTip.add(ButtonToolTips.Blacklisted.text().withStyle(ChatFormatting.RED).withStyle(ChatFormatting.ITALIC));
+        if (entry.getWhat().isTagged(AETags.ITEM_STORAGE_BLACKLIST)
+                || entry.getWhat().isTagged(AETags.FLUID_STORAGE_BLACKLIST)) {
+            currentToolTip.add(
+                    ButtonToolTips.Blacklisted.text().withStyle(ChatFormatting.RED).withStyle(ChatFormatting.ITALIC));
         }
 
         // Special case to support the Item API of visual tooltip components
