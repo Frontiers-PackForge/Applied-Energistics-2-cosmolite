@@ -123,9 +123,6 @@ public class TerminalSettingsScreen<C extends MEStorageMenu> extends AESubScreen
     }
 
     private void updateState() {
-        nextPageButton.visible = page < 1;
-        previousPageButton.visible = page > 0;
-
         pinAutoCraftedItemsCheckbox.setSelected(config.isPinAutoCraftedItems());
         notifyForFinishedCraftingJobsCheckbox.setSelected(config.isNotifyForFinishedCraftingJobs());
         clearGridOnCloseCheckbox.setSelected(config.isClearGridOnClose());
@@ -139,9 +136,11 @@ public class TerminalSettingsScreen<C extends MEStorageMenu> extends AESubScreen
 
         autoPauseTerminalCheckbox.setSelected(config.isAutoPauseTerminal());
 
+        int highestPage = 0;
         for (var entry : pages.object2IntEntrySet()) {
             var widget = entry.getKey();
             widget.visible = entry.getIntValue() == page;
+            highestPage = Math.max(highestPage, entry.getIntValue());
         }
 
         // Need to do this jank-ish stuff so it doesn't override the page
@@ -152,6 +151,9 @@ public class TerminalSettingsScreen<C extends MEStorageMenu> extends AESubScreen
         clearExternalCheckbox.visible = useExternalSearchRadio.isSelected() && useExternalSearchRadio.visible;
 
         setTextHidden(TEXT_SEARCH_SETTINGS_TITLE, !useInternalSearchRadio.visible);
+
+        nextPageButton.visible = page < highestPage;
+        previousPageButton.visible = page > 0;
     }
 
     private void save() {
