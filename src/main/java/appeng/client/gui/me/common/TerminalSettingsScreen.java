@@ -149,7 +149,7 @@ public class TerminalSettingsScreen<C extends MEStorageMenu> extends AESubScreen
         autoFocusCheckbox.visible = useInternalSearchRadio.isSelected() && useInternalSearchRadio.visible;
         syncWithExternalCheckbox.visible = useInternalSearchRadio.isSelected() && useInternalSearchRadio.visible;
 
-        clearExternalCheckbox.visible = useExternalSearchRadio.isSelected() && useExternalSearchRadio.active;
+        clearExternalCheckbox.visible = useExternalSearchRadio.isSelected() && useExternalSearchRadio.visible;
 
         setTextHidden(TEXT_SEARCH_SETTINGS_TITLE, !useInternalSearchRadio.visible);
     }
