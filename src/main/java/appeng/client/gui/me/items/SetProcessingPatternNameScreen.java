@@ -8,6 +8,8 @@ import net.minecraft.network.chat.Component;
 
 import appeng.api.stacks.GenericStack;
 import appeng.client.gui.AESubScreen;
+import appeng.client.gui.widgets.TabButton;
+import appeng.core.localization.GuiText;
 import appeng.menu.me.items.PatternEncodingTermMenu;
 
 /**
@@ -37,13 +39,20 @@ public class SetProcessingPatternNameScreen<C extends PatternEncodingTermMenu>
         this.name.setValue(itemStack.getHoverName().getString());
 
         this.name.setMaxLength(32);
-        this.name.setResponder(this::setName);
+
+        widgets.addButton("save", GuiText.Set.text(), this::setName);
+
+        var icon = getMenu().getHost().getMainMenuIcon();
+        var button = new TabButton(icon, icon.getHoverName(), btn -> returnToParent());
+        widgets.add("back", button);
     }
 
-    private void setName(String newName) {
+    private void setName() {
+        String newName = name.getValue();
         var itemStack = currentStack.what().wrapForDisplayOrFilter();
         itemStack.setHoverName(Component.literal(newName));
         setter.accept(GenericStack.fromItemStack(itemStack));
+        returnToParent();
     }
 
     @Override

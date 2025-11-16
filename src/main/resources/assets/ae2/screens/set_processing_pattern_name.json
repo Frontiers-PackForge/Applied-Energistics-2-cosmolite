@@ -1,4 +1,43 @@
 {
   "$schema": "schema.json",
-  "includes": ["quartz_knife.json"]
+  "includes": ["common/common.json"],
+  "background": {
+    "texture": "guis/background.png",
+    "srcRect": [0, 0, 176, 50]
+  },
+  "slots": {
+    "MACHINE_OUTPUT": {
+      "left": 23,
+      "top": 53
+    }
+  },
+  "text": {
+    "dialog_title": {
+      "text": {
+        "translate": "gui.ae2.SelectName"
+      },
+      "position": {
+        "left": 8,
+        "top": 6
+      }
+    }
+  },
+  "widgets": {
+    "save": {
+      "left": 120,
+      "top": 25,
+      "width": 38,
+      "height": 20
+    },
+    "back": {
+      "left": 154,
+      "top": 0
+    },
+    "name": {
+      "left": 21,
+      "top": 30,
+      "width": 90,
+      "height": 12
+    }
+  }
 }
