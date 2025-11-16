@@ -1,9 +1,9 @@
 {
   "$schema": "schema.json",
   "includes": ["common/common.json"],
-  "background": {
-    "texture": "guis/background.png",
-    "srcRect": [0, 0, 176, 50]
+  "generatedBackground": {
+    "height": 50,
+    "width": 176
   },
   "slots": {
     "MACHINE_OUTPUT": {
