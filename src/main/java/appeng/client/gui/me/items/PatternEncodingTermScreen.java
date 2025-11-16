@@ -100,13 +100,25 @@ public class PatternEncodingTermScreen<C extends PatternEncodingTermMenu> extend
             if (menu.canModifyAmountForSlot(slot)) {
                 var currentStack = GenericStack.fromItemStack(slot.getItem());
                 if (currentStack != null) {
-                    var screen = new SetProcessingPatternAmountScreen<>(
-                            this,
-                            currentStack,
-                            newStack -> NetworkHandler.instance().sendToServer(new InventoryActionPacket(
-                                    InventoryAction.SET_FILTER, slot.index,
-                                    GenericStack.wrapInItemStack(newStack))));
-                    switchToScreen(screen);
+                    if (hasControlDown()) {
+                        // Set stack name
+                        var screen = new SetProcessingPatternNameScreen<>(
+                                this,
+                                currentStack,
+                                newStack -> NetworkHandler.instance().sendToServer(new InventoryActionPacket(
+                                        InventoryAction.SET_FILTER, slot.index,
+                                        GenericStack.wrapInItemStack(newStack))));
+                        switchToScreen(screen);
+                    } else {
+                        // Set stack amount
+                        var screen = new SetProcessingPatternAmountScreen<>(
+                                this,
+                                currentStack,
+                                newStack -> NetworkHandler.instance().sendToServer(new InventoryActionPacket(
+                                        InventoryAction.SET_FILTER, slot.index,
+                                        GenericStack.wrapInItemStack(newStack))));
+                        switchToScreen(screen);
+                    }
                     return true;
                 }
             }
