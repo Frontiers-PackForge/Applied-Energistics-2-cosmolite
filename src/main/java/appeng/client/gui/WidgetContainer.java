@@ -23,7 +23,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import appeng.client.gui.widgets.*;
+import appeng.client.gui.widgets.AECheckbox;
+import appeng.client.gui.widgets.AETextField;
+import appeng.client.gui.widgets.AETextDisplayWidget;
+import appeng.client.gui.widgets.BackgroundPanel;
+import appeng.client.gui.widgets.IntegerTextField;
+import appeng.client.gui.widgets.IResizableWidget;
+import appeng.client.gui.widgets.NumberEntryWidget;
+import appeng.client.gui.widgets.Scrollbar;
+import appeng.client.gui.widgets.TabButton;
 import com.google.common.base.Preconditions;
 
 import net.minecraft.client.gui.Font;

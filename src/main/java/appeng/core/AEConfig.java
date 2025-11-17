@@ -42,7 +42,6 @@ import appeng.core.config.IntegerOption;
 import appeng.core.settings.TickRates;
 import appeng.util.EnumCycler;
 import appeng.util.Platform;
-import com.lowdragmc.lowdraglib.syncdata.managed.IManagedVar;
 
 public final class AEConfig {
 

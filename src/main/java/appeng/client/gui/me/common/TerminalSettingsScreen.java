@@ -1,6 +1,11 @@
 package appeng.client.gui.me.common;
 
-import appeng.client.gui.widgets.*;
+import appeng.client.gui.widgets.AECheckbox;
+import appeng.client.gui.widgets.AETextDisplayWidget;
+import appeng.client.gui.widgets.ActionButton;
+import appeng.client.gui.widgets.IntegerTextField;
+import appeng.client.gui.widgets.TabButton;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
