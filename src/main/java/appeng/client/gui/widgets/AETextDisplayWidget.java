@@ -23,7 +23,10 @@ public class AETextDisplayWidget extends AbstractWidget {
 
     @Override
     public void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {}
-
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        return false;
+        // Not clickable, no sound
+    }
     @Override
     public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         var minecraft = Minecraft.getInstance();
