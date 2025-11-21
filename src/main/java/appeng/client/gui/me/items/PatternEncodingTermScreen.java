@@ -128,7 +128,8 @@ public class PatternEncodingTermScreen<C extends PatternEncodingTermMenu> extend
     }
 
     /**
-     * When in processing mode, show a hint in the tooltip that middle-click will open the amount entry dialog.
+     * When in processing mode, show a hint in the tooltip that middle-click will open the amount entry dialog and
+     * ctrl+middle-click will open the name modification dialog.
      */
     @Override
     protected void renderTooltip(GuiGraphics guiGraphics, int x, int y) {
@@ -139,6 +140,7 @@ public class PatternEncodingTermScreen<C extends PatternEncodingTermMenu> extend
                 itemTooltip.add(Tooltips.getAmountTooltip(ButtonToolTips.Amount, unwrapped));
             }
             itemTooltip.add(Tooltips.getSetAmountTooltip());
+            itemTooltip.add(Tooltips.getModifyNameTooltip());
             drawTooltip(guiGraphics, x, y, itemTooltip);
         } else {
             super.renderTooltip(guiGraphics, x, y);

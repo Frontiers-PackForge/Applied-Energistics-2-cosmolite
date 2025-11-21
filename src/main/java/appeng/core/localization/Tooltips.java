@@ -130,8 +130,11 @@ public final class Tooltips {
 
     public static Component getSetAmountTooltip() {
         return ButtonToolTips.ModifyAmountAction.text(Tooltips.getMouseButtonText(InputConstants.MOUSE_BUTTON_MIDDLE))
-                .append("\n")
-                .append(ButtonToolTips.ModifyNameAction.text(ButtonToolTips.CtrlMiddleClick.text()))
+                .withStyle(MUTED_COLOR);
+    }
+
+    public static Component getModifyNameTooltip() {
+        return ButtonToolTips.ModifyNameAction.text(ButtonToolTips.CtrlMiddleClick.text())
                 .withStyle(MUTED_COLOR);
     }
 

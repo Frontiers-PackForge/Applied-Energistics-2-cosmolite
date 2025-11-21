@@ -2,7 +2,6 @@ package appeng.client.gui.me.items;
 
 import java.util.function.Consumer;
 
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.Component;
 
@@ -53,12 +52,5 @@ public class SetProcessingPatternNameScreen<C extends PatternEncodingTermMenu>
         itemStack.setHoverName(Component.literal(newName));
         setter.accept(GenericStack.fromItemStack(itemStack));
         returnToParent();
-    }
-
-    @Override
-    public void drawBG(GuiGraphics guiGraphics, int offsetX, int offsetY, int mouseX, int mouseY,
-            float partialTicks) {
-        super.drawBG(guiGraphics, offsetX, offsetY, mouseX, mouseY, partialTicks);
-        this.name.render(guiGraphics, mouseX, mouseY, partialTicks);
     }
 }
