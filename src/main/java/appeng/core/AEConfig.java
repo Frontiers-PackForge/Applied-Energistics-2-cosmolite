@@ -560,6 +560,7 @@ public final class AEConfig {
     public int getNumberWidgetValue(int index) {
         return CLIENT.numberWidgetValues[index].get();
     }
+
     public void setNumberWidgetValue(int value, int index) {
         CLIENT.numberWidgetValues[index].set(value);
     }
@@ -627,7 +628,8 @@ public final class AEConfig {
             this.fancyPatternTooltips = client.addBoolean("fancyPatternTooltips", true,
                     "Show fancy tooltips for encoded patterns.");
 
-            var widgetNumbers = root.subsection("widgetNumbers", "Number button values in the level emitter config panel and the craft order amount picker");
+            var widgetNumbers = root.subsection("widgetNumbers",
+                    "Number button values in the level emitter config panel and the craft order amount picker");
             this.numberWidgetValues = new IntegerOption[] {
                     widgetNumbers.addInt("widgetNumberBase1", 1,
                             "Value of the first button when not pressing shift or ctrl"),

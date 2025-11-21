@@ -23,21 +23,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import appeng.client.gui.widgets.AECheckbox;
-import appeng.client.gui.widgets.AETextField;
-import appeng.client.gui.widgets.AETextDisplayWidget;
-import appeng.client.gui.widgets.BackgroundPanel;
-import appeng.client.gui.widgets.IntegerTextField;
-import appeng.client.gui.widgets.IResizableWidget;
-import appeng.client.gui.widgets.NumberEntryWidget;
-import appeng.client.gui.widgets.Scrollbar;
-import appeng.client.gui.widgets.TabButton;
 import com.google.common.base.Preconditions;
 
-import net.minecraft.client.gui.Font;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
@@ -49,6 +40,15 @@ import net.minecraft.network.chat.Component;
 import appeng.client.Point;
 import appeng.client.gui.style.ScreenStyle;
 import appeng.client.gui.style.WidgetStyle;
+import appeng.client.gui.widgets.AECheckbox;
+import appeng.client.gui.widgets.AETextDisplayWidget;
+import appeng.client.gui.widgets.AETextField;
+import appeng.client.gui.widgets.BackgroundPanel;
+import appeng.client.gui.widgets.IResizableWidget;
+import appeng.client.gui.widgets.IntegerTextField;
+import appeng.client.gui.widgets.NumberEntryWidget;
+import appeng.client.gui.widgets.Scrollbar;
+import appeng.client.gui.widgets.TabButton;
 import appeng.core.localization.GuiText;
 import appeng.core.sync.network.NetworkHandler;
 import appeng.core.sync.packets.SwitchGuisPacket;

@@ -1,10 +1,6 @@
 package appeng.client.gui.me.common;
 
-import appeng.client.gui.widgets.AECheckbox;
-import appeng.client.gui.widgets.AETextDisplayWidget;
-import appeng.client.gui.widgets.ActionButton;
-import appeng.client.gui.widgets.IntegerTextField;
-import appeng.client.gui.widgets.TabButton;
+import java.util.function.Consumer;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -17,12 +13,15 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import appeng.api.config.ActionItems;
 import appeng.client.gui.AESubScreen;
 import appeng.client.gui.IPagedScreen;
+import appeng.client.gui.widgets.AECheckbox;
+import appeng.client.gui.widgets.AETextDisplayWidget;
+import appeng.client.gui.widgets.ActionButton;
+import appeng.client.gui.widgets.IntegerTextField;
+import appeng.client.gui.widgets.TabButton;
 import appeng.core.localization.GuiText;
 import appeng.integration.abstraction.ItemListMod;
 import appeng.menu.SlotSemantics;
 import appeng.menu.me.common.MEStorageMenu;
-
-import java.util.function.Consumer;
 
 public class TerminalSettingsScreen<C extends MEStorageMenu> extends AESubScreen<C, MEStorageScreen<C>>
         implements IPagedScreen {
@@ -102,31 +101,50 @@ public class TerminalSettingsScreen<C extends MEStorageMenu> extends AESubScreen
                 this::save);
 
         // Config for NumberEntryWidget
-        textDisplayWidgetConfig = makeTextDisplay("textDisplayConfig", GuiText.TerminalSettingsNumberWidgetTitle.text());
+        textDisplayWidgetConfig = makeTextDisplay("textDisplayConfig",
+                GuiText.TerminalSettingsNumberWidgetTitle.text());
 
-        numberWidgetConfigInput = makeIntegerTextField("numberWidgetConfigInput",4, (text) -> {});
+        numberWidgetConfigInput = makeIntegerTextField("numberWidgetConfigInput", 4, (text) -> {
+        });
 
-        textDisplayConfigBase = makeTextDisplay("textDisplayConfigBase", GuiText.TerminalSettingsNumberWidgetBase.text());
+        textDisplayConfigBase = makeTextDisplay("textDisplayConfigBase",
+                GuiText.TerminalSettingsNumberWidgetBase.text());
         textDisplayConfigAlt = makeTextDisplay("textDisplayConfigAlt", GuiText.TerminalSettingsNumberWidgetAlt.text());
 
         numberConfigButtons = new Button[] {
-                makeButton("saveBaseNumber1", GuiText.TerminalSettingsSaveValue.text("1"), () -> this.saveConfigValue(0)),
-                makeButton("saveBaseNumber2", GuiText.TerminalSettingsSaveValue.text("2"), () -> this.saveConfigValue(1)),
-                makeButton("saveBaseNumber3", GuiText.TerminalSettingsSaveValue.text("3"), () -> this.saveConfigValue(2)),
-                makeButton("saveBaseNumber4", GuiText.TerminalSettingsSaveValue.text("4"), () -> this.saveConfigValue(3)),
-                makeButton("saveAltNumber1", GuiText.TerminalSettingsSaveValue.text("1"), () -> this.saveConfigValue(4)),
-                makeButton("saveAltNumber2", GuiText.TerminalSettingsSaveValue.text("2"), () -> this.saveConfigValue(5)),
-                makeButton("saveAltNumber3", GuiText.TerminalSettingsSaveValue.text("3"), () -> this.saveConfigValue(6)),
-                makeButton("saveAltNumber4", GuiText.TerminalSettingsSaveValue.text("4"), () -> this.saveConfigValue(7)),
+                makeButton("saveBaseNumber1", GuiText.TerminalSettingsSaveValue.text("1"),
+                        () -> this.saveConfigValue(0)),
+                makeButton("saveBaseNumber2", GuiText.TerminalSettingsSaveValue.text("2"),
+                        () -> this.saveConfigValue(1)),
+                makeButton("saveBaseNumber3", GuiText.TerminalSettingsSaveValue.text("3"),
+                        () -> this.saveConfigValue(2)),
+                makeButton("saveBaseNumber4", GuiText.TerminalSettingsSaveValue.text("4"),
+                        () -> this.saveConfigValue(3)),
+                makeButton("saveAltNumber1", GuiText.TerminalSettingsSaveValue.text("1"),
+                        () -> this.saveConfigValue(4)),
+                makeButton("saveAltNumber2", GuiText.TerminalSettingsSaveValue.text("2"),
+                        () -> this.saveConfigValue(5)),
+                makeButton("saveAltNumber3", GuiText.TerminalSettingsSaveValue.text("3"),
+                        () -> this.saveConfigValue(6)),
+                makeButton("saveAltNumber4", GuiText.TerminalSettingsSaveValue.text("4"),
+                        () -> this.saveConfigValue(7)),
 
-                makeButton("loadBaseNumber1", GuiText.TerminalSettingsLoadValue.text("1"), () -> this.loadConfigValue(0)),
-                makeButton("loadBaseNumber2", GuiText.TerminalSettingsLoadValue.text("2"), () -> this.loadConfigValue(1)),
-                makeButton("loadBaseNumber3", GuiText.TerminalSettingsLoadValue.text("3"), () -> this.loadConfigValue(2)),
-                makeButton("loadBaseNumber4", GuiText.TerminalSettingsLoadValue.text("4"), () -> this.loadConfigValue(3)),
-                makeButton("loadAltNumber1", GuiText.TerminalSettingsLoadValue.text("1"), () -> this.loadConfigValue(4)),
-                makeButton("loadAltNumber2", GuiText.TerminalSettingsLoadValue.text("2"), () -> this.loadConfigValue(5)),
-                makeButton("loadAltNumber3", GuiText.TerminalSettingsLoadValue.text("3"), () -> this.loadConfigValue(6)),
-                makeButton("loadAltNumber4", GuiText.TerminalSettingsLoadValue.text("4"), () -> this.loadConfigValue(7)),
+                makeButton("loadBaseNumber1", GuiText.TerminalSettingsLoadValue.text("1"),
+                        () -> this.loadConfigValue(0)),
+                makeButton("loadBaseNumber2", GuiText.TerminalSettingsLoadValue.text("2"),
+                        () -> this.loadConfigValue(1)),
+                makeButton("loadBaseNumber3", GuiText.TerminalSettingsLoadValue.text("3"),
+                        () -> this.loadConfigValue(2)),
+                makeButton("loadBaseNumber4", GuiText.TerminalSettingsLoadValue.text("4"),
+                        () -> this.loadConfigValue(3)),
+                makeButton("loadAltNumber1", GuiText.TerminalSettingsLoadValue.text("1"),
+                        () -> this.loadConfigValue(4)),
+                makeButton("loadAltNumber2", GuiText.TerminalSettingsLoadValue.text("2"),
+                        () -> this.loadConfigValue(5)),
+                makeButton("loadAltNumber3", GuiText.TerminalSettingsLoadValue.text("3"),
+                        () -> this.loadConfigValue(6)),
+                makeButton("loadAltNumber4", GuiText.TerminalSettingsLoadValue.text("4"),
+                        () -> this.loadConfigValue(7)),
         };
 
         nextPageButton = addToLeftToolbar(new ActionButton(ActionItems.NEXT_PAGE, () -> setCurrentPage(page + 1)));
@@ -164,12 +182,12 @@ public class TerminalSettingsScreen<C extends MEStorageMenu> extends AESubScreen
         widgets.add("back", button);
     }
 
-    private void loadConfigValue(int index){
+    private void loadConfigValue(int index) {
         int value = config.getNumberWidgetValue(index);
         numberWidgetConfigInput.setIntValue(value);
     }
 
-    private void saveConfigValue(int index){
+    private void saveConfigValue(int index) {
         int value = numberWidgetConfigInput.getIntValue();
         config.setNumberWidgetValue(value, index);
     }

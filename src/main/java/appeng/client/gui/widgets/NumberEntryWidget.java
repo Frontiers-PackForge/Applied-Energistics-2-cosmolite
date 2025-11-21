@@ -28,7 +28,6 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 import java.util.function.Consumer;
 
-import appeng.core.AEConfig;
 import com.google.common.primitives.Longs;
 
 import net.minecraft.ChatFormatting;
@@ -49,13 +48,13 @@ import appeng.client.gui.Rects;
 import appeng.client.gui.style.PaletteColor;
 import appeng.client.gui.style.ScreenStyle;
 import appeng.client.gui.style.WidgetStyle;
+import appeng.core.AEConfig;
 import appeng.core.localization.GuiText;
 import appeng.util.NumberUtil;
 
 /**
  * A utility widget that consists of a text-field to enter a number with attached buttons to increment/decrement the
- * number in fixed intervals.
- * Increment/decrement button values can be configured in terminal settings.
+ * number in fixed intervals. Increment/decrement button values can be configured in terminal settings.
  */
 public class NumberEntryWidget implements ICompositeWidget {
 
@@ -107,7 +106,7 @@ public class NumberEntryWidget implements ICompositeWidget {
                 config.getNumberWidgetValue(6),
                 config.getNumberWidgetValue(7)
         };
-        
+
         this.errorTextColor = style.getColor(PaletteColor.TEXTFIELD_ERROR).toARGB();
         this.normalTextColor = style.getColor(PaletteColor.TEXTFIELD_TEXT).toARGB();
 

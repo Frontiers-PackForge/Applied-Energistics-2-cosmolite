@@ -250,7 +250,8 @@ public enum GuiText implements LocalizationEnum {
     TankBucketCapacity("Can Store up to %d Buckets"),
     Terminal("Terminal"),
     TerminalSettingsAutoPause("Pause the terminal exactly like when pressing shift, except done automatically"),
-    TerminalSettingsNumberWidgetTitle("Configure increment button values for level emitter config and craft order menu"),
+    TerminalSettingsNumberWidgetTitle(
+            "Configure increment button values for level emitter config and craft order menu"),
     TerminalSettingsNumberWidgetBase("Edit increment values when not holding shift or ctrl"),
     TerminalSettingsNumberWidgetAlt("Edit increment values when holding shift or ctrl"),
     TerminalSettingsLoadValue("Load %s"),

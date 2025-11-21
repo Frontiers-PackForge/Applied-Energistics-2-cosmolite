@@ -18,14 +18,14 @@
 
 package appeng.client.gui.widgets;
 
-import appeng.client.gui.style.ScreenStyle;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 
+import appeng.client.gui.style.ScreenStyle;
+
 /**
- * Variant of AETextField that only accepts digits as characters.
- * Also includes shorthands for getting and setting the value as int.
- * Value should always be parseable as int, hence no exception handling in get/set.
+ * Variant of AETextField that only accepts digits as characters. Also includes shorthands for getting and setting the
+ * value as int. Value should always be parseable as int, hence no exception handling in get/set.
  */
 public class IntegerTextField extends AETextField {
 
@@ -33,15 +33,12 @@ public class IntegerTextField extends AETextField {
         super(style, fontRenderer, x, y, width, height);
         this.setPlaceholder(Component.literal("0"));
         this.setFilter(text -> {
-            try
-            {
+            try {
                 if (!text.isEmpty()) {
                     Integer.parseInt(text);
                 }
                 return true;
-            }
-            catch(NumberFormatException e)
-            {
+            } catch (NumberFormatException e) {
                 return false;
             }
         });
