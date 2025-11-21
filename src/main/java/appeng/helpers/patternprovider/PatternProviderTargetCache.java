@@ -24,7 +24,7 @@ import appeng.parts.automation.StackWorldBehaviors;
 import appeng.util.BlockApiCache;
 import appeng.util.ConfigManager;
 
-public class PatternProviderTargetCache {
+class PatternProviderTargetCache {
     private final BlockApiCache<MEStorage> cache;
     private final Direction direction;
     private final IActionSource src;
