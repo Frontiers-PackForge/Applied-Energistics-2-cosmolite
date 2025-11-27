@@ -636,7 +636,7 @@
   "gui.tooltips.ae2.MiddleClick": "Middle-Click",
   "gui.tooltips.ae2.Mod": "Mod",
   "gui.tooltips.ae2.ModifyAmountAction": "%s: Modify Amount",
-  "gui.tooltips.ae2.ModifyNameAction": "%s: Modify Name",
+  "gui.tooltips.ae2.ModifyNameAction": "%s: Modify Name (only available for items)",
   "gui.tooltips.ae2.MouseButton": "Mouse %d",
   "gui.tooltips.ae2.MoveWhenEmpty": "Move to output when empty.",
   "gui.tooltips.ae2.MoveWhenFull": "Move to output when full.",
