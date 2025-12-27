@@ -81,15 +81,15 @@ import appeng.me.service.helpers.NetworkCraftingProviders;
 public class CraftingService implements ICraftingService, IGridServiceProvider {
 
     /**
-     * Sorts Crafting CPUs by Storage in ascending order (to minimize the storage waste for jobs),
-     * and Co-Processors in ascending order (player requests always try to get the most).
+     * Sorts Crafting CPUs by Storage in ascending order (to minimize the storage waste for jobs), and Co-Processors in
+     * ascending order (player requests always try to get the most).
      */
     private static final Comparator<CraftingCPUCluster> FAST_FIRST_COMPARATOR = Comparator
             .comparingLong(CraftingCPUCluster::getAvailableStorage)
             .thenComparing(Comparator.comparingInt(CraftingCPUCluster::getCoProcessors).reversed());
     /**
-     * Sorts Crafting CPUs by Storage in ascending order (to minimize the storage waste for jobs),
-     * and Co-Processors in ascending order (machine requests always try to get the least).
+     * Sorts Crafting CPUs by Storage in ascending order (to minimize the storage waste for jobs), and Co-Processors in
+     * ascending order (machine requests always try to get the least).
      */
     private static final Comparator<CraftingCPUCluster> FAST_LAST_COMPARATOR = Comparator
             .comparingLong(CraftingCPUCluster::getAvailableStorage)
