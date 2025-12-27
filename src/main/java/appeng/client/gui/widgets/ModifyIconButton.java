@@ -56,7 +56,11 @@ public final class ModifyIconButton extends Button implements ITooltip {
             pose.pushPose();
             pose.translate(getX(), getY(), 0.0F);
             pose.scale(0.5F, 0.5F, 1.0F);
-            Icon.TOOLBAR_BUTTON_BACKGROUND.getBlitter().dest(0, 0).blit(guiGraphics);
+            if (isHoveredOrFocused()) {
+                Icon.TOOLBAR_BUTTON_BACKGROUND_HOVERED.getBlitter().dest(0, 0).blit(guiGraphics);
+            } else {
+                Icon.TOOLBAR_BUTTON_BACKGROUND.getBlitter().dest(0, 0).blit(guiGraphics);
+            }
             blitter.dest(0, 0).blit(guiGraphics);
             pose.popPose();
             RenderSystem.enableDepthTest();

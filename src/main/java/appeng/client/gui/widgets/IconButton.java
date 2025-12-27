@@ -27,7 +27,6 @@ import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.Button.OnPress;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
@@ -99,13 +98,20 @@ public abstract class IconButton extends Button implements ITooltip {
                 pose.scale(0.5f, 0.5f, 1.f);
 
                 if (!disableBackground) {
-                    Icon.TOOLBAR_BUTTON_BACKGROUND.getBlitter().dest(0, 0).blit(guiGraphics);
+                    if (isHoveredOrFocused())
+                        Icon.TOOLBAR_BUTTON_BACKGROUND_HOVERED.getBlitter().dest(0, 0).blit(guiGraphics);
+                    else
+                        Icon.TOOLBAR_BUTTON_BACKGROUND.getBlitter().dest(0, 0).blit(guiGraphics);
                 }
                 blitter.dest(0, 0).blit(guiGraphics);
                 pose.popPose();
             } else {
+
                 if (!disableBackground) {
-                    Icon.TOOLBAR_BUTTON_BACKGROUND.getBlitter().dest(getX(), getY()).blit(guiGraphics);
+                    if (isHoveredOrFocused())
+                        Icon.TOOLBAR_BUTTON_BACKGROUND_HOVERED.getBlitter().dest(getX(), getY()).blit(guiGraphics);
+                    else
+                        Icon.TOOLBAR_BUTTON_BACKGROUND.getBlitter().dest(getX(), getY()).blit(guiGraphics);
                 }
                 icon.getBlitter().dest(getX(), getY()).blit(guiGraphics);
             }

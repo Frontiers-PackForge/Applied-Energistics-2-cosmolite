@@ -48,6 +48,7 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -66,6 +67,7 @@ import appeng.api.stacks.GenericStack;
 import appeng.client.Point;
 import appeng.client.gui.layout.SlotGridLayout;
 import appeng.client.gui.style.BackgroundGenerator;
+import appeng.client.gui.style.PaletteColor;
 import appeng.client.gui.style.ScreenStyle;
 import appeng.client.gui.style.SlotPosition;
 import appeng.client.gui.style.Text;
@@ -98,6 +100,8 @@ import appeng.util.ConfigMenuInventory;
 
 public abstract class AEBaseScreen<T extends AEBaseMenu> extends AbstractContainerScreen<T> {
     private static final Logger LOG = LoggerFactory.getLogger(AEBaseScreen.class);
+
+    public static final ResourceLocation TEXTURE_WIDGETS = AppEng.makeId("textures/guis/widgets.png");
 
     private static final Point HIDDEN_SLOT_POS = new Point(-9999, -9999);
 
@@ -419,6 +423,9 @@ public abstract class AEBaseScreen<T extends AEBaseMenu> extends AbstractContain
         if (override != null && override.isHidden()) {
             return;
         }
+        /*
+         * if (this instanceof IPagedScreen pagedScreen) { if (text.getPage() != pagedScreen.getCurrentPage()) return; }
+         */
 
         int color = style.getColor(text.getColor()).toARGB();
 
@@ -945,7 +952,12 @@ public abstract class AEBaseScreen<T extends AEBaseMenu> extends AbstractContain
     /**
      * Used by mixin to render the slot highlight.
      */
-    public void renderCustomSlotHighlight(GuiGraphics guiGraphics, int x, int y, int z) {
+    public void renderCustomSlotHighlight(GuiGraphics guiGraphics, int mouseX, int mouseY, int z) {
+        if (!hoveredSlot.isHighlightable())
+            return;
+
+        int x = hoveredSlot.x;
+        int y = hoveredSlot.y;
         int w, h;
         if (this.hoveredSlot instanceof ResizableSlot resizableSlot) {
             w = resizableSlot.getWidth();
@@ -954,9 +966,15 @@ public abstract class AEBaseScreen<T extends AEBaseMenu> extends AbstractContain
             w = 16;
             h = 16;
         }
+        var inside = style.getColor(PaletteColor.SLOT_HIGHLIGHT_INSIDE).toARGB();
+        var outline = style.getColor(PaletteColor.SLOT_HIGHLIGHT_OUTLINE).toARGB();
 
         // Same as the Vanilla method, just with dynamic width and height
-        guiGraphics.fillGradient(RenderType.guiOverlay(), x, y, x + w, y + h, 0x80ffffff, 0x80ffffff, z);
+        guiGraphics.hLine(x, x + w, y - 1, outline);
+        guiGraphics.hLine(x - 1, x + w, y + h, outline);
+        guiGraphics.vLine(x - 1, y - 2, y + h, outline);
+        guiGraphics.vLine(x + w, y - 2, y + h, outline);
+        guiGraphics.fillGradient(RenderType.guiOverlay(), x, y, x + w, y + h, inside, inside, z);
     }
 
     protected final void switchToScreen(AEBaseScreen<?> screen) {

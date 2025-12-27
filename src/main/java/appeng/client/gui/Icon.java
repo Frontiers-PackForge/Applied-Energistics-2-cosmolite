@@ -189,7 +189,8 @@ public enum Icon {
     SCHEDULING_RANDOM(32, 240),
     OVERLAY_OFF(48, 240),
     OVERLAY_ON(64, 240),
-    TOOLBAR_BUTTON_BACKGROUND(240, 240);
+    TOOLBAR_BUTTON_BACKGROUND(240, 240),
+    TOOLBAR_BUTTON_BACKGROUND_HOVERED(240, 224);
 
     public final int x;
     public final int y;

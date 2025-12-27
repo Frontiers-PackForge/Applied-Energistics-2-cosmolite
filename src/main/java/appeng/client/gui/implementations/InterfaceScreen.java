@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.Button.OnPress;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 

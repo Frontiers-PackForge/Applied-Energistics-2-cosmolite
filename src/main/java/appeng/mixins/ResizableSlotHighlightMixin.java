@@ -16,15 +16,10 @@ import appeng.client.gui.AEBaseScreen;
  */
 @Mixin(AbstractContainerScreen.class)
 public abstract class ResizableSlotHighlightMixin {
-    @Inject(method = "renderSlotHighlight", at = @At("HEAD"), cancellable = true)
-    private static void renderResizableSlotHighlight(GuiGraphics guiGraphics, int x, int y, int z, CallbackInfo ci) {
-        var minecraft = Minecraft.getInstance();
-        if (minecraft == null) {
-            return;
-        }
-
-        var screen = minecraft.screen;
-        if (screen instanceof AEBaseScreen<?> self) {
+    @Inject(method = "renderSlotHighlight*", at = @At("HEAD"), cancellable = true)
+    private static void renderResizableSlotHighlight(GuiGraphics guiGraphics, int x, int y, int z, int color,
+            CallbackInfo ci) {
+        if (Minecraft.getInstance().screen instanceof AEBaseScreen<?> self) {
             self.renderCustomSlotHighlight(guiGraphics, x, y, z);
             ci.cancel();
         }

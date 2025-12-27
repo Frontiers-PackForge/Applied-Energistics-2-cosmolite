@@ -24,7 +24,6 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.Button.OnPress;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
@@ -67,11 +66,11 @@ public class TabButton extends Button implements ITooltip {
             // Selects the button border from the sprite-sheet, where each type occupies a
             // 2x2 slot
             var backdrop = switch (this.style) {
-                case CORNER -> this.isFocused() ? Icon.TAB_BUTTON_BACKGROUND_BORDERLESS_FOCUS
+                case CORNER -> this.isHoveredOrFocused() ? Icon.TAB_BUTTON_BACKGROUND_BORDERLESS_FOCUS
                         : Icon.TAB_BUTTON_BACKGROUND_BORDERLESS;
-                case BOX -> this.isFocused() ? Icon.TAB_BUTTON_BACKGROUND_FOCUS : Icon.TAB_BUTTON_BACKGROUND;
+                case BOX -> this.isHoveredOrFocused() ? Icon.TAB_BUTTON_BACKGROUND_FOCUS : Icon.TAB_BUTTON_BACKGROUND;
                 case HORIZONTAL -> {
-                    if (this.isFocused()) {
+                    if (this.isHoveredOrFocused()) {
                         yield Icon.HORIZONTAL_TAB_FOCUS;
                     } else if (this.selected) {
                         yield Icon.HORIZONTAL_TAB_SELECTED;

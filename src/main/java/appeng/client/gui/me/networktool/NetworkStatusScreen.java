@@ -24,10 +24,12 @@ import java.util.List;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 
 import appeng.api.client.AEKeyRendering;
+import appeng.client.Point;
 import appeng.client.gui.AEBaseScreen;
 import appeng.client.gui.style.PaletteColor;
 import appeng.client.gui.style.ScreenStyle;
@@ -126,6 +128,10 @@ public class NetworkStatusScreen extends AEBaseScreen<NetworkStatusMenu> {
                 if (entry.getPowerGenerationCapacity() > 0) {
                     tooltip.add(GuiText.EnergyGenerationCapacity
                             .text(Platform.formatPower(entry.getPowerGenerationCapacity(), true)));
+                }
+                var mousePos = new Point(mouseX - x, mouseY - y);
+                if (mousePos.isIn(new Rect2i(cellX, cellY, CELL_WIDTH, CELL_HEIGHT))) {
+
                 }
             }
 
