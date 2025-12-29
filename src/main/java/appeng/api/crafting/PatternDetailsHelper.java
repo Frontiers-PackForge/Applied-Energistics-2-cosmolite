@@ -130,6 +130,11 @@ public final class PatternDetailsHelper {
                 author);
     }
 
+    public static ItemStack encodeCraftingPattern(CraftingRecipe recipe, ItemStack[] in, ItemStack out,
+                                                  boolean allowSubstitutes, boolean allowFluidSubstitutes) {
+        return encodeCraftingPattern(recipe, in, out, allowSubstitutes, allowFluidSubstitutes, "");
+    }
+
     public static ItemStack encodeStonecuttingPattern(StonecutterRecipe recipe, AEItemKey in, AEItemKey out,
             boolean allowSubstitutes) {
         return encodeStonecuttingPattern(recipe, in, out, allowSubstitutes, "");
