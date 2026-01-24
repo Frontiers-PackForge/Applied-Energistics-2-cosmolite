@@ -25,6 +25,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
 import org.apache.commons.lang3.time.DurationFormatUtils;
 
 import net.minecraft.ChatFormatting;
@@ -34,17 +37,20 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 
+import appeng.api.config.ActionItems;
 import appeng.api.config.CpuSelectionMode;
 import appeng.api.config.Settings;
 import appeng.client.gui.AEBaseScreen;
 import appeng.client.gui.StackWithBounds;
 import appeng.client.gui.style.ScreenStyle;
+import appeng.client.gui.widgets.ActionButton;
 import appeng.client.gui.widgets.Scrollbar;
 import appeng.client.gui.widgets.ServerSettingToggleButton;
 import appeng.client.gui.widgets.SettingToggleButton;
 import appeng.core.localization.GuiText;
 import appeng.core.sync.network.NetworkHandler;
 import appeng.core.sync.packets.BlockHighlightPacket;
+import appeng.helpers.CraftExporter;
 import appeng.menu.me.crafting.CraftingCPUMenu;
 import appeng.menu.me.crafting.CraftingStatus;
 import appeng.menu.me.crafting.CraftingStatusEntry;
@@ -56,9 +62,11 @@ public class CraftingCPUScreen<T extends CraftingCPUMenu> extends AEBaseScreen<T
 
     private final CraftingStatusTableRenderer table;
 
-    private final Button cancel;
+    private final Button cancel, suspend;
 
     private final Scrollbar scrollbar;
+
+    private final ActionButton exportCraft;
 
     private final SettingToggleButton<CpuSelectionMode> schedulingModeButton;
 
@@ -72,10 +80,12 @@ public class CraftingCPUScreen<T extends CraftingCPUMenu> extends AEBaseScreen<T
         this.scrollbar = widgets.addScrollBar("scrollbar");
 
         this.cancel = this.widgets.addButton("cancel", GuiText.Cancel.text(), menu::cancelCrafting);
+        this.suspend = this.widgets.addButton("suspend", GuiText.Suspend.text(), menu::toggleScheduling);
 
         this.schedulingModeButton = new ServerSettingToggleButton<>(Settings.CPU_SELECTION_MODE,
                 CpuSelectionMode.ANY);
 
+        this.exportCraft = this.addToLeftToolbar(new ActionButton(ActionItems.EXPORT_CRAFT, this::exportCraft));
         // This screen is reused for the crafting status in Terminals, where it should not show the config buttons
         if (menu.allowConfiguration()) {
             this.addToLeftToolbar(this.schedulingModeButton);
@@ -112,6 +122,8 @@ public class CraftingCPUScreen<T extends CraftingCPUMenu> extends AEBaseScreen<T
         scrollbar.setRange(0, this.table.getScrollableRows(size), 1);
 
         this.schedulingModeButton.set(this.menu.getSchedulingMode());
+
+        this.exportCraft.visible = !getVisualEntries().isEmpty();
     }
 
     private List<CraftingStatusEntry> getVisualEntries() {
@@ -121,6 +133,7 @@ public class CraftingCPUScreen<T extends CraftingCPUMenu> extends AEBaseScreen<T
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float btn) {
         this.cancel.active = !getVisualEntries().isEmpty();
+        this.suspend.active = this.cancel.active;
 
         super.render(guiGraphics, mouseX, mouseY, btn);
     }
@@ -164,17 +177,12 @@ public class CraftingCPUScreen<T extends CraftingCPUMenu> extends AEBaseScreen<T
                 continue;
             }
 
-            CraftingStatusEntry existingEntry = entries.get(entry.getSerial());
-            if (existingEntry != null) {
-                entries.put(entry.getSerial(), new CraftingStatusEntry(
-                        existingEntry.getSerial(),
-                        existingEntry.getWhat(),
-                        entry.getStoredAmount(),
-                        entry.getActiveAmount(),
-                        entry.getPendingAmount()));
-            } else {
-                entries.put(entry.getSerial(), entry);
-            }
+            entries.merge(entry.getSerial(), entry, (existingEntry, newEntry) -> new CraftingStatusEntry(
+                    existingEntry.getSerial(),
+                    existingEntry.getWhat(),
+                    newEntry.getStoredAmount(),
+                    newEntry.getActiveAmount(),
+                    newEntry.getPendingAmount()));
         }
 
         List<CraftingStatusEntry> sortedEntries = new ArrayList<>(entries.values());
@@ -184,7 +192,9 @@ public class CraftingCPUScreen<T extends CraftingCPUMenu> extends AEBaseScreen<T
                 status.getElapsedTime(),
                 status.getRemainingItemCount(),
                 status.getStartItemCount(),
-                sortedEntries);
+                sortedEntries,
+                status.isSuspended());
+        this.suspend.setMessage(status.isSuspended() ? GuiText.Resume.text() : GuiText.Suspend.text());
     }
 
     @Override
@@ -198,5 +208,27 @@ public class CraftingCPUScreen<T extends CraftingCPUMenu> extends AEBaseScreen<T
             }
         }
         return super.mouseClicked(xCoord, yCoord, btn);
+    }
+
+    protected void exportCraft() {
+        var exportObject = new JsonObject();
+        var currentStatus = new JsonObject();
+        currentStatus.addProperty("elapsedTime", status.getElapsedTime());
+        currentStatus.addProperty("remainingItemCount", status.getRemainingItemCount());
+        currentStatus.addProperty("startItemCount", status.getStartItemCount());
+        currentStatus.addProperty("suspended", status.isSuspended());
+        exportObject.add("status", currentStatus);
+        var entryArray = new JsonArray();
+        for (var entry : status.getEntries()) {
+            var entryObject = new JsonObject();
+            entryObject.addProperty("what", entry.getWhat().getId().toString());
+            entryObject.addProperty("serial", entry.getSerial());
+            entryObject.addProperty("storedAmount", entry.getStoredAmount());
+            entryObject.addProperty("activeAmount", entry.getActiveAmount());
+            entryObject.addProperty("pendingAmount", entry.getPendingAmount());
+            entryArray.add(entryObject);
+        }
+        exportObject.add("entries", entryArray);
+        CraftExporter.exportCraft(exportObject, getPlayer(), CraftExporter.ExportType.CRAFTING_STATUS);
     }
 }

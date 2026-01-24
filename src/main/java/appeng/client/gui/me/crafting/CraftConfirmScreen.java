@@ -18,6 +18,9 @@
 
 package appeng.client.gui.me.crafting;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
 import org.lwjgl.glfw.GLFW;
 
 import net.minecraft.client.gui.GuiGraphics;
@@ -25,11 +28,15 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 
+import appeng.api.config.ActionItems;
 import appeng.client.gui.AEBaseScreen;
 import appeng.client.gui.StackWithBounds;
 import appeng.client.gui.style.ScreenStyle;
+import appeng.client.gui.widgets.ActionButton;
 import appeng.client.gui.widgets.Scrollbar;
+import appeng.core.AEConfig;
 import appeng.core.localization.GuiText;
+import appeng.helpers.CraftExporter;
 import appeng.menu.me.crafting.CraftConfirmMenu;
 import appeng.menu.me.crafting.CraftingPlanSummary;
 import appeng.util.NumberUtil;
@@ -42,22 +49,31 @@ public class CraftConfirmScreen extends AEBaseScreen<CraftConfirmMenu> {
 
     private final CraftConfirmTableRenderer table;
 
-    private final Button start;
+    private final Button start, startWithFollow;
     private final Button selectCPU;
     private final Scrollbar scrollbar;
+    private final boolean isNotifyForFinishedCraftingJobs;
 
     public CraftConfirmScreen(CraftConfirmMenu menu, Inventory playerInventory, Component title,
             ScreenStyle style) {
         super(menu, playerInventory, title, style);
+        this.isNotifyForFinishedCraftingJobs = AEConfig.instance().isNotifyForFinishedCraftingJobs();
         this.table = new CraftConfirmTableRenderer(this, 9, 19);
 
         this.scrollbar = widgets.addScrollBar("scrollbar");
 
-        this.start = widgets.addButton("start", GuiText.Start.text(), this::start);
+        this.start = widgets.addButton("start", GuiText.Start.text(),
+                () -> this.start(isNotifyForFinishedCraftingJobs));
         this.start.active = false;
+
+        this.startWithFollow = widgets.addButton("startWithFollow", GuiText.StartWithFollow.text(),
+                () -> this.start(true));
+        this.startWithFollow.active = false;
 
         this.selectCPU = widgets.addButton("selectCpu", getNextCpuButtonLabel(), this::selectNextCpu);
         this.selectCPU.active = false;
+
+        this.addToLeftToolbar(new ActionButton(ActionItems.EXPORT_CRAFT, this::exportCraft));
 
         widgets.addButton("cancel", GuiText.Cancel.text(), menu::goBack);
     }
@@ -75,23 +91,26 @@ public class CraftConfirmScreen extends AEBaseScreen<CraftConfirmMenu> {
         this.selectCPU.setMessage(getNextCpuButtonLabel());
 
         CraftingPlanSummary plan = menu.getPlan();
-        boolean planIsStartable = plan != null && !plan.simulation();
-        this.start.active = !this.menu.hasNoCPU() && planIsStartable;
+        boolean planIsStartable = plan != null && !plan.isSimulation();
+        var start = !this.menu.hasNoCPU() && planIsStartable;
+        this.start.active = start;
+        this.startWithFollow.active = start;
+        this.startWithFollow.visible = !isNotifyForFinishedCraftingJobs;
         this.selectCPU.active = planIsStartable;
 
         // Show additional status about the selected CPU and plan when the planning is done
         Component planDetails = GuiText.CalculatingWait.text();
         Component cpuDetails = Component.empty();
         if (plan != null) {
-            String byteUsed = NumberUtil.formatNumber(plan.usedBytes());
+            String byteUsed = NumberUtil.formatNumber(plan.getUsedBytes());
             planDetails = GuiText.BytesUsed.text(byteUsed);
 
-            if (plan.simulation()) {
+            if (plan.isSimulation()) {
                 cpuDetails = GuiText.PartialPlan.text();
             } else if (this.menu.getCpuAvailableBytes() > 0) {
                 cpuDetails = GuiText.ConfirmCraftCpuStatus.text(
-                        this.menu.getCpuAvailableBytes(),
-                        this.menu.getCpuCoProcessors());
+                        NumberUtil.formatNumber(this.menu.getCpuAvailableBytes()),
+                        NumberUtil.formatNumber(this.menu.getCpuCoProcessors()));
             } else {
                 cpuDetails = GuiText.ConfirmCraftNoCpu.text();
             }
@@ -100,7 +119,7 @@ public class CraftConfirmScreen extends AEBaseScreen<CraftConfirmMenu> {
         setTextContent(TEXT_ID_DIALOG_TITLE, GuiText.CraftingPlan.text(planDetails));
         setTextContent("cpu_status", cpuDetails);
 
-        final int size = plan != null ? plan.entries().size() : 0;
+        final int size = plan != null ? plan.getEntries().size() : 0;
         scrollbar.setRange(0, this.table.getScrollableRows(size), 1);
     }
 
@@ -125,7 +144,7 @@ public class CraftConfirmScreen extends AEBaseScreen<CraftConfirmMenu> {
 
         CraftingPlanSummary plan = menu.getPlan();
         if (plan != null) {
-            this.table.render(guiGraphics, mouseX, mouseY, plan.entries(), scrollbar.getCurrentScroll());
+            this.table.render(guiGraphics, mouseX, mouseY, plan.getEntries(), scrollbar.getCurrentScroll());
         }
 
     }
@@ -144,7 +163,7 @@ public class CraftConfirmScreen extends AEBaseScreen<CraftConfirmMenu> {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int p_keyPressed_3_) {
         if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
-            this.start();
+            this.start(isNotifyForFinishedCraftingJobs);
             return true;
         }
         return super.keyPressed(keyCode, scanCode, p_keyPressed_3_);
@@ -154,8 +173,32 @@ public class CraftConfirmScreen extends AEBaseScreen<CraftConfirmMenu> {
         getMenu().cycleSelectedCPU(!isHandlingRightClick());
     }
 
-    private void start() {
-        getMenu().startJob();
+    private void start(boolean isFollowing) {
+        getMenu().startJob(isFollowing);
     }
 
+    private void exportCraft() {
+        CraftingPlanSummary plan = menu.getPlan();
+        var exportObject = new JsonObject();
+        var cpuStats = new JsonObject();
+        cpuStats.addProperty("name",
+                menu.cpuName != null ? menu.cpuName.getString() : GuiText.Automatic.getEnglishText());
+        cpuStats.addProperty("isFollowing", menu.isFollowing);
+        cpuStats.addProperty("availableBytes", menu.getCpuAvailableBytes());
+        cpuStats.addProperty("coProcessors", menu.getCpuCoProcessors());
+        cpuStats.addProperty("usedBytes", plan.getUsedBytes());
+        exportObject.add("cpu", cpuStats);
+        var entryArray = new JsonArray();
+        for (var entry : plan.getEntries()) {
+            var entryObject = new JsonObject();
+            entryObject.addProperty("what", entry.getWhat().getId().toString());
+            entryObject.addProperty("missingAmount", entry.getMissingAmount());
+            entryObject.addProperty("storedAmount", entry.getStoredAmount());
+            entryObject.addProperty("craftAmount", entry.getCraftAmount());
+            entryObject.addProperty("availableAmount", entry.getAvailableAmount());
+            entryArray.add(entryObject);
+        }
+        exportObject.add("getEntries", entryArray);
+        CraftExporter.exportCraft(exportObject, getPlayer(), CraftExporter.ExportType.CRAFTING_PLAN);
+    }
 }

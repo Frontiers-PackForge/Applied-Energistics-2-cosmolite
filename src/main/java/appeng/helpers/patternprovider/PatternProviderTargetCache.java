@@ -12,6 +12,8 @@ import net.minecraft.server.level.ServerLevel;
 
 import appeng.api.behaviors.ExternalStorageStrategy;
 import appeng.api.config.Actionable;
+import appeng.api.config.BlockingMode;
+import appeng.api.config.Settings;
 import appeng.api.networking.security.IActionSource;
 import appeng.api.stacks.AEKey;
 import appeng.api.stacks.AEKeyType;
@@ -20,18 +22,27 @@ import appeng.capabilities.Capabilities;
 import appeng.me.storage.CompositeStorage;
 import appeng.parts.automation.StackWorldBehaviors;
 import appeng.util.BlockApiCache;
+import appeng.util.ConfigManager;
 
 class PatternProviderTargetCache {
     private final BlockApiCache<MEStorage> cache;
     private final Direction direction;
     private final IActionSource src;
     private final Map<AEKeyType, ExternalStorageStrategy> strategies;
+    private final ConfigManager configManager;
+    private BlockingMode blockingMode;
 
     PatternProviderTargetCache(ServerLevel l, BlockPos pos, Direction direction, IActionSource src) {
+        this(l, pos, direction, src, null);
+    }
+
+    PatternProviderTargetCache(ServerLevel l, BlockPos pos, Direction direction, IActionSource src,
+            ConfigManager configManager) {
         this.cache = BlockApiCache.create(Capabilities.STORAGE, l, pos);
         this.direction = direction;
         this.src = src;
         this.strategies = StackWorldBehaviors.createExternalStorageStrategies(l, pos, direction);
+        this.configManager = configManager;
     }
 
     @Nullable
@@ -68,12 +79,41 @@ class PatternProviderTargetCache {
 
             @Override
             public boolean containsPatternInput(Set<AEKey> patternInputs) {
-                for (var stack : storage.getAvailableStacks()) {
-                    if (patternInputs.contains(stack.getKey().dropSecondary())) {
-                        return true;
+                var mode = blockingMode == null
+                        ? (configManager == null ? BlockingMode.DEFAULT
+                                : configManager.getSetting(Settings.BLOCKING_MODE_EXTRA))
+                        : blockingMode;
+                switch (mode) {
+                    case ALL -> {
+                        for (var stack : storage.getAvailableStacks()) {
+                            if (stack.getKey().getId().equals(programmedCircuit))
+                                continue;
+                            return true;
+                        }
+                    }
+                    case DEFAULT -> {
+                        for (var stack : storage.getAvailableStacks()) {
+                            if (stack.getKey().getId().equals(programmedCircuit))
+                                continue;
+                            if (patternInputs.contains(stack.getKey().dropSecondary()))
+                                return true;
+                        }
+                    }
+                    case SMART -> {
+                        for (var stack : storage.getAvailableStacks()) {
+                            if (stack.getKey().getId().equals(programmedCircuit))
+                                continue;
+                            if (!patternInputs.contains(stack.getKey().dropSecondary()))
+                                return true;
+                        }
                     }
                 }
                 return false;
+            }
+
+            @Override
+            public void setBlockingMode(BlockingMode mode) {
+                blockingMode = mode;
             }
         };
     }

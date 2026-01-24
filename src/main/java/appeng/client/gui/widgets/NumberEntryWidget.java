@@ -36,6 +36,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 
@@ -47,16 +48,20 @@ import appeng.client.gui.Rects;
 import appeng.client.gui.style.PaletteColor;
 import appeng.client.gui.style.ScreenStyle;
 import appeng.client.gui.style.WidgetStyle;
+import appeng.core.AEConfig;
 import appeng.core.localization.GuiText;
 import appeng.util.NumberUtil;
 
 /**
  * A utility widget that consists of a text-field to enter a number with attached buttons to increment/decrement the
- * number in fixed intervals.
+ * number in fixed intervals. Increment/decrement button values can be configured in terminal settings.
  */
 public class NumberEntryWidget implements ICompositeWidget {
 
-    private static final long[] STEPS = new long[] { 1, 10, 100, 1000 };
+    public final long[] stepsBase;
+    public final long[] stepsAlt;
+    private final Component[] components1000;
+    private final Component[] components64;
     private static final Component PLUS = Component.literal("+");
     private static final Component MINUS = Component.literal("-");
     private static final int UNIT_PADDING = 3;
@@ -84,7 +89,24 @@ public class NumberEntryWidget implements ICompositeWidget {
     private Rect2i textFieldBounds = Rects.ZERO;
     private Point currentScreenOrigin = Point.ZERO;
 
+    private List<Button> amountButtons = List.of();
+
+    protected final AEConfig config = AEConfig.instance();
+
     public NumberEntryWidget(ScreenStyle style, NumberEntryType type) {
+        stepsBase = new long[] {
+                config.getNumberWidgetValue(0),
+                config.getNumberWidgetValue(1),
+                config.getNumberWidgetValue(2),
+                config.getNumberWidgetValue(3)
+        };
+        stepsAlt = new long[] {
+                config.getNumberWidgetValue(4),
+                config.getNumberWidgetValue(5),
+                config.getNumberWidgetValue(6),
+                config.getNumberWidgetValue(7)
+        };
+
         this.errorTextColor = style.getColor(PaletteColor.TEXTFIELD_ERROR).toARGB();
         this.normalTextColor = style.getColor(PaletteColor.TEXTFIELD_TEXT).toARGB();
 
@@ -113,6 +135,27 @@ public class NumberEntryWidget implements ICompositeWidget {
             }
         });
         validate();
+
+        components1000 = new Component[] {
+                makeLabel(PLUS, 0, true),
+                makeLabel(PLUS, 1, true),
+                makeLabel(PLUS, 2, true),
+                makeLabel(PLUS, 3, true),
+                makeLabel(MINUS, 0, true),
+                makeLabel(MINUS, 1, true),
+                makeLabel(MINUS, 2, true),
+                makeLabel(MINUS, 3, true),
+        };
+        components64 = new Component[] {
+                makeLabel(PLUS, 0, false),
+                makeLabel(PLUS, 1, false),
+                makeLabel(PLUS, 2, false),
+                makeLabel(PLUS, 3, false),
+                makeLabel(MINUS, 0, false),
+                makeLabel(MINUS, 1, false),
+                makeLabel(MINUS, 2, false),
+                makeLabel(MINUS, 3, false),
+        };
     }
 
     public void setOnConfirm(Runnable callback) {
@@ -191,13 +234,21 @@ public class NumberEntryWidget implements ICompositeWidget {
         List<Button> buttons = new ArrayList<>(9);
 
         buttons.add(
-                Button.builder(makeLabel(PLUS, STEPS[0]), btn -> addQty(STEPS[0])).bounds(left, top, 22, 20).build());
-        buttons.add(Button.builder(makeLabel(PLUS, STEPS[1]), btn -> addQty(STEPS[1])).bounds(left + 28, top, 28, 20)
-                .build());
-        buttons.add(Button.builder(makeLabel(PLUS, STEPS[2]), btn -> addQty(STEPS[2])).bounds(left + 62, top, 32, 20)
-                .build());
-        buttons.add(Button.builder(makeLabel(PLUS, STEPS[3]), btn -> addQty(STEPS[3])).bounds(left + 100, top, 38, 20)
-                .build());
+                Button.builder(components1000[0], btn -> addQty(hasShiftOrControlDown() ? stepsAlt[0] : stepsBase[0]))
+                        .bounds(left, top, 22, 20)
+                        .build());
+        buttons.add(
+                Button.builder(components1000[1], btn -> addQty(hasShiftOrControlDown() ? stepsAlt[1] : stepsBase[1]))
+                        .bounds(left + 28, top, 28, 20)
+                        .build());
+        buttons.add(
+                Button.builder(components1000[2], btn -> addQty(hasShiftOrControlDown() ? stepsAlt[2] : stepsBase[2]))
+                        .bounds(left + 62, top, 32, 20)
+                        .build());
+        buttons.add(
+                Button.builder(components1000[3], btn -> addQty(hasShiftOrControlDown() ? stepsAlt[3] : stepsBase[3]))
+                        .bounds(left + 100, top, 38, 20)
+                        .build());
 
         // Need to add these now for sensible tab-order
         buttons.forEach(addWidget);
@@ -208,14 +259,24 @@ public class NumberEntryWidget implements ICompositeWidget {
         screen.setInitialFocus(this.textField);
         addWidget.accept(this.textField);
 
-        buttons.add(Button.builder(makeLabel(MINUS, STEPS[0]), btn -> addQty(-STEPS[0])).bounds(left, top + 42, 22, 20)
+        buttons.add(Button
+                .builder(components1000[4], btn -> addQty(hasShiftOrControlDown() ? -stepsAlt[0] : -stepsBase[0]))
+                .bounds(left, top + 42, 22, 20)
                 .build());
-        buttons.add(Button.builder(makeLabel(MINUS, STEPS[1]), btn -> addQty(-STEPS[1]))
-                .bounds(left + 28, top + 42, 28, 20).build());
-        buttons.add(Button.builder(makeLabel(MINUS, STEPS[2]), btn -> addQty(-STEPS[2]))
-                .bounds(left + 62, top + 42, 32, 20).build());
-        buttons.add(Button.builder(makeLabel(MINUS, STEPS[3]), btn -> addQty(-STEPS[3]))
-                .bounds(left + 100, top + 42, 38, 20).build());
+        buttons.add(Button
+                .builder(components1000[5], btn -> addQty(hasShiftOrControlDown() ? -stepsAlt[1] : -stepsBase[1]))
+                .bounds(left + 28, top + 42, 28, 20)
+                .build());
+        buttons.add(Button
+                .builder(components1000[6], btn -> addQty(hasShiftOrControlDown() ? -stepsAlt[2] : -stepsBase[2]))
+                .bounds(left + 62, top + 42, 32, 20)
+                .build());
+        buttons.add(Button
+                .builder(components1000[7], btn -> addQty(hasShiftOrControlDown() ? -stepsAlt[3] : -stepsBase[3]))
+                .bounds(left + 100, top + 42, 38, 20)
+                .build());
+
+        amountButtons = List.copyOf(buttons);
 
         // This element is not focusable
         if (!hideValidationIcon) {
@@ -233,6 +294,18 @@ public class NumberEntryWidget implements ICompositeWidget {
         // we need to re-validate because the icon may now be present and needs it's
         // initial state
         this.validate();
+    }
+
+    @Override
+    public void updateBeforeRender() {
+        Component[] messages = hasShiftOrControlDown() ? components64 : components1000;
+        for (int i = 0; i < amountButtons.size(); i++) {
+            amountButtons.get(i).setMessage(messages[i]);
+        }
+    }
+
+    private static boolean hasShiftOrControlDown() {
+        return Screen.hasShiftDown() || Screen.hasControlDown();
     }
 
     /**
@@ -310,7 +383,7 @@ public class NumberEntryWidget implements ICompositeWidget {
             newValue = minimum;
         } else if (newValue > maximum) {
             newValue = maximum;
-        } else if (currentValue == 1 && delta > 0 && delta % 10 == 0) {
+        } else if (currentValue == 1 && delta > 0 && (delta % 10 == 0 || delta % 16 == 0)) {
             newValue = newValue - 1;
         }
         setValueInternal(newValue);
@@ -381,8 +454,9 @@ public class NumberEntryWidget implements ICompositeWidget {
         }
     }
 
-    private Component makeLabel(Component prefix, long amount) {
-        return prefix.plainCopy().append(decimalFormat.format(amount));
+    private Component makeLabel(Component prefix, int amountIndex, boolean useDecimalSteps) {
+        return prefix.plainCopy()
+                .append(decimalFormat.format(useDecimalSteps ? stepsBase[amountIndex] : stepsAlt[amountIndex]));
     }
 
     public void setHideValidationIcon(boolean hideValidationIcon) {

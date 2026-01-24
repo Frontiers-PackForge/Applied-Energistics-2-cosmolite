@@ -132,6 +132,7 @@ public final class AEConfig {
     private boolean disableColoredCableRecipesInJEI;
     private boolean isEnableFacadesInJEI;
     private boolean isEnableFacadeRecipesInJEI;
+    private boolean isExposeNetworkInventoryToEmi;
     private int craftingCalculationTimePerTick;
     private boolean craftingSimulatedExtraction;
     private boolean spatialAnchorEnablesRandomTicks;
@@ -170,6 +171,7 @@ public final class AEConfig {
         this.disableColoredCableRecipesInJEI = CLIENT.disableColoredCableRecipesInJEI.get();
         this.isEnableFacadesInJEI = CLIENT.enableFacadesInJEI.get();
         this.isEnableFacadeRecipesInJEI = CLIENT.enableFacadeRecipesInJEI.get();
+        this.isExposeNetworkInventoryToEmi = CLIENT.exposeInventoryToEmi.get();
         this.enableEffects = CLIENT.enableEffects.get();
         this.useLargeFonts = CLIENT.useLargeFonts.get();
         this.useColoredCraftingStatus = CLIENT.useColoredCraftingStatus.get();
@@ -361,6 +363,10 @@ public final class AEConfig {
         return this.isEnableFacadeRecipesInJEI;
     }
 
+    public boolean isExposeNetworkInventoryToEmi() {
+        return this.isExposeNetworkInventoryToEmi;
+    }
+
     public int getCraftingCalculationTimePerTick() {
         return this.craftingCalculationTimePerTick;
     }
@@ -457,6 +463,10 @@ public final class AEConfig {
         return COMMON.channels.get();
     }
 
+    public int getControllerMaxLength() {
+        return COMMON.controllerLength.get();
+    }
+
     public void setChannelModel(ChannelMode mode) {
         COMMON.channels.set(mode);
     }
@@ -511,6 +521,10 @@ public final class AEConfig {
         CLIENT.notifyForFinishedCraftingJobs.set(enabled);
     }
 
+    public boolean isFancyPatternTooltips() {
+        return CLIENT.fancyPatternTooltips.get();
+    }
+
     public boolean isClearGridOnClose() {
         return CLIENT.clearGridOnClose.get();
     }
@@ -535,6 +549,22 @@ public final class AEConfig {
         return CLIENT.terminalMargin.get();
     }
 
+    public boolean isAutoPauseTerminal() {
+        return CLIENT.autoPauseTerminal.get();
+    }
+
+    public void setAutoPauseTerminal(boolean autoPauseTerminal) {
+        CLIENT.autoPauseTerminal.set(autoPauseTerminal);
+    }
+
+    public int getNumberWidgetValue(int index) {
+        return CLIENT.numberWidgetValues[index].get();
+    }
+
+    public void setNumberWidgetValue(int value, int index) {
+        CLIENT.numberWidgetValues[index].set(value);
+    }
+
     // Setters keep visibility as low as possible.
 
     private static class ClientConfig {
@@ -546,16 +576,22 @@ public final class AEConfig {
         public final BooleanOption disableColoredCableRecipesInJEI;
         public final BooleanOption enableFacadesInJEI;
         public final BooleanOption enableFacadeRecipesInJEI;
+        public final BooleanOption exposeInventoryToEmi;
         public final EnumOption<PowerUnits> selectedPowerUnit;
         public final BooleanOption debugGuiOverlays;
         public final BooleanOption showPlacementPreview;
         public final BooleanOption notifyForFinishedCraftingJobs;
+        public final BooleanOption fancyPatternTooltips;
+
+        // Number Widget Values
+        public final IntegerOption[] numberWidgetValues;
 
         // Terminal Settings
         public final EnumOption<TerminalStyle> terminalStyle;
         public final BooleanOption pinAutoCraftedItems;
         public final BooleanOption clearGridOnClose;
         public final IntegerOption terminalMargin;
+        public final BooleanOption autoPauseTerminal;
 
         // Search Settings
         public final BooleanOption searchModNameInTooltips;
@@ -578,6 +614,8 @@ public final class AEConfig {
                     "Show facades in JEI ingredient list");
             this.enableFacadeRecipesInJEI = client.addBoolean("enableFacadeRecipesInJEI", true,
                     "Show facade recipes in JEI for supported blocks");
+            this.exposeInventoryToEmi = client.addBoolean("exposeInventoryToEmi", false,
+                    "Expose the full network inventory to EMI, which might cause performance problems.");
             this.enableEffects = client.addBoolean("enableEffects", true);
             this.useLargeFonts = client.addBoolean("useTerminalUseLargeFont", false);
             this.useColoredCraftingStatus = client.addBoolean("useColoredCraftingStatus", true);
@@ -587,6 +625,29 @@ public final class AEConfig {
                     "Show a preview of part and facade placement");
             this.notifyForFinishedCraftingJobs = client.addBoolean("notifyForFinishedCraftingJobs", true,
                     "Show toast when long-running crafting jobs finish.");
+            this.fancyPatternTooltips = client.addBoolean("fancyPatternTooltips", true,
+                    "Show fancy tooltips for encoded patterns.");
+
+            var widgetNumbers = root.subsection("widgetNumbers",
+                    "Number button values in the level emitter config panel and the craft order amount picker");
+            this.numberWidgetValues = new IntegerOption[] {
+                    widgetNumbers.addInt("widgetNumberBase1", 1,
+                            "Value of the first button when not pressing shift or ctrl"),
+                    widgetNumbers.addInt("widgetNumberBase2", 10,
+                            "Value of the second button when not pressing shift or ctrl"),
+                    widgetNumbers.addInt("widgetNumberBase3", 100,
+                            "Value of the third button when not pressing shift or ctrl"),
+                    widgetNumbers.addInt("widgetNumberBase4", 1000,
+                            "Value of the fourth button when not pressing shift or ctrl"),
+                    widgetNumbers.addInt("widgetNumberAlt1", 1,
+                            "Value of the first button when pressing shift or ctrl"),
+                    widgetNumbers.addInt("widgetNumberAlt2", 16,
+                            "Value of the second button when pressing shift or ctrl"),
+                    widgetNumbers.addInt("widgetNumberAlt3", 32,
+                            "Value of the third button when pressing shift or ctrl"),
+                    widgetNumbers.addInt("widgetNumberAlt4", 64,
+                            "Value of the fourth button when pressing shift or ctrl"),
+            };
 
             var terminals = root.subsection("terminals");
             this.terminalStyle = terminals.addEnum("terminalStyle", TerminalStyle.SMALL);
@@ -596,6 +657,8 @@ public final class AEConfig {
                     "Automatically clear the crafting/encoding grid when closing the terminal");
             this.terminalMargin = client.addInt("terminalMargin", 25,
                     "The vertical margin to apply when sizing terminals. Used to make room for centered item mod search bars");
+            this.autoPauseTerminal = client.addBoolean("autoPauseTerminal", false,
+                    "Pause the terminal exactly like when pressing shift, except done automatically");
 
             // Search Settings
             var search = root.subsection("search");
@@ -636,6 +699,7 @@ public final class AEConfig {
         public final BooleanOption matterCannonBlockDamage;
         public final BooleanOption tinyTntBlockDamage;
         public final EnumOption<ChannelMode> channels;
+        public final IntegerOption controllerLength;
         public final BooleanOption spatialAnchorEnableRandomTicks;
 
         public final BooleanOption disassemblyCrafting;
@@ -708,6 +772,7 @@ public final class AEConfig {
                     "Enables the ability of Tiny TNT to break blocks.");
             channels = general.addEnum("channels", ChannelMode.DEFAULT,
                     "Changes the channel capacity that cables provide in AE2.");
+            controllerLength = general.addInt("controllerLength", 11, 7, 15, "Maximum length for AE controllers");
             spatialAnchorEnableRandomTicks = general.addBoolean("spatialAnchorEnableRandomTicks", true,
                     "Whether Spatial Anchors should force random chunk ticks and entity spawning.");
 

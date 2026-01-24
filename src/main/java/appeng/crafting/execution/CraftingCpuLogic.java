@@ -83,6 +83,11 @@ public class CraftingCpuLogic {
 
     public ICraftingSubmitResult trySubmitJob(IGrid grid, ICraftingPlan plan, IActionSource src,
             @Nullable ICraftingRequester requester) {
+        return trySubmitJob(grid, plan, src, requester, false);
+    }
+
+    public ICraftingSubmitResult trySubmitJob(IGrid grid, ICraftingPlan plan, IActionSource src,
+            @Nullable ICraftingRequester requester, boolean isFollowing) {
         // Already have a job.
         if (this.job != null)
             return CraftingSubmitResult.CPU_BUSY;
@@ -107,7 +112,7 @@ public class CraftingCpuLogic {
                 .orElse(null);
         var craftId = UUID.randomUUID();
         var linkCpu = new CraftingLink(CraftingCpuHelper.generateLinkData(craftId, requester == null, false), cluster);
-        this.job = new ExecutingCraftingJob(plan, this::postChange, linkCpu, playerId);
+        this.job = new ExecutingCraftingJob(plan, this::postChange, linkCpu, playerId, isFollowing);
         cluster.updateOutput(plan.finalOutput());
         cluster.markDirty();
 
@@ -145,6 +150,10 @@ public class CraftingCpuLogic {
         // Check if the job was cancelled.
         if (job.link.isCanceled()) {
             cancel();
+            return;
+        }
+
+        if (job.suspended) {
             return;
         }
 
@@ -535,8 +544,19 @@ public class CraftingCpuLogic {
                             job.finalOutput.amount(),
                             job.remainingAmount,
                             job.timeTracker.getElapsedTime(),
+                            job.isFollowing,
                             status),
                     connectedPlayer);
+        }
+    }
+
+    public boolean isJobSuspended() {
+        return job != null && job.suspended;
+    }
+
+    public void setJobSuspended(boolean suspended) {
+        if (job != null && job.suspended != suspended) {
+            job.suspended = suspended;
         }
     }
 }

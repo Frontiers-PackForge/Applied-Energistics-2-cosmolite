@@ -27,11 +27,13 @@ import com.google.common.util.concurrent.Runnables;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 import appeng.api.config.Actionable;
+import appeng.api.config.BlockingMode;
 import appeng.api.networking.security.IActionSource;
 import appeng.api.stacks.AEKey;
 import appeng.api.stacks.AEKeyType;
@@ -44,6 +46,8 @@ import appeng.parts.automation.StackWorldBehaviors;
  * Wrapper used by the pattern provider logic to interact with adjacent inventories.
  */
 public interface PatternProviderTarget {
+    ResourceLocation programmedCircuit = new ResourceLocation("gtceu", "programmed_circuit");
+
     @Nullable
     static PatternProviderTarget get(Level l, BlockPos pos, @Nullable BlockEntity be, Direction side,
             IActionSource src) {
@@ -96,4 +100,12 @@ public interface PatternProviderTarget {
     long insert(AEKey what, long amount, Actionable type);
 
     boolean containsPatternInput(Set<AEKey> patternInputs);
+
+    default boolean containsPatternInput(Set<AEKey> patternInputs, BlockingMode blockingMode) {
+        setBlockingMode(blockingMode);
+        return containsPatternInput(patternInputs);
+    }
+
+    default void setBlockingMode(BlockingMode blockingMode) {
+    }
 }
