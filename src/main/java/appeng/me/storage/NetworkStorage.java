@@ -100,11 +100,23 @@ public class NetworkStorage implements MEStorage {
 
         mountsInUse = true;
         try {
+            // first, we need to check if any inventory has this key marked as sticky
+            for (var invList : this.priorityInventory.values()) {
+                for (var inv : invList) {
+                    if (inv.isSticky(what)) {
+                        hasSticky = true;
+                        break;
+                    }
+                }
+                if (hasSticky)
+                    break;
+            }
+
             for (var invList : this.priorityInventory.values()) {
                 secondPassInventories.clear();
 
-                // First give every inventory a chance to accept the item if it's preferential storage for the given
-                // stack
+                // then we give every inventory a chance to accept the item if it's preferential storage for the given
+                // stack and taking into account its sticky status
                 var ii = invList.iterator();
                 while (ii.hasNext() && remaining > 0) {
                     var inv = ii.next();
@@ -113,9 +125,7 @@ public class NetworkStorage implements MEStorage {
                         continue;
                     }
 
-                    if (!hasSticky && inv.isSticky(what)) {
-                        hasSticky = true;
-                    }
+                    // skip this inventory if we're looking for a sticky one and it is not
                     if (hasSticky && !inv.isSticky(what)) {
                         continue;
                     }
@@ -134,10 +144,6 @@ public class NetworkStorage implements MEStorage {
                     }
 
                     if (isQueuedForRemoval(inv)) {
-                        continue;
-                    }
-
-                    if (hasSticky && !inv.isSticky(what)) {
                         continue;
                     }
 

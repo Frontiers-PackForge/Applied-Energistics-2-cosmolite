@@ -28,9 +28,11 @@ public class DriveWatcher extends MEInventoryHandler {
 
     private CellState oldStatus = CellState.EMPTY;
     private final Runnable activityCallback;
+    private final StorageCell cell;
 
     public DriveWatcher(StorageCell i, Runnable activityCallback) {
         super(i);
+        this.cell = i;
         this.activityCallback = activityCallback;
         this.oldStatus = getStatus();
     }
@@ -73,5 +75,10 @@ public class DriveWatcher extends MEInventoryHandler {
         }
 
         return extracted;
+    }
+
+    @Override
+    public boolean isSticky(AEKey what) {
+        return cell.isSticky(what);
     }
 }

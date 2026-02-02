@@ -463,4 +463,10 @@ public class BasicCellInventory implements StorageCell {
     public Component getDescription() {
         return i.getHoverName();
     }
+
+    @Override
+    public boolean isSticky(AEKey what) {
+        return getUpgradesInventory().isInstalled(AEItems.STICKY_CARD)
+                && partitionList.matchesFilter(what, this.partitionListMode);
+    }
 }

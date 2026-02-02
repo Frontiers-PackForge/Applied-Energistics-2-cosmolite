@@ -66,6 +66,7 @@ public class ItemModelProvider extends net.minecraftforge.client.model.generator
         flatSingleLayer(AEItems.ENGINEERING_PROCESSOR_PRINT, "item/printed_engineering_processor");
         flatSingleLayer(AEItems.EQUAL_DISTRIBUTION_CARD, "item/card_equal_distribution");
         flatSingleLayer(AEItems.AUTO_COMPLETE_CARD, "item/auto_complete_card");
+        flatSingleLayer(AEItems.STICKY_CARD, "item/sticky_card");
         storageCell(AEItems.FLUID_CELL_1K, "item/fluid_storage_cell_1k");
         storageCell(AEItems.FLUID_CELL_4K, "item/fluid_storage_cell_4k");
         storageCell(AEItems.FLUID_CELL_16K, "item/fluid_storage_cell_16k");

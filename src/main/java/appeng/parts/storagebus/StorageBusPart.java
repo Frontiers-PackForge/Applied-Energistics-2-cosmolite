@@ -55,6 +55,7 @@ import appeng.api.parts.IPartCollisionHelper;
 import appeng.api.parts.IPartHost;
 import appeng.api.parts.IPartItem;
 import appeng.api.parts.IPartModel;
+import appeng.api.stacks.AEKey;
 import appeng.api.stacks.AEKeyType;
 import appeng.api.storage.IStorageMounts;
 import appeng.api.storage.IStorageProvider;
@@ -456,7 +457,7 @@ public class StorageBusPart extends UpgradeablePart
     /**
      * This inventory forwards to the actual external inventory and allows the inventory to be swapped out underneath.
      */
-    private static class StorageBusInventory extends MEInventoryHandler {
+    private class StorageBusInventory extends MEInventoryHandler {
         public StorageBusInventory(MEStorage inventory) {
             super(inventory);
         }
@@ -474,6 +475,12 @@ public class StorageBusPart extends UpgradeablePart
         public void setAccessRestriction(AccessRestriction setting) {
             setAllowExtraction(setting.isAllowExtraction());
             setAllowInsertion(setting.isAllowInsertion());
+        }
+
+        @Override
+        public boolean isSticky(AEKey what) {
+            return isUpgradedWith(AEItems.STICKY_CARD)
+                    && this.getPartitionList().matchesFilter(what, this.getWhitelist());
         }
     }
 
