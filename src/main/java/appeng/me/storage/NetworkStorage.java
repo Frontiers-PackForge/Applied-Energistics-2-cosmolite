@@ -96,6 +96,7 @@ public class NetworkStorage implements MEStorage {
         }
 
         var remaining = amount;
+        boolean hasSticky = false;
 
         mountsInUse = true;
         try {
@@ -109,6 +110,13 @@ public class NetworkStorage implements MEStorage {
                     var inv = ii.next();
 
                     if (isQueuedForRemoval(inv)) {
+                        continue;
+                    }
+
+                    if (!hasSticky && inv.isSticky(what)) {
+                        hasSticky = true;
+                    }
+                    if (hasSticky && !inv.isSticky(what)) {
                         continue;
                     }
 
@@ -126,6 +134,10 @@ public class NetworkStorage implements MEStorage {
                     }
 
                     if (isQueuedForRemoval(inv)) {
+                        continue;
+                    }
+
+                    if (hasSticky && !inv.isSticky(what)) {
                         continue;
                     }
 

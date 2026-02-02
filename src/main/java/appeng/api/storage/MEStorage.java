@@ -96,6 +96,20 @@ public interface MEStorage {
     }
 
     /**
+     * If that key has any inventory marked as sticky it should only be able to insert into that one or other
+     * inventories that have it marked as sticky
+     * <p/>
+     * If for example a storage bus has a sticky card with a filter for stone, then on that network it should be the
+     * only place where stone can be stored.
+     *
+     * @return Whether the specified stack is sticky for this inventory.
+     * @param what what to check.
+     */
+    default boolean isSticky(AEKey what) {
+        return false;
+    }
+
+    /**
      * @return The type of storage represented by this object.
      */
     Component getDescription();
