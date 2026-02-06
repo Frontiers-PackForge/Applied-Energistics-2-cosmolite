@@ -48,6 +48,7 @@ public class NetworkStorage implements MEStorage {
     private boolean mountsInUse;
 
     private final NavigableMap<Integer, List<MEStorage>> priorityInventory;
+    private final NavigableMap<Integer, List<MEStorage>> priorityStickyInventory;
     private final List<MEStorage> secondPassInventories = new ArrayList<>();
 
     // Queued mount/unmount operations that occurred while an insert/extract was ongoing
@@ -57,6 +58,7 @@ public class NetworkStorage implements MEStorage {
 
     public NetworkStorage() {
         this.priorityInventory = new TreeMap<>(PRIORITY_SORTER);
+        this.priorityStickyInventory = new TreeMap<>(PRIORITY_SORTER);
     }
 
     public void mount(int priority, MEStorage inventory) {
@@ -66,8 +68,13 @@ public class NetworkStorage implements MEStorage {
             }
             queuedOperations.add(new MountOperation(priority, inventory));
         } else {
-            this.priorityInventory.computeIfAbsent(priority, k -> new ArrayList<>())
-                    .add(inventory);
+            if (!inventory.isSticky(null)) {
+                this.priorityInventory.computeIfAbsent(priority, k -> new ArrayList<>())
+                        .add(inventory);
+            } else {
+                this.priorityStickyInventory.computeIfAbsent(priority, k -> new ArrayList<>())
+                        .add(inventory);
+            }
         }
     }
 
@@ -101,15 +108,13 @@ public class NetworkStorage implements MEStorage {
         mountsInUse = true;
         try {
             // first, we need to check if any inventory has this key marked as sticky
-            for (var invList : this.priorityInventory.values()) {
+            for (var invList : this.priorityStickyInventory.values()) {
                 for (var inv : invList) {
                     if (inv.isSticky(what)) {
                         hasSticky = true;
-                        break;
+                        remaining -= inv.insert(what, remaining, type, src);
                     }
                 }
-                if (hasSticky)
-                    break;
             }
 
             for (var invList : this.priorityInventory.values()) {

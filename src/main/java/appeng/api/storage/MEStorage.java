@@ -34,6 +34,7 @@ import appeng.api.config.Actionable;
 import appeng.api.networking.security.IActionSource;
 import appeng.api.stacks.AEKey;
 import appeng.api.stacks.KeyCounter;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * AE's Equivalent to IInventory, used to reading contents, and manipulating contents of ME Inventories.
@@ -101,11 +102,13 @@ public interface MEStorage {
      * <p/>
      * If for example a storage bus has a sticky card with a filter for stone, then on that network it should be the
      * only place where stone can be stored.
+     * <p/>
+     * @apiNote Pass a null value to check if the inventory is sticky at all.
      *
      * @return Whether the specified stack is sticky for this inventory.
      * @param what what to check.
      */
-    default boolean isSticky(AEKey what) {
+    default boolean isSticky(@Nullable AEKey what) {
         return false;
     }
 

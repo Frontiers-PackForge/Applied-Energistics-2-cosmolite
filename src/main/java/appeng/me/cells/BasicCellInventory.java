@@ -467,6 +467,6 @@ public class BasicCellInventory implements StorageCell {
     @Override
     public boolean isSticky(AEKey what) {
         return getUpgradesInventory().isInstalled(AEItems.STICKY_CARD)
-                && partitionList.matchesFilter(what, this.partitionListMode);
+                && (what == null || partitionList.matchesFilter(what, this.partitionListMode));
     }
 }

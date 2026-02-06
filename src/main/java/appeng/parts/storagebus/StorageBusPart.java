@@ -480,7 +480,7 @@ public class StorageBusPart extends UpgradeablePart
         @Override
         public boolean isSticky(AEKey what) {
             return isUpgradedWith(AEItems.STICKY_CARD)
-                    && this.getPartitionList().matchesFilter(what, this.getWhitelist());
+                    && (what == null || this.getPartitionList().matchesFilter(what, this.getWhitelist()));
         }
     }
 
