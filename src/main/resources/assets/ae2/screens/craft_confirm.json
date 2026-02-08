@@ -5,6 +5,29 @@
     "texture": "guis/craftingreport.png",
     "srcRect": [0, 0, 238, 206]
   },
+  "terminalStyle": {
+    "slotsPerRow": 3,
+    "header": {
+      "texture": "guis/craftingreport.png",
+      "srcRect": [0, 0, 238, 19]
+    },
+    "firstRow": {
+      "texture": "guis/craftingreport.png",
+      "srcRect": [0, 19, 238, 23]
+    },
+    "row": {
+      "texture": "guis/craftingreport.png",
+      "srcRect": [0, 42, 238, 23]
+    },
+    "lastRow": {
+      "texture": "guis/craftingreport.png",
+      "srcRect": [0, 65, 238, 23]
+    },
+    "bottom": {
+      "texture": "guis/craftingreport.png",
+      "srcRect": [0, 134, 238, 72]
+    }
+  },
   "text": {
     "dialog_title": {
       "position": {
