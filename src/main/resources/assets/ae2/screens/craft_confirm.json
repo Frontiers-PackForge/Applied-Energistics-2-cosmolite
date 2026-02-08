@@ -21,11 +21,11 @@
     },
     "lastRow": {
       "texture": "guis/craftingreport.png",
-      "srcRect": [0, 65, 238, 23]
+      "srcRect": [0, 65, 238, 22]
     },
     "bottom": {
       "texture": "guis/craftingreport.png",
-      "srcRect": [0, 134, 238, 72]
+      "srcRect": [0, 133, 238, 73]
     }
   },
   "text": {
@@ -38,7 +38,7 @@
     "cpu_status": {
       "position": {
         "left": 109,
-        "top": 165
+        "bottom": 41
       },
       "align": "CENTER"
     }

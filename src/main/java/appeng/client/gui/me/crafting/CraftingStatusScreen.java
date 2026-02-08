@@ -59,7 +59,7 @@ public class CraftingStatusScreen extends CraftingCPUScreen<CraftingStatusMenu> 
             var listHeight = imageHeight - 8;
             cpuList.setVisibleRows(visibleRows);
             cpuList.setSize(cpuList.getBounds().getWidth(), listHeight);
-            scrollbar.setHeight(visibleRows * terminalStyle.getRow().getSrcHeight() - 2);
+            scrollbar.setHeight(visibleRows * terminalStyle.getRow().getSrcHeight() - 1);
         }
     }
 

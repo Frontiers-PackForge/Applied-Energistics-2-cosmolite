@@ -123,7 +123,7 @@ public class CraftingCPUScreen<T extends CraftingCPUMenu> extends AEBaseScreen<T
             this.table = new CraftingStatusTableRenderer(this, 9, 19, this.rows);
 
             if (this.scrollbar != null) {
-                this.scrollbar.setHeight(this.rows * this.terminalStyle.getRow().getSrcHeight() - 2);
+                this.scrollbar.setHeight(this.rows * this.terminalStyle.getRow().getSrcHeight() - 1);
             }
         }
 
@@ -216,7 +216,7 @@ public class CraftingCPUScreen<T extends CraftingCPUMenu> extends AEBaseScreen<T
             y += terminalStyle.getRow().getSrcHeight();
         }
 
-        terminalStyle.getBottom().dest(offsetX, y).blit(guiGraphics);
+        terminalStyle.getBottom().dest(offsetX, y - 1).blit(guiGraphics);
     }
 
     @org.jetbrains.annotations.Nullable

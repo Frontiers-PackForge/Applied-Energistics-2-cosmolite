@@ -112,7 +112,7 @@ public class CraftConfirmScreen extends AEBaseScreen<CraftConfirmMenu> {
             this.table = new CraftConfirmTableRenderer(this, 9, 19, this.rows);
 
             if (this.scrollbar != null) {
-                this.scrollbar.setHeight(this.rows * this.terminalStyle.getRow().getSrcHeight() - 2);
+                this.scrollbar.setHeight(this.rows * this.terminalStyle.getRow().getSrcHeight() - 1);
             }
         }
         super.init();
@@ -218,7 +218,7 @@ public class CraftConfirmScreen extends AEBaseScreen<CraftConfirmMenu> {
             blitter.dest(offsetX, y).blit(guiGraphics);
             y += terminalStyle.getRow().getSrcHeight();
         }
-        terminalStyle.getBottom().dest(offsetX, y).blit(guiGraphics);
+        terminalStyle.getBottom().dest(offsetX, y - 1).blit(guiGraphics);
     }
 
     @org.jetbrains.annotations.Nullable

@@ -62,7 +62,7 @@ public class CPUSelectionList implements ICompositeWidget {
         this.header = background.copy().src(0, 0, width, 19);
         this.firstRow = background.copy().src(0, 19, width, 23);
         this.row = background.copy().src(0, 42, width, 23);
-        this.lastRow = background.copy().src(0, 65, width, 23);
+        this.lastRow = background.copy().src(0, 65, width, 22);
         this.bottom = background.copy().src(0, 156, width, 8);
     }
 
