@@ -21,7 +21,6 @@ package appeng.init;
 import java.util.HashMap;
 import java.util.Map;
 
-import appeng.menu.implementations.ConfigurationTerminalMenu;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -29,6 +28,7 @@ import net.minecraftforge.registries.IForgeRegistry;
 import appeng.menu.implementations.CellWorkbenchMenu;
 import appeng.menu.implementations.ChestMenu;
 import appeng.menu.implementations.CondenserMenu;
+import appeng.menu.implementations.ConfigurationTerminalMenu;
 import appeng.menu.implementations.DriveMenu;
 import appeng.menu.implementations.EnergyLevelEmitterMenu;
 import appeng.menu.implementations.FormationPlaneMenu;

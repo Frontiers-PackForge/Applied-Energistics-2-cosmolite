@@ -69,8 +69,8 @@ public class ConfigurationTerminalPacket extends BasePacket {
     }
 
     private ConfigurationTerminalPacket(boolean fullUpdate, long hostId, int configSize, long sortBy,
-                                        ConfigFilterGroup group, Int2ObjectMap<GenericStack> slots, int capacityCards, boolean isInterface,
-                                        int storageSize, Int2ObjectMap<GenericStack> storageSlots) {
+            ConfigFilterGroup group, Int2ObjectMap<GenericStack> slots, int capacityCards, boolean isInterface,
+            int storageSize, Int2ObjectMap<GenericStack> storageSlots) {
         this.fullUpdate = fullUpdate;
         this.hostId = hostId;
         this.configSize = configSize;
@@ -109,8 +109,8 @@ public class ConfigurationTerminalPacket extends BasePacket {
     }
 
     public static ConfigurationTerminalPacket fullUpdate(long hostId, int configSize, long sortBy,
-                                                         ConfigFilterGroup group, Int2ObjectMap<GenericStack> slots, int capacityCards, boolean isInterface,
-                                                         int storageSize, Int2ObjectMap<GenericStack> storageSlots) {
+            ConfigFilterGroup group, Int2ObjectMap<GenericStack> slots, int capacityCards, boolean isInterface,
+            int storageSize, Int2ObjectMap<GenericStack> storageSlots) {
         return new ConfigurationTerminalPacket(true, hostId, configSize, sortBy, group, slots, capacityCards,
                 isInterface, storageSize, storageSlots);
     }
@@ -140,7 +140,8 @@ public class ConfigurationTerminalPacket extends BasePacket {
     public void clientPacketData(Player player) {
         if (Minecraft.getInstance().screen instanceof ConfigTerminalScreen<?> screen) {
             if (fullUpdate) {
-                screen.postFullUpdate(hostId, sortBy, group, configSize, slots, capacityCards, isInterface, getStorageSize(), getStorageSlots());
+                screen.postFullUpdate(hostId, sortBy, group, configSize, slots, capacityCards, isInterface,
+                        getStorageSize(), getStorageSlots());
             } else {
                 screen.postIncrementalUpdate(hostId, slots);
             }

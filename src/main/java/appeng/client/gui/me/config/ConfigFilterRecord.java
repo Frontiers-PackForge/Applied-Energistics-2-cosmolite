@@ -19,15 +19,17 @@ public class ConfigFilterRecord implements Comparable<ConfigFilterRecord> {
     private final ClientSyncableConfigInv storageInv;
 
     public ConfigFilterRecord(long serverId, int configSize, long order, ConfigFilterGroup group,
-                              int capacityCards, boolean isInterface, int storageSize) {
+            int capacityCards, boolean isInterface, int storageSize) {
         this.serverId = serverId;
         this.group = group;
         this.searchName = group.name().getString().toLowerCase();
         this.order = order;
         this.capacityCards = capacityCards;
         this.isInterface = isInterface;
-        this.configInv = new ClientSyncableConfigInv(configSize, isInterface ? GenericStackInv.Mode.CONFIG_STACKS : GenericStackInv.Mode.CONFIG_TYPES);
-        this.storageInv = storageSize > 0 ? new ClientSyncableConfigInv(storageSize, GenericStackInv.Mode.STORAGE) : null;
+        this.configInv = new ClientSyncableConfigInv(configSize,
+                isInterface ? GenericStackInv.Mode.CONFIG_STACKS : GenericStackInv.Mode.CONFIG_TYPES);
+        this.storageInv = storageSize > 0 ? new ClientSyncableConfigInv(storageSize, GenericStackInv.Mode.STORAGE)
+                : null;
     }
 
     public ConfigFilterGroup getGroup() {

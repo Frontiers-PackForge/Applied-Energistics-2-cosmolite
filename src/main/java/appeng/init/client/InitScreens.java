@@ -21,8 +21,6 @@ package appeng.init.client;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
-import appeng.client.gui.me.config.ConfigTerminalScreen;
-import appeng.menu.implementations.ConfigurationTerminalMenu;
 import com.google.common.annotations.VisibleForTesting;
 
 import net.minecraft.client.gui.screens.MenuScreens;
@@ -57,6 +55,7 @@ import appeng.client.gui.implementations.StorageLevelEmitterScreen;
 import appeng.client.gui.implementations.VibrationChamberScreen;
 import appeng.client.gui.implementations.WirelessAccessPointScreen;
 import appeng.client.gui.me.common.MEStorageScreen;
+import appeng.client.gui.me.config.ConfigTerminalScreen;
 import appeng.client.gui.me.crafting.CraftAmountScreen;
 import appeng.client.gui.me.crafting.CraftConfirmScreen;
 import appeng.client.gui.me.crafting.CraftingCPUScreen;
@@ -74,6 +73,7 @@ import appeng.menu.AEBaseMenu;
 import appeng.menu.implementations.CellWorkbenchMenu;
 import appeng.menu.implementations.ChestMenu;
 import appeng.menu.implementations.CondenserMenu;
+import appeng.menu.implementations.ConfigurationTerminalMenu;
 import appeng.menu.implementations.DriveMenu;
 import appeng.menu.implementations.EnergyLevelEmitterMenu;
 import appeng.menu.implementations.FormationPlaneMenu;
@@ -106,7 +106,6 @@ import appeng.menu.me.items.PatternEncodingTermMenu;
 import appeng.menu.me.items.WirelessCraftingTermMenu;
 import appeng.menu.me.networktool.NetworkStatusMenu;
 import appeng.menu.me.networktool.NetworkToolMenu;
-import org.checkerframework.checker.units.qual.C;
 
 /**
  * The server sends the client a menu identifier, which the client then maps onto a screen using {@link MenuScreens}.

@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-import appeng.parts.reporting.ConfigurationTerminalPart;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 
@@ -63,6 +62,7 @@ import appeng.parts.p2p.ItemP2PTunnelPart;
 import appeng.parts.p2p.LightP2PTunnelPart;
 import appeng.parts.p2p.MEP2PTunnelPart;
 import appeng.parts.p2p.RedstoneP2PTunnelPart;
+import appeng.parts.reporting.ConfigurationTerminalPart;
 import appeng.parts.reporting.ConversionMonitorPart;
 import appeng.parts.reporting.CraftingTerminalPart;
 import appeng.parts.reporting.DarkPanelPart;

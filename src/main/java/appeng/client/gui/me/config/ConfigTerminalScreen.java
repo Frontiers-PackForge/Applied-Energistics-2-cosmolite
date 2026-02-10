@@ -8,12 +8,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
-import net.minecraft.core.registries.BuiltInRegistries;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -87,7 +87,8 @@ public class ConfigTerminalScreen<C extends ConfigurationTerminalMenu> extends A
 
     @Override
     public void init() {
-        this.visibleRows = Math.max(1, (this.height - GUI_HEADER_HEIGHT - GUI_FOOTER_HEIGHT - GUI_TOP_AND_BOTTOM_PADDING) / ROW_HEIGHT);
+        this.visibleRows = Math.max(1,
+                (this.height - GUI_HEADER_HEIGHT - GUI_FOOTER_HEIGHT - GUI_TOP_AND_BOTTOM_PADDING) / ROW_HEIGHT);
         this.imageHeight = GUI_HEADER_HEIGHT + GUI_FOOTER_HEIGHT + this.visibleRows * ROW_HEIGHT;
         super.init();
         this.setInitialFocus(this.searchField);
@@ -162,7 +163,8 @@ public class ConfigTerminalScreen<C extends ConfigurationTerminalMenu> extends A
 
     private Rect2i selectRowBackgroundBox(boolean isInvLine, boolean firstLine, boolean lastLine) {
         if (isInvLine) {
-            return firstLine ? ROW_INVENTORY_TOP_BBOX : (lastLine ? ROW_INVENTORY_BOTTOM_BBOX : ROW_INVENTORY_MIDDLE_BBOX);
+            return firstLine ? ROW_INVENTORY_TOP_BBOX
+                    : (lastLine ? ROW_INVENTORY_BOTTOM_BBOX : ROW_INVENTORY_MIDDLE_BBOX);
         }
         return firstLine ? ROW_TEXT_TOP_BBOX : (lastLine ? ROW_TEXT_BOTTOM_BBOX : ROW_TEXT_MIDDLE_BBOX);
     }
@@ -202,7 +204,8 @@ public class ConfigTerminalScreen<C extends ConfigurationTerminalMenu> extends A
                     var row = rows.get(rowIndex);
                     if (row instanceof HeaderRow) {
                         int relX = x - leftPos;
-                        if (relX >= HIGHLIGHT_BUTTON_X_OFFSET && relX < HIGHLIGHT_BUTTON_X_OFFSET + HIGHLIGHT_BUTTON_SIZE) {
+                        if (relX >= HIGHLIGHT_BUTTON_X_OFFSET
+                                && relX < HIGHLIGHT_BUTTON_X_OFFSET + HIGHLIGHT_BUTTON_SIZE) {
                             guiGraphics.renderTooltip(font,
                                     GuiText.ConfigurationTerminalHighlight.text(), x, y);
                             return;
@@ -216,14 +219,16 @@ public class ConfigTerminalScreen<C extends ConfigurationTerminalMenu> extends A
 
     @Override
     protected void slotClicked(Slot slot, int slotIdx, int mouseButton, ClickType clickType) {
-        if (slot instanceof ConfigSlot configSlot && (clickType == ClickType.PICKUP || clickType == ClickType.QUICK_MOVE)) {
+        if (slot instanceof ConfigSlot configSlot
+                && (clickType == ClickType.PICKUP || clickType == ClickType.QUICK_MOVE)) {
             var carried = menu.getCarried();
             if (carried.isEmpty()) {
                 menu.setConfigFilterFromClient(configSlot.getServerId(), configSlot.getConfigSlotIndex(), null, 0);
             } else {
                 String itemId = BuiltInRegistries.ITEM.getKey(carried.getItem()).toString();
                 int count = clickType == ClickType.QUICK_MOVE ? carried.getCount() : 1;
-                menu.setConfigFilterFromClient(configSlot.getServerId(), configSlot.getConfigSlotIndex(), itemId, count);
+                menu.setConfigFilterFromClient(configSlot.getServerId(), configSlot.getConfigSlotIndex(), itemId,
+                        count);
             }
             return;
         }
@@ -237,8 +242,8 @@ public class ConfigTerminalScreen<C extends ConfigurationTerminalMenu> extends A
     }
 
     public void postFullUpdate(long hostId, long sortBy, ConfigFilterGroup group, int configSize,
-                               Int2ObjectMap<GenericStack> slots, int capacityCards, boolean isInterface,
-                               int storageSize, Int2ObjectMap<GenericStack> storageSlots) {
+            Int2ObjectMap<GenericStack> slots, int capacityCards, boolean isInterface,
+            int storageSize, Int2ObjectMap<GenericStack> storageSlots) {
         var record = byId.get(hostId);
         if (record == null) {
             record = new ConfigFilterRecord(hostId, configSize, sortBy, group, capacityCards, isInterface, storageSize);
@@ -317,13 +322,18 @@ public class ConfigTerminalScreen<C extends ConfigurationTerminalMenu> extends A
     }
 
     private void blit(GuiGraphics guiGraphics, int offsetX, int offsetY, Rect2i srcRect) {
-        ResourceLocation texture = AppEng.makeId("textures/guis/patternaccessterminal.png"); //TODO: Make actual texture
-        guiGraphics.blit(texture, offsetX, offsetY, srcRect.getX(), srcRect.getY(), srcRect.getWidth(), srcRect.getHeight());
+        ResourceLocation texture = AppEng.makeId("textures/guis/patternaccessterminal.png"); // TODO: Make actual
+                                                                                             // texture
+        guiGraphics.blit(texture, offsetX, offsetY, srcRect.getX(), srcRect.getY(), srcRect.getWidth(),
+                srcRect.getHeight());
     }
 
-    sealed interface Row {}
+    sealed interface Row {
+    }
 
-    record HeaderRow(ConfigFilterRecord record) implements Row {}
+    record HeaderRow(ConfigFilterRecord record) implements Row {
+    }
 
-    record SlotsRow(ConfigFilterRecord record, int offset, int slots) implements Row {}
+    record SlotsRow(ConfigFilterRecord record, int offset, int slots) implements Row {
+    }
 }

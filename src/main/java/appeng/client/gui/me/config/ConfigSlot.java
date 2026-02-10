@@ -3,8 +3,8 @@ package appeng.client.gui.me.config;
 import appeng.menu.slot.FakeSlot;
 
 /**
- * Slot used in the configuration terminal to interact with a filter host's config inventory.
- * Interactions are sent to the server via InventoryActionPacket with config slot index and host id.
+ * Slot used in the configuration terminal to interact with a filter host's config inventory. Interactions are sent to
+ * the server via InventoryActionPacket with config slot index and host id.
  */
 public class ConfigSlot extends FakeSlot {
 

@@ -7,23 +7,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import appeng.api.stacks.AEItemKey;
-import appeng.blockentity.misc.InterfaceBlockEntity;
-import appeng.client.render.BlockHighlightHandler;
-import appeng.core.definitions.AEItems;
-import appeng.core.sync.packets.BlockHighlightPacket;
-import appeng.helpers.InterfaceLogicHost;
-import appeng.parts.automation.IOBusPart;
-import appeng.parts.automation.UpgradeablePart;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.Nullable;
 
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -35,26 +27,34 @@ import appeng.api.networking.IGrid;
 import appeng.api.networking.IGridNode;
 import appeng.api.networking.security.IActionHost;
 import appeng.api.parts.IPart;
+import appeng.api.stacks.AEItemKey;
 import appeng.api.stacks.GenericStack;
+import appeng.api.util.DimensionalBlockPos;
+import appeng.blockentity.misc.InterfaceBlockEntity;
+import appeng.client.render.BlockHighlightHandler;
+import appeng.core.definitions.AEItems;
+import appeng.core.sync.packets.BlockHighlightPacket;
 import appeng.core.sync.packets.ClearConfigurationTerminalPacket;
 import appeng.core.sync.packets.ConfigurationTerminalPacket;
+import appeng.helpers.InterfaceLogicHost;
+import appeng.helpers.externalstorage.GenericStackInv;
 import appeng.menu.AEBaseMenu;
+import appeng.parts.AEBasePart;
 import appeng.parts.automation.ExportBusPart;
 import appeng.parts.automation.FormationPlanePart;
+import appeng.parts.automation.IOBusPart;
 import appeng.parts.automation.ImportBusPart;
 import appeng.parts.automation.StorageLevelEmitterPart;
-import appeng.api.util.DimensionalBlockPos;
-import appeng.helpers.externalstorage.GenericStackInv;
-import appeng.parts.AEBasePart;
+import appeng.parts.automation.UpgradeablePart;
 import appeng.parts.misc.InterfacePart;
 import appeng.parts.reporting.ConfigurationTerminalPart;
 import appeng.parts.storagebus.StorageBusPart;
 import appeng.util.ConfigMenuInventory;
 
 /**
- * Menu for the Configuration Terminal. Lists all filter-configurable hosts on the grid
- * (storage busses, import/export busses, interfaces, formation planes, level emitters)
- * and allows editing their config and highlighting them in-world.
+ * Menu for the Configuration Terminal. Lists all filter-configurable hosts on the grid (storage busses, import/export
+ * busses, interfaces, formation planes, level emitters) and allows editing their config and highlighting them in-world.
+ * 
  * @see appeng.client.gui.me.config.ConfigTerminalScreen
  */
 public class ConfigurationTerminalMenu extends AEBaseMenu {
@@ -125,7 +125,8 @@ public class ConfigurationTerminalMenu extends AEBaseMenu {
             collectPartHosts(grid, currentHosts, ImportBusPart.class, IOBusPart::getConfig, false);
             collectPartHosts(grid, currentHosts, ExportBusPart.class, IOBusPart::getConfig, false);
             collectPartHosts(grid, currentHosts, FormationPlanePart.class, FormationPlanePart::getConfig, false);
-            collectPartHosts(grid, currentHosts, StorageLevelEmitterPart.class, StorageLevelEmitterPart::getConfig, false);
+            collectPartHosts(grid, currentHosts, StorageLevelEmitterPart.class, StorageLevelEmitterPart::getConfig,
+                    false);
             collectPartHosts(grid, currentHosts, InterfacePart.class, InterfaceLogicHost::getConfig, true);
             collectBlockInterfaceHosts(grid, currentHosts);
         }
@@ -140,16 +141,19 @@ public class ConfigurationTerminalMenu extends AEBaseMenu {
     }
 
     private record HostEntry(Object machine, GenericStackInv config, DimensionalBlockPos location,
-                             ConfigFilterGroup group, int capacityCards, boolean isInterface, GenericStackInv storage) {}
+            ConfigFilterGroup group, int capacityCards, boolean isInterface, GenericStackInv storage) {
+    }
 
     private <T> void collectPartHosts(IGrid grid, List<HostEntry> out, Class<T> clazz,
-                                      Function<T, GenericStackInv> configGetter, boolean isInterface) {
+            Function<T, GenericStackInv> configGetter, boolean isInterface) {
         for (T machine : grid.getActiveMachines(clazz)) {
             if (machine instanceof IPart part && part instanceof AEBasePart basePart) {
                 GenericStackInv config = configGetter.apply(machine);
                 DimensionalBlockPos location = basePart.getHost().getLocation();
                 int capacity = getCapacityCards(machine);
-                GenericStackInv storage = isInterface && machine instanceof InterfaceLogicHost ih ? ih.getInterfaceLogic().getStorage() : null;
+                GenericStackInv storage = isInterface && machine instanceof InterfaceLogicHost ih
+                        ? ih.getInterfaceLogic().getStorage()
+                        : null;
                 out.add(new HostEntry(machine, config, location, groupForPart(part), capacity, isInterface, storage));
             }
         }
@@ -198,8 +202,8 @@ public class ConfigurationTerminalMenu extends AEBaseMenu {
         for (var position : positions) {
             var packet = new BlockHighlightPacket(
                     position, dimension,
-                    BlockHighlightHandler.getTime(position, this.getPlayer().getOnPos())
-            ); //TODO maybe bulk send all in a list
+                    BlockHighlightHandler.getTime(position, this.getPlayer().getOnPos())); // TODO maybe bulk send all
+                                                                                           // in a list
             sendPacketToClient(packet);
         }
     }
@@ -331,8 +335,8 @@ public class ConfigurationTerminalMenu extends AEBaseMenu {
     }
 
     /**
-     * Single-argument payload for setConfigFilter
-     * itemId null or empty = clear slot; otherwise item registry id and count.
+     * Single-argument payload for setConfigFilter itemId null or empty = clear slot; otherwise item registry id and
+     * count.
      */
     public static final class SetConfigFilterPayload {
         public long hostId;
