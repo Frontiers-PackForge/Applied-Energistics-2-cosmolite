@@ -21,6 +21,7 @@ package appeng.init;
 import java.util.HashMap;
 import java.util.Map;
 
+import appeng.menu.implementations.ConfigurationTerminalMenu;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -96,6 +97,7 @@ public final class InitMenuTypes {
                 PatternAccessTermMenu.TYPE,
                 PatternProviderMenu.TYPE,
                 PatternEncodingTermMenu.TYPE,
+                ConfigurationTerminalMenu.TYPE,
                 PatternBoxMenu.TYPE,
                 PriorityMenu.TYPE,
                 QNBMenu.TYPE,

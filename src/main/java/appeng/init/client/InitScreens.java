@@ -21,6 +21,8 @@ package appeng.init.client;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
+import appeng.client.gui.me.config.ConfigTerminalScreen;
+import appeng.menu.implementations.ConfigurationTerminalMenu;
 import com.google.common.annotations.VisibleForTesting;
 
 import net.minecraft.client.gui.screens.MenuScreens;
@@ -104,6 +106,7 @@ import appeng.menu.me.items.PatternEncodingTermMenu;
 import appeng.menu.me.items.WirelessCraftingTermMenu;
 import appeng.menu.me.networktool.NetworkStatusMenu;
 import appeng.menu.me.networktool.NetworkToolMenu;
+import org.checkerframework.checker.units.qual.C;
 
 /**
  * The server sends the client a menu identifier, which the client then maps onto a screen using {@link MenuScreens}.
@@ -184,6 +187,9 @@ public final class InitScreens {
         InitScreens.<PatternAccessTermMenu, PatternAccessTermScreen<PatternAccessTermMenu>>register(
                 PatternAccessTermMenu.TYPE, PatternAccessTermScreen::new,
                 "/screens/terminals/pattern_access_terminal.json");
+        InitScreens.<ConfigurationTerminalMenu, ConfigTerminalScreen<ConfigurationTerminalMenu>>register(
+                ConfigurationTerminalMenu.TYPE, ConfigTerminalScreen::new,
+                "/screens/terminals/configuration_terminal.json");
         // spotless:on
     }
 

@@ -22,6 +22,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import appeng.core.sync.packets.ClearConfigurationTerminalPacket;
+import appeng.core.sync.packets.ConfigurationTerminalPacket;
+import appeng.core.sync.packets.HighlightPartRequestPacket;
 import net.minecraft.network.FriendlyByteBuf;
 
 import appeng.core.sync.packets.AssemblerAnimationPacket;
@@ -116,7 +119,11 @@ public class BasePacketHandler {
 
         HOTKEY(HotkeyPacket.class, HotkeyPacket::new),
 
-        CRAFTING_JOB_STATUS(CraftingJobStatusPacket.class, CraftingJobStatusPacket::new);
+        CRAFTING_JOB_STATUS(CraftingJobStatusPacket.class, CraftingJobStatusPacket::new),
+
+        CONFIG_TERMINAL_CLEAR(ClearConfigurationTerminalPacket.class, ClearConfigurationTerminalPacket::new),
+        CONFIG_TERMINAL_UPDATE(ConfigurationTerminalPacket.class, ConfigurationTerminalPacket::new),
+        HIGHLIGHT_PART_REQUEST(HighlightPartRequestPacket.class, HighlightPartRequestPacket::new);
 
         private final Function<FriendlyByteBuf, BasePacket> factory;
 
