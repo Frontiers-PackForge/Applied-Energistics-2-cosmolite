@@ -101,6 +101,15 @@ public interface PatternProviderTarget {
 
     boolean containsPatternInput(Set<AEKey> patternInputs);
 
+    /**
+     * Overloaded method for SMART blocking mode that checks current pattern inputs.
+     * @param allPatternInputs inputs from all patterns (used by DEFAULT and ALL modes)
+     * @param currentPatternInputs inputs from only the current pattern being pushed (used by SMART mode)
+     */
+    default boolean containsPatternInput(Set<AEKey> allPatternInputs, Set<AEKey> currentPatternInputs) {
+        return containsPatternInput(allPatternInputs);
+    }
+
     default boolean containsPatternInput(Set<AEKey> patternInputs, BlockingMode blockingMode) {
         setBlockingMode(blockingMode);
         return containsPatternInput(patternInputs);

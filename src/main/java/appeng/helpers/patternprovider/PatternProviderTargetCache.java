@@ -79,6 +79,11 @@ class PatternProviderTargetCache {
 
             @Override
             public boolean containsPatternInput(Set<AEKey> patternInputs) {
+                return containsPatternInput(patternInputs, patternInputs);
+            }
+
+            @Override
+            public boolean containsPatternInput(Set<AEKey> allPatternInputs, Set<AEKey> currentPatternInputs) {
                 var mode = blockingMode == null
                         ? (configManager == null ? BlockingMode.DEFAULT
                                 : configManager.getSetting(Settings.BLOCKING_MODE_EXTRA))
@@ -95,15 +100,16 @@ class PatternProviderTargetCache {
                         for (var stack : storage.getAvailableStacks()) {
                             if (stack.getKey().getId().equals(programmedCircuit))
                                 continue;
-                            if (patternInputs.contains(stack.getKey().dropSecondary()))
+                            if (allPatternInputs.contains(stack.getKey().dropSecondary()))
                                 return true;
                         }
                     }
                     case SMART -> {
+                        // SMART mode: block if machine contains items NOT in current pattern's inputs
                         for (var stack : storage.getAvailableStacks()) {
                             if (stack.getKey().getId().equals(programmedCircuit))
                                 continue;
-                            if (!patternInputs.contains(stack.getKey().dropSecondary()))
+                            if (!currentPatternInputs.contains(stack.getKey().dropSecondary()))
                                 return true;
                         }
                     }
