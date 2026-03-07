@@ -368,10 +368,11 @@ public class PatternProviderLogic implements InternalInventoryHost, ICraftingPro
         // Build current pattern inputs for SMART blocking mode
         Set<AEKey> currentPatternInputs = new HashSet<>();
         for (var iinput : patternDetails.getInputs()) {
-            for (var inputCandidate : iinput.getPossibleInputs()) {
-                currentPatternInputs.add(inputCandidate.what().dropSecondary());
-            }
+            currentPatternInputs.add(iinput.getPossibleInputs()[0].what().dropSecondary());
         }
+
+        // Choose the appropriate input set based on blocking mode
+        var blockingInputs = getBlockingMode() == BlockingMode.SMART ? currentPatternInputs : this.patternInputs;
 
         // Push to other kinds of blocks
         for (int i = 0; i < possibleTargets.size(); ++i) {
@@ -379,7 +380,7 @@ public class PatternProviderLogic implements InternalInventoryHost, ICraftingPro
             var direction = target.direction();
             var adapter = target.target();
 
-            if (this.isBlocking() && adapter.containsPatternInput(this.patternInputs, currentPatternInputs)) {
+            if (this.isBlocking() && adapter.containsPatternInput(blockingInputs)) {
                 continue;
             }
 

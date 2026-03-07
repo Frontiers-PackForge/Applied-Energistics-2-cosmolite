@@ -79,11 +79,6 @@ class PatternProviderTargetCache {
 
             @Override
             public boolean containsPatternInput(Set<AEKey> patternInputs) {
-                return containsPatternInput(patternInputs, patternInputs);
-            }
-
-            @Override
-            public boolean containsPatternInput(Set<AEKey> allPatternInputs, Set<AEKey> currentPatternInputs) {
                 var mode = blockingMode == null
                         ? (configManager == null ? BlockingMode.DEFAULT
                                 : configManager.getSetting(Settings.BLOCKING_MODE_EXTRA))
@@ -100,7 +95,7 @@ class PatternProviderTargetCache {
                         for (var stack : storage.getAvailableStacks()) {
                             if (stack.getKey().getId().equals(programmedCircuit))
                                 continue;
-                            if (allPatternInputs.contains(stack.getKey().dropSecondary()))
+                            if (patternInputs.contains(stack.getKey().dropSecondary()))
                                 return true;
                         }
                     }
@@ -109,7 +104,7 @@ class PatternProviderTargetCache {
                         for (var stack : storage.getAvailableStacks()) {
                             if (stack.getKey().getId().equals(programmedCircuit))
                                 continue;
-                            if (!currentPatternInputs.contains(stack.getKey().dropSecondary()))
+                            if (!patternInputs.contains(stack.getKey().dropSecondary()))
                                 return true;
                         }
                     }
