@@ -272,7 +272,22 @@ public class MEStorageMenu extends AEBaseMenu
             }
 
             var craftables = getCraftablesFromGrid();
-            var availableStacks = storage == null ? new KeyCounter() : storage.getAvailableStacks();
+
+            // Use the cached inventory for grid-connected terminals.
+            // Wireless terminals have networkNode == null but can still resolve a grid via IActionHost.
+            IGridNode gridNode = networkNode;
+            if (gridNode == null && host instanceof IActionHost actionHost) {
+                gridNode = actionHost.getActionableNode();
+            }
+
+            KeyCounter availableStacks;
+            if (gridNode != null && gridNode.getGrid() != null) {
+                KeyCounter cachedInventory = gridNode.getGrid().getStorageService().getCachedInventory();
+                availableStacks = new KeyCounter();
+                availableStacks.addAll(cachedInventory);
+            } else {
+                availableStacks = storage == null ? new KeyCounter() : storage.getAvailableStacks();
+            }
 
             // This is currently not supported/backed by any network service
             var requestables = new KeyCounter();
