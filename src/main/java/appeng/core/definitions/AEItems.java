@@ -61,6 +61,7 @@ import appeng.items.storage.CreativeCellItem;
 import appeng.items.storage.SpatialStorageCellItem;
 import appeng.items.storage.StorageTier;
 import appeng.items.storage.ViewCellItem;
+import appeng.items.tools.ColorizerItem;
 import appeng.items.tools.GuideItem;
 import appeng.items.tools.MemoryCardItem;
 import appeng.items.tools.NetworkToolItem;
@@ -187,6 +188,8 @@ public final class AEItems {
     public static final ColoredItemDefinition<PaintBallItem> COLORED_LUMEN_PAINT_BALL = createColoredItems("Lumen Paint Ball", AEItemIds.COLORED_LUMEN_PAINT_BALL, (p, color) -> new PaintBallItem(p, color, true));
 
     public static final ItemDefinition<MeteoriteCompassItem> METEORITE_COMPASS = item("Meteorite Compass", AEItemIds.METEORITE_COMPASS, MeteoriteCompassItem::new);
+
+    public static final ItemDefinition<ColorizerItem> COLORIZER = item("Colorizer", AEItemIds.COLORIZER, ColorizerItem::new);
 
     ///
     /// MATERIALS

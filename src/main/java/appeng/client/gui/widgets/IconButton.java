@@ -101,13 +101,13 @@ public abstract class IconButton extends Button implements ITooltip {
                 if (!disableBackground) {
                     Icon.TOOLBAR_BUTTON_BACKGROUND.getBlitter().dest(0, 0).blit(guiGraphics);
                 }
-                blitter.dest(0, 0).blit(guiGraphics);
+                blitter.dest(0, 0).blit(guiGraphics, false);
                 pose.popPose();
             } else {
                 if (!disableBackground) {
                     Icon.TOOLBAR_BUTTON_BACKGROUND.getBlitter().dest(getX(), getY()).blit(guiGraphics);
                 }
-                icon.getBlitter().dest(getX(), getY()).blit(guiGraphics);
+                icon.getBlitter().dest(getX(), getY()).blit(guiGraphics, false);
             }
             RenderSystem.enableDepthTest();
 

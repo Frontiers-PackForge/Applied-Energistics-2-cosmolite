@@ -40,6 +40,7 @@ import net.minecraft.util.Mth;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import appeng.client.gui.ScreenColor;
 import appeng.core.AppEng;
 
 /**
@@ -256,7 +257,24 @@ public final class Blitter {
         return color(r, g, b);
     }
 
+    /**
+     * As most textures should be colorized, this is the default blit method.
+     */
     public void blit(GuiGraphics guiGraphics) {
+        blit(guiGraphics, true);
+    }
+
+    /**
+     * Alternate method signature as some textures should not be colorized. (Icons, items, fluids, etc.)
+     */
+    public void blit(GuiGraphics guiGraphics, boolean colorize) {
+        if (colorize) {
+            float r = ScreenColor.getRed();
+            float g = ScreenColor.getGreen();
+            float b = ScreenColor.getBlue();
+            this.color(r, g, b);
+        }
+
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
         RenderSystem.setShaderTexture(0, this.texture);
 

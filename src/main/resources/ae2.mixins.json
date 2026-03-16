@@ -6,26 +6,27 @@
   "compatibilityLevel": "JAVA_11",
   "plugin": "appeng.mixins.ConfigPlugin",
   "mixins": [
-    "chunkloading.ChunkMapMixin",
-    "spatial.MinecraftServerMixin",
     "AnvilMenuMixin",
     "EarlyStartupMixin",
     "EnchantmentHelperMixin",
     "ItemEntityMixin",
-    "tests.StructureUtilsMixin",
     "StructureTemplateMixin",
-    "UnbreakingMixin"
+    "UnbreakingMixin",
+    "chunkloading.ChunkMapMixin",
+    "spatial.MinecraftServerMixin",
+    "tests.StructureUtilsMixin"
   ],
   "client": [
+    "AbstractButtonMixin",
     "AbstractContainerScreenMixin",
     "GuiGraphicsMixin",
-    "WrappedGenericStackTooltipModIdMixin",
-    "ResizableSlotHighlightMixin",
-    "PickColorMixin",
-    "TextureAtlasMixin",
-    "PonderWorldMixin",
     "ModelBakeryMixin",
-    "VariantDeserializerMixin"
+    "PickColorMixin",
+    "PonderWorldMixin",
+    "ResizableSlotHighlightMixin",
+    "TextureAtlasMixin",
+    "VariantDeserializerMixin",
+    "WrappedGenericStackTooltipModIdMixin"
   ],
   "server": [],
   "injectors": {

@@ -59,6 +59,7 @@ import appeng.api.crafting.PatternDetailsHelper;
 import appeng.api.implementations.blockentities.PatternContainerGroup;
 import appeng.api.stacks.AEItemKey;
 import appeng.client.gui.AEBaseScreen;
+import appeng.client.gui.ScreenColor;
 import appeng.client.gui.style.PaletteColor;
 import appeng.client.gui.style.ScreenStyle;
 import appeng.client.gui.widgets.AETextField;
@@ -615,6 +616,11 @@ public class PatternAccessTermScreen<C extends PatternAccessTermMenu> extends AE
      */
     private void blit(GuiGraphics guiGraphics, int offsetX, int offsetY, Rect2i srcRect) {
         var texture = AppEng.makeId("textures/guis/patternaccessterminal.png");
+        // Duplicate coloring logic since we don't use Blitter here
+        float r = ScreenColor.getRed();
+        float g = ScreenColor.getGreen();
+        float b = ScreenColor.getBlue();
+        guiGraphics.setColor(r, g, b, 1f);
         guiGraphics.blit(texture, offsetX, offsetY, srcRect.getX(), srcRect.getY(), srcRect.getWidth(),
                 srcRect.getHeight());
     }

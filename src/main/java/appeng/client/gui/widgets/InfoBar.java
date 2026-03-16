@@ -102,7 +102,7 @@ public class InfoBar {
             poseStack.scale(scale, scale, 1);
             icon.getBlitter()
                     .dest(0, 0)
-                    .blit(guiGraphics);
+                    .blit(guiGraphics, false);
             poseStack.popPose();
         }
     }

@@ -35,6 +35,10 @@ public final class BackgroundGenerator {
     }
 
     public static void draw(int width, int height, GuiGraphics guiGraphics, int x, int y) {
+        draw(width, height, guiGraphics, x, y, 1f, 1f, 1f);
+    }
+
+    public static void draw(int width, int height, GuiGraphics guiGraphics, int x, int y, float r, float g, float b) {
         if (width < 2 * BORDER || height < 2 * BORDER) {
             return;
         }
@@ -43,10 +47,10 @@ public final class BackgroundGenerator {
         var bottom = y + height;
 
         // Corners first
-        TOP_LEFT.dest(x, y).blit(guiGraphics);
-        TOP_RIGHT.dest(right - BORDER, y).blit(guiGraphics);
-        BOTTOM_LEFT.dest(x, bottom - BORDER).blit(guiGraphics);
-        BOTTOM_RIGHT.dest(right - BORDER, bottom - BORDER).blit(guiGraphics);
+        TOP_LEFT.copy().color(r, g, b).dest(x, y).blit(guiGraphics);
+        TOP_RIGHT.copy().color(r, g, b).dest(right - BORDER, y).blit(guiGraphics);
+        BOTTOM_LEFT.copy().color(r, g, b).dest(x, bottom - BORDER).blit(guiGraphics);
+        BOTTOM_RIGHT.copy().color(r, g, b).dest(right - BORDER, bottom - BORDER).blit(guiGraphics);
 
         var innerWidth = width - 2 * BORDER;
         var innerHeight = height - 2 * BORDER;
@@ -56,10 +60,12 @@ public final class BackgroundGenerator {
             var tileWidth = Math.min(TILED_SIZE, innerWidth - cx);
             TOP_MIDDLE.copy()
                     .srcWidth(tileWidth)
+                    .color(r, g, b)
                     .dest(x + BORDER + cx, y)
                     .blit(guiGraphics);
             BOTTOM_MIDDLE.copy()
                     .srcWidth(tileWidth)
+
                     .dest(x + BORDER + cx, y + height - BORDER)
                     .blit(guiGraphics);
 
@@ -69,6 +75,7 @@ public final class BackgroundGenerator {
                 MIDDLE.copy()
                         .srcWidth(tileWidth)
                         .srcHeight(tileHeight)
+                        .color(r, g, b)
                         .dest(x + BORDER + cx, y + BORDER + cy)
                         .blit(guiGraphics);
             }
@@ -79,10 +86,12 @@ public final class BackgroundGenerator {
             var tileHeight = Math.min(TILED_SIZE, innerHeight - cy);
             LEFT.copy()
                     .srcHeight(tileHeight)
+                    .color(r, g, b)
                     .dest(x, y + BORDER + cy)
                     .blit(guiGraphics);
             RIGHT.copy()
                     .srcHeight(tileHeight)
+                    .color(r, g, b)
                     .dest(right - BORDER, y + BORDER + cy)
                     .blit(guiGraphics);
         }
