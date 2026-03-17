@@ -90,7 +90,7 @@ public class TabButton extends Button implements ITooltip {
             var iconY = 3;
 
             if (this.icon != null) {
-                this.icon.getBlitter().dest(getX() + iconX, getY() + iconY).blit(guiGraphics);
+                this.icon.getBlitter().dest(getX() + iconX, getY() + iconY).blit(guiGraphics, false);
             }
 
             if (this.item != null) {

@@ -21,6 +21,7 @@ import appeng.client.gui.style.Blitter;
 import appeng.client.gui.style.Color;
 import appeng.client.gui.style.PaletteColor;
 import appeng.client.gui.style.ScreenStyle;
+import appeng.core.AEConfig;
 import appeng.core.definitions.AEParts;
 import appeng.core.localization.ButtonToolTips;
 import appeng.core.localization.GuiText;
@@ -209,7 +210,7 @@ public class CPUSelectionList implements ICompositeWidget {
                 Mth.clamp(scrollbar.getCurrentScroll() + visibleRows, 0, menu.getCpuList().cpus().size()));
         int index = 0;
         for (var cpu : cpus) {
-            int color = -1;
+            int color = AEConfig.instance().getScreenColor();
             if (!menu.isCpuValid(cpu)) {
                 color = 0xFFFF6666;
             } else if (cpu.serial() == menu.getSelectedCpuSerial()) {

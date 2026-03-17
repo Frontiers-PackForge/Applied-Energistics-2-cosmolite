@@ -118,7 +118,7 @@ public class InitStackRenderHandlers {
         public void drawInGui(Minecraft minecraft, GuiGraphics guiGraphics, int x, int y, AEFluidKey what) {
             FluidBlitter.create(what)
                     .dest(x, y, 16, 16)
-                    .blit(guiGraphics);
+                    .blit(guiGraphics, false);
         }
 
         @Override

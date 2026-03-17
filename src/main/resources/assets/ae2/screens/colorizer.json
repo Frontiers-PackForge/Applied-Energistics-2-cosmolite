@@ -1,0 +1,57 @@
+{
+  "$schema": "schema.json",
+  "includes": ["common/common.json", "common/player_inventory.json"],
+  "background": {
+    "texture": "guis/colorizer.png",
+    "srcRect": [0, 0, 176, 237]
+  },
+  "text": {
+    "dialog_title": {
+      "position": {
+        "left": 8,
+        "top": 7
+      },
+      "text": {
+        "translate": "gui.ae2.Colorizer"
+      }
+    }
+  },
+  "widgets": {
+    "redSlider": {
+      "left": 7,
+      "top": 20,
+      "width": 162,
+      "height": 20
+    },
+    "greenSlider": {
+      "left": 7,
+      "top": 45,
+      "width": 162,
+      "height": 20
+    },
+    "blueSlider": {
+      "left": 7,
+      "top": 70,
+      "width": 162,
+      "height": 20
+    },
+    "hexInput": {
+      "left": 7,
+      "top": 95,
+      "width": 100,
+      "height": 20
+    },
+    "confirm": {
+      "left": 112,
+      "top": 95,
+      "width": 57,
+      "height": 12
+    },
+    "preview": {
+      "left": 7,
+      "top": 110,
+      "width": 162,
+      "height": 32
+    }
+  }
+}

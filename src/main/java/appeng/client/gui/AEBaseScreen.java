@@ -756,18 +756,22 @@ public abstract class AEBaseScreen<T extends AEBaseMenu> extends AbstractContain
             float partialTicks) {
 
         var generatedBackground = style.getGeneratedBackground();
+        float r = ScreenColor.getRed();
+        float g = ScreenColor.getGreen();
+        float b = ScreenColor.getBlue();
         if (generatedBackground != null) {
             BackgroundGenerator.draw(
                     generatedBackground.getWidth(),
                     generatedBackground.getHeight(),
                     guiGraphics,
                     offsetX,
-                    offsetY);
+                    offsetY,
+                    r, g, b);
         }
 
         var background = style.getBackground();
         if (background != null) {
-            background.dest(offsetX, offsetY).blit(guiGraphics);
+            background.copy().color(r, g, b).dest(offsetX, offsetY).blit(guiGraphics);
         }
 
     }

@@ -565,6 +565,15 @@ public final class AEConfig {
         CLIENT.numberWidgetValues[index].set(value);
     }
 
+    public int getScreenColor() {
+        return CLIENT.screenColor.get();
+    }
+
+    public void setScreenColor(int color) {
+        CLIENT.screenColor.set(color);
+        save();
+    }
+
     // Setters keep visibility as low as possible.
 
     private static class ClientConfig {
@@ -582,6 +591,7 @@ public final class AEConfig {
         public final BooleanOption showPlacementPreview;
         public final BooleanOption notifyForFinishedCraftingJobs;
         public final BooleanOption fancyPatternTooltips;
+        public final IntegerOption screenColor;
 
         // Number Widget Values
         public final IntegerOption[] numberWidgetValues;
@@ -627,6 +637,8 @@ public final class AEConfig {
                     "Show toast when long-running crafting jobs finish.");
             this.fancyPatternTooltips = client.addBoolean("fancyPatternTooltips", true,
                     "Show fancy tooltips for encoded patterns.");
+            this.screenColor = client.addInt("screenColor", 0xFFFFFF,
+                    "Custom hex color code to apply to all AE2 screens.");
 
             var widgetNumbers = root.subsection("widgetNumbers",
                     "Number button values in the level emitter config panel and the craft order amount picker");

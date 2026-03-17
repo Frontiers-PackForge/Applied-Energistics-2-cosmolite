@@ -450,7 +450,7 @@ public class MEStorageScreen<C extends MEStorageMenu>
                     Blitter.texture("block/molecular_assembler_lights.png", 16, 192)
                             .src(2, 2 + frame * 16, 12, 12)
                             .dest(slot.x - 1, slot.y - 1, 18, 18)
-                            .blit(guiGraphics);
+                            .blit(guiGraphics, false);
                 }
             }
         }
