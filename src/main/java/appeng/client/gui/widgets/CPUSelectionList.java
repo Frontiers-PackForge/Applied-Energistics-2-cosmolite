@@ -26,7 +26,8 @@ import appeng.core.definitions.AEParts;
 import appeng.core.localization.ButtonToolTips;
 import appeng.core.localization.GuiText;
 import appeng.core.localization.Tooltips;
-import appeng.menu.me.crafting.CraftingStatusMenu;
+import appeng.menu.me.crafting.CraftingCpuListEntry;
+import appeng.menu.me.crafting.ICpuListMenu;
 import appeng.util.NumberUtil;
 
 public class CPUSelectionList implements ICompositeWidget {
@@ -35,7 +36,7 @@ public class CPUSelectionList implements ICompositeWidget {
 
     private final Blitter background;
     private final Blitter buttonBg;
-    private final CraftingStatusMenu menu;
+    private final ICpuListMenu menu;
     private final Color textColor;
     private final int selectedColor;
     private final Scrollbar scrollbar;
@@ -50,7 +51,7 @@ public class CPUSelectionList implements ICompositeWidget {
     // Relative to the origin of the current screen (not window)
     private Rect2i bounds = new Rect2i(0, 0, 0, 0);
 
-    public CPUSelectionList(CraftingStatusMenu menu, Scrollbar scrollbar, ScreenStyle style) {
+    public CPUSelectionList(ICpuListMenu menu, Scrollbar scrollbar, ScreenStyle style) {
         this.menu = menu;
         this.scrollbar = scrollbar;
         this.background = style.getImage("cpuList");
@@ -142,15 +143,19 @@ public class CPUSelectionList implements ICompositeWidget {
     public boolean onMouseUp(Point mousePos, int button) {
         var cpu = hitTestCpu(mousePos);
         if (cpu != null) {
-            menu.selectCpu(cpu.serial());
-            return true;
+            if (cpu.serial() == menu.getSelectedCpuSerial()) {
+                menu.selectCpu(-1);
+                return true;
+            } else if (menu.isCpuValid(cpu)) {
+                menu.selectCpu(cpu.serial());
+                return true;
+            }
         }
-
         return false;
     }
 
     @Nullable
-    private CraftingStatusMenu.CraftingCpuListEntry hitTestCpu(Point mousePos) {
+    private CraftingCpuListEntry hitTestCpu(Point mousePos) {
         var relX = mousePos.getX() - bounds.getX();
         var relY = mousePos.getY() - bounds.getY();
         relX -= 9;
@@ -164,12 +169,12 @@ public class CPUSelectionList implements ICompositeWidget {
             // Clicked right between two buttons
             return null;
         }
-        if (relY < 0 || buttonIdx >= menu.cpuList.cpus().size()) {
+        if (relY < 0 || buttonIdx >= menu.getCpuList().cpus().size()) {
             // Clicked above first or below last button
             return null;
         }
 
-        var cpus = menu.cpuList.cpus();
+        var cpus = menu.getCpuList().cpus();
         if (buttonIdx >= 0 && buttonIdx < cpus.size()) {
             return cpus.get(buttonIdx);
         }
@@ -179,7 +184,7 @@ public class CPUSelectionList implements ICompositeWidget {
 
     @Override
     public void updateBeforeRender() {
-        var hiddenRows = Math.max(0, menu.cpuList.cpus().size() - visibleRows);
+        var hiddenRows = Math.max(0, menu.getCpuList().cpus().size() - visibleRows);
         scrollbar.setRange(0, hiddenRows, Math.max(1, visibleRows / 3));
     }
 
@@ -200,13 +205,15 @@ public class CPUSelectionList implements ICompositeWidget {
         var pose = guiGraphics.pose();
 
         var font = Minecraft.getInstance().font;
-        var cpus = menu.cpuList.cpus().subList(
-                Mth.clamp(scrollbar.getCurrentScroll(), 0, menu.cpuList.cpus().size()),
-                Mth.clamp(scrollbar.getCurrentScroll() + visibleRows, 0, menu.cpuList.cpus().size()));
+        var cpus = menu.getCpuList().cpus().subList(
+                Mth.clamp(scrollbar.getCurrentScroll(), 0, menu.getCpuList().cpus().size()),
+                Mth.clamp(scrollbar.getCurrentScroll() + visibleRows, 0, menu.getCpuList().cpus().size()));
         int index = 0;
         for (var cpu : cpus) {
             int color = AEConfig.instance().getScreenColor();
-            if (cpu.serial() == menu.getSelectedCpuSerial()) {
+            if (!menu.isCpuValid(cpu)) {
+                color = 0xFFFF6666;
+            } else if (cpu.serial() == menu.getSelectedCpuSerial()) {
                 color = selectedColor;
             }
             var blitter = row;
@@ -289,7 +296,7 @@ public class CPUSelectionList implements ICompositeWidget {
         bottom.dest(bounds.getX() + this.bounds.getX(), y - 1).blit(guiGraphics);
     }
 
-    private Component getCpuName(CraftingStatusMenu.CraftingCpuListEntry cpu) {
+    private Component getCpuName(CraftingCpuListEntry cpu) {
         return cpu.name() != null ? cpu.name() : GuiText.CPUs.text().append(String.format(" #%d", cpu.serial()));
     }
 

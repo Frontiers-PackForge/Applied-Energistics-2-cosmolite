@@ -56,7 +56,7 @@ public class CraftingStatusScreen extends CraftingCPUScreen<CraftingStatusMenu> 
         var terminalStyle = getTerminalStyle();
         if (terminalStyle != null) {
             var visibleRows = getVisibleRows();
-            var listHeight = imageHeight - 8;
+            var listHeight = imageHeight - this.getTerminalStyle().getBottom().getSrcHeight();
             cpuList.setVisibleRows(visibleRows);
             cpuList.setSize(cpuList.getBounds().getWidth(), listHeight);
             scrollbar.setHeight(visibleRows * terminalStyle.getRow().getSrcHeight() - 1);
