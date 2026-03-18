@@ -131,6 +131,11 @@ public final class Blitter {
         return result;
     }
 
+    public Blitter setSrcX(int x) {
+        this.srcRect = new Rect2i(x, srcRect.getY(), srcRect.getWidth(), srcRect.getHeight());
+        return this;
+    }
+
     public int getSrcX() {
         return srcRect == null ? 0 : srcRect.getX();
     }

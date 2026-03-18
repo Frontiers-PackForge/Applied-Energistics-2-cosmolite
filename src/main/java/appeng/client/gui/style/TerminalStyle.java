@@ -131,6 +131,11 @@ public class TerminalStyle {
         return screenWidth;
     }
 
+    public int getScreenWidth(int targetSlotsPerRow) {
+        int extraSlots = Math.max(0, targetSlotsPerRow - this.slotsPerRow);
+        return getScreenWidth() + extraSlots * 18;
+    }
+
     public int getPossibleRows(int availableHeight) {
         return (availableHeight - header.getSrcHeight() - bottom.getSrcHeight()) / row.getSrcHeight();
     }

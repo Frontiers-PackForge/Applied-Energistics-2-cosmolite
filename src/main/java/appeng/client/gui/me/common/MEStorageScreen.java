@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import appeng.api.config.TerminalLayout;
 import com.mojang.blaze3d.platform.InputConstants;
 
 import org.jetbrains.annotations.Nullable;
@@ -141,6 +142,8 @@ public class MEStorageScreen<C extends MEStorageMenu>
 
         this.searchField.setResponder(this::setSearchText);
 
+        this.imageWidth = this.style.getScreenWidth(getSlotsPerRow());
+
         this.imageWidth = this.style.getScreenWidth();
         this.imageHeight = this.style.getScreenHeight(0);
 
@@ -186,6 +189,10 @@ public class MEStorageScreen<C extends MEStorageMenu>
         appeng.api.config.TerminalStyle terminalStyle = config.getTerminalStyle();
         this.addToLeftToolbar(
                 new SettingToggleButton<>(Settings.TERMINAL_STYLE, terminalStyle, this::toggleTerminalStyle));
+
+        var terminalLayout = config.getTerminalLayout();
+        this.addToLeftToolbar(
+                new SettingToggleButton<>(Settings.TERMINAL_LAYOUT, terminalLayout, this::toggleTerminalLayout));
 
         this.widgets.add("upgrades", new UpgradesPanel(
                 menu.getSlots(SlotSemantics.UPGRADE),
@@ -315,7 +322,7 @@ public class MEStorageScreen<C extends MEStorageMenu>
     }
 
     private int getSlotsPerRow() {
-        return style.getSlotsPerRow();
+        return config.getTerminalLayout().getColumns();
     }
 
     @Override
@@ -331,8 +338,9 @@ public class MEStorageScreen<C extends MEStorageMenu>
         slots.removeIf(slot -> slot instanceof RepoSlot);
 
         int repoIndex = 0;
+        int slotsPerRow = getSlotsPerRow();
         for (int row = 0; row < this.rows; row++) {
-            for (int col = 0; col < style.getSlotsPerRow(); col++) {
+            for (int col = 0; col < slotsPerRow; col++) {
                 Point pos = style.getSlotPos(row, col);
 
                 slots.add(new RepoSlot(this.repo, repoIndex++, pos.getX(), pos.getY()));
@@ -341,11 +349,56 @@ public class MEStorageScreen<C extends MEStorageMenu>
 
         super.init();
 
+        int extraWidth = Math.max(0, slotsPerRow - 9) * 18;
+        if (extraWidth > 0) {
+            // Shift search box and scrollbar
+            this.searchField.setX(this.searchField.getX() + extraWidth);
+            this.scrollbar.setPosition(new appeng.client.Point(this.scrollbar.getBounds().getX() + extraWidth,
+                    this.scrollbar.getBounds().getY()));
+
+            // Shift any other right-aligned widgets
+            var viewCellsWidget = this.widgets.getCompositeWidget("viewCells");
+            if (viewCellsWidget != null) {
+                viewCellsWidget.setPosition(new appeng.client.Point(viewCellsWidget.getBounds().getX() + extraWidth,
+                        viewCellsWidget.getBounds().getY()));
+            }
+            var craftingStatusWidget = this.widgets.getWidget("craftingStatus");
+            if (craftingStatusWidget != null) {
+                craftingStatusWidget.setX(craftingStatusWidget.getX() + extraWidth);
+            }
+        }
+
         if (shouldAutoFocus()) {
             setInitialFocus(this.searchField);
         }
 
         this.updateScrollbar();
+    }
+
+    private void drawSplitHorizontally(GuiGraphics guiGraphics, Blitter blitter, int x, int y,
+                                       int extraWidth) {
+        if (extraWidth == 0) {
+            blitter.dest(x, y).blit(guiGraphics);
+            return;
+        }
+
+        int midXSource = 7 + 18; // Default first slot is at 7 (1px border) + 18px slot
+
+        // Left
+        blitter.copy().srcWidth(midXSource).dest(x, y).blit(guiGraphics);
+
+        // Middle (repeat)
+        int repeatWidth = 18;
+        int numRepeats = extraWidth / repeatWidth;
+        for (int i = 0; i < numRepeats; i++) {
+            blitter.copy().setSrcX(blitter.getSrcX() + midXSource - repeatWidth).srcWidth(repeatWidth)
+                    .dest(x + midXSource + i * repeatWidth, y).blit(guiGraphics);
+        }
+
+        // Right
+        int rightSourceWidth = blitter.getSrcWidth() - midXSource;
+        blitter.copy().setSrcX(blitter.getSrcX() + midXSource).srcWidth(rightSourceWidth)
+                .dest(x + midXSource + extraWidth, y).blit(guiGraphics);
     }
 
     @Override
@@ -527,12 +580,16 @@ public class MEStorageScreen<C extends MEStorageMenu>
     public void drawBG(GuiGraphics guiGraphics, int offsetX, int offsetY, int mouseX,
             int mouseY, float partialTicks) {
 
+        int slotsPerRow = config.getTerminalLayout().getColumns();
+        int extraSlots = Math.max(0, slotsPerRow - style.getSlotsPerRow());
+        int extraWidth = extraSlots * 18;
+
         style.getHeader()
                 .dest(offsetX, offsetY)
                 .blit(guiGraphics);
 
         int y = offsetY;
-        style.getHeader().dest(offsetX, y).blit(guiGraphics);
+        drawSplitHorizontally(guiGraphics, style.getHeader(), offsetX, y, extraWidth);
         y += style.getHeader().getSrcHeight();
 
         // To draw the first/last row, we need to at least draw 2
@@ -544,18 +601,19 @@ public class MEStorageScreen<C extends MEStorageMenu>
             } else if (x + 1 == rowsToDraw) {
                 row = style.getLastRow();
             }
-            row.dest(offsetX, y).blit(guiGraphics);
+            drawSplitHorizontally(guiGraphics, row, offsetX, y, extraWidth);
             y += style.getRow().getSrcHeight();
         }
 
-        style.getBottom().dest(offsetX, y).blit(guiGraphics);
+        drawSplitHorizontally(guiGraphics, style.getBottom(), offsetX, y, extraWidth);
 
         // Draw the overlay for the pinned row
         if (repo.hasPinnedRow()) {
-            Blitter.texture("guis/terminal.png")
-                    .src(0, 204, 162, 18)
-                    .dest(offsetX + 7, offsetY + style.getHeader().getSrcHeight())
-                    .blit(guiGraphics);
+            drawSplitHorizontally(guiGraphics,
+                    Blitter.texture("guis/terminal.png")
+                            .src(0, 204, 162, 18),
+                    offsetX, offsetY + style.getHeader().getSrcHeight(), extraWidth
+            );
         }
 
         if (this.searchField != null) {
@@ -804,6 +862,14 @@ public class MEStorageScreen<C extends MEStorageMenu>
         SE next = btn.getNextValue(backwards);
         NetworkHandler.instance().sendToServer(new ConfigValuePacket(btn.getSetting(), next));
         btn.set(next);
+    }
+
+    private void toggleTerminalLayout(SettingToggleButton<TerminalLayout> btn, boolean backwards) {
+        var next = btn.getNextValue(backwards);
+        AEConfig.instance().setTerminalLayout(next);
+        btn.set(next);
+        this.imageWidth = this.style.getScreenWidth(getSlotsPerRow());
+        this.reinitalize();
     }
 
     private void setSearchText(String text) {

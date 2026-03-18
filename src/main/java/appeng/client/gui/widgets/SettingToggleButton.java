@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
+import appeng.api.config.TerminalLayout;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.client.Minecraft;
@@ -171,6 +172,19 @@ public class SettingToggleButton<T extends Enum<T>> extends IconButton {
             registerApp(Icon.TERMINAL_STYLE_FULL, Settings.TERMINAL_STYLE, TerminalStyle.FULL,
                     ButtonToolTips.TerminalStyle,
                     ButtonToolTips.TerminalStyle_Full);
+
+            registerApp(Icon.TERMINAL_LAYOUT_9, Settings.TERMINAL_LAYOUT, TerminalLayout.COLUMNS_9,
+                    ButtonToolTips.TerminalLayout,
+                    ButtonToolTips.TerminalLayoutColumns.text(9));
+            registerApp(Icon.TERMINAL_LAYOUT_11, Settings.TERMINAL_LAYOUT, TerminalLayout.COLUMNS_11,
+                    ButtonToolTips.TerminalLayout,
+                    ButtonToolTips.TerminalLayoutColumns.text(11));
+            registerApp(Icon.TERMINAL_LAYOUT_13, Settings.TERMINAL_LAYOUT, TerminalLayout.COLUMNS_13,
+                    ButtonToolTips.TerminalLayout,
+                    ButtonToolTips.TerminalLayoutColumns.text(13));
+            registerApp(Icon.TERMINAL_LAYOUT_15, Settings.TERMINAL_LAYOUT, TerminalLayout.COLUMNS_15,
+                    ButtonToolTips.TerminalLayout,
+                    ButtonToolTips.TerminalLayoutColumns.text(15));
 
             registerApp(Icon.SORT_BY_NAME, Settings.SORT_BY, SortOrder.NAME, ButtonToolTips.SortBy,
                     ButtonToolTips.ItemName);

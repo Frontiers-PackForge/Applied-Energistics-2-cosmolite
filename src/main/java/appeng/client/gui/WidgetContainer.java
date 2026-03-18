@@ -431,4 +431,12 @@ public class WidgetContainer {
             this.tooltip = tooltip;
         }
     }
+
+    public AbstractWidget getWidget(String id) {
+        return widgets.get(id);
+    }
+
+    public ICompositeWidget getCompositeWidget(String id) {
+        return compositeWidgets.get(id);
+    }
 }

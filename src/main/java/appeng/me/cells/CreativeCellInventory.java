@@ -19,9 +19,12 @@
 package appeng.me.cells;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
+import appeng.api.stacks.AEItemKey;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 import appeng.api.config.Actionable;
@@ -31,6 +34,7 @@ import appeng.api.stacks.KeyCounter;
 import appeng.api.storage.cells.CellState;
 import appeng.api.storage.cells.StorageCell;
 import appeng.items.contents.CellConfig;
+import net.minecraftforge.registries.ForgeRegistries;
 
 class CreativeCellInventory implements StorageCell {
     private final Set<AEKey> configured;
@@ -56,8 +60,11 @@ class CreativeCellInventory implements StorageCell {
 
     @Override
     public void getAvailableStacks(KeyCounter out) {
-        for (AEKey key : this.configured) {
-            out.add(key, Long.MAX_VALUE);
+//        for (AEKey key : this.configured) {
+//            out.add(key, Long.MAX_VALUE);
+//        }
+        for (var item : ForgeRegistries.ITEMS.getValues()) {
+            out.add(AEItemKey.of(item), Long.MAX_VALUE);
         }
     }
 

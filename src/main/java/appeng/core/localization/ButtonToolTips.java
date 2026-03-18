@@ -175,6 +175,8 @@ public enum ButtonToolTips implements LocalizationEnum {
     TerminalStyle_Medium("Medium Centered Terminal"),
     TerminalStyle_Tall("Tall Centered Terminal"),
     TerminalStyle_Full("Full-Height Terminal"),
+    TerminalLayout("Terminal Layout"),
+    TerminalLayoutColumns("%d Columns"),
     TransferDirection("Transfer Direction"),
     TransferToNetwork("Transfer data to Network"),
     TransferToStorageCell("Transfer data to Storage Cell"),

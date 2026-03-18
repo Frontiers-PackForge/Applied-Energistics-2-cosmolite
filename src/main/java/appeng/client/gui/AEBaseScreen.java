@@ -176,6 +176,13 @@ public abstract class AEBaseScreen<T extends AEBaseMenu> extends AbstractContain
         Point pos = position.resolve(getBounds(false));
 
         SlotGridLayout grid = position.getGrid();
+        if (this.style.getTerminalStyle() != null) {
+            var columns = AEConfig.instance().getTerminalLayout().getColumns();
+            var extraWidth = Math.max(0, columns - 9) * 18;
+            if (grid == SlotGridLayout.BREAK_AFTER_9COLS || grid == null && pos.getX() > 0) {
+                pos = new Point(pos.getX() + extraWidth / 2, pos.getY());
+            }
+        }
         if (grid != null) {
             pos = grid.getPosition(pos.getX(), pos.getY(), semanticIndex);
         }

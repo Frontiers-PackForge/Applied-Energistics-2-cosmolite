@@ -30,6 +30,7 @@ import appeng.api.config.CondenserOutput;
 import appeng.api.config.PowerMultiplier;
 import appeng.api.config.PowerUnits;
 import appeng.api.config.Settings;
+import appeng.api.config.TerminalLayout;
 import appeng.api.config.TerminalStyle;
 import appeng.api.networking.pathing.ChannelMode;
 import appeng.core.config.BooleanOption;
@@ -291,6 +292,14 @@ public final class AEConfig {
 
     public void setTerminalStyle(TerminalStyle setting) {
         CLIENT.terminalStyle.set(setting);
+    }
+
+    public TerminalLayout getTerminalLayout() {
+        return CLIENT.terminalLayout.get();
+    }
+
+    public void setTerminalLayout(TerminalLayout setting) {
+        CLIENT.terminalLayout.set(setting);
     }
 
     public boolean isGuideHotkeyEnabled() {
@@ -598,6 +607,7 @@ public final class AEConfig {
 
         // Terminal Settings
         public final EnumOption<TerminalStyle> terminalStyle;
+        public final EnumOption<TerminalLayout> terminalLayout;
         public final BooleanOption pinAutoCraftedItems;
         public final BooleanOption clearGridOnClose;
         public final IntegerOption terminalMargin;
@@ -663,6 +673,7 @@ public final class AEConfig {
 
             var terminals = root.subsection("terminals");
             this.terminalStyle = terminals.addEnum("terminalStyle", TerminalStyle.SMALL);
+            this.terminalLayout = terminals.addEnum("terminalLayout", TerminalLayout.COLUMNS_9);
             this.pinAutoCraftedItems = terminals.addBoolean("pinAutoCraftedItems", true,
                     "Pin items that the player auto-crafts to the top of the terminal");
             this.clearGridOnClose = client.addBoolean("clearGridOnClose", false,
