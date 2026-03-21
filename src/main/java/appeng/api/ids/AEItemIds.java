@@ -54,6 +54,7 @@ public final class AEItemIds {
     public static final ResourceLocation WIRELESS_CRAFTING_TERMINAL = id("wireless_crafting_terminal");
     public static final ResourceLocation WRAPPED_GENERIC_STACK = id("wrapped_generic_stack");
     public static final ResourceLocation FACADE = id("facade");
+    public static final ResourceLocation COLORIZER = id("colorizer");
 
     ///
     /// STORAGE CELLS

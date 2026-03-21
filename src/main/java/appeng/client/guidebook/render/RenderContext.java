@@ -180,7 +180,7 @@ public interface RenderContext {
         var key = AEFluidKey.of(fluid, tag);
         FluidBlitter.create(key)
                 .dest(x, y, width, height)
-                .blit(guiGraphics());
+                .blit(guiGraphics(), false);
     }
 
     void renderItem(ItemStack stack, int x, int y, int z, float width, float height);

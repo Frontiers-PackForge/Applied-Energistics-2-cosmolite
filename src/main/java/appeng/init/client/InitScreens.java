@@ -34,6 +34,7 @@ import net.minecraft.world.inventory.MenuType;
 import appeng.client.gui.AEBaseScreen;
 import appeng.client.gui.implementations.CellWorkbenchScreen;
 import appeng.client.gui.implementations.ChestScreen;
+import appeng.client.gui.implementations.ColorizerScreen;
 import appeng.client.gui.implementations.CondenserScreen;
 import appeng.client.gui.implementations.DriveScreen;
 import appeng.client.gui.implementations.EnergyLevelEmitterScreen;
@@ -71,6 +72,7 @@ import appeng.client.gui.style.StyleManager;
 import appeng.menu.AEBaseMenu;
 import appeng.menu.implementations.CellWorkbenchMenu;
 import appeng.menu.implementations.ChestMenu;
+import appeng.menu.implementations.ColorizerMenu;
 import appeng.menu.implementations.CondenserMenu;
 import appeng.menu.implementations.DriveMenu;
 import appeng.menu.implementations.EnergyLevelEmitterMenu;
@@ -151,6 +153,7 @@ public final class InitScreens {
         register(CraftingStatusMenu.TYPE, CraftingStatusScreen::new, "/screens/crafting_status.json");
         register(SpatialAnchorMenu.TYPE, SpatialAnchorScreen::new, "/screens/spatial_anchor.json");
         register(PatternBoxMenu.TYPE, PatternBoxScreen::new, "/screens/pattern_box.json");
+        register(ColorizerMenu.TYPE, ColorizerScreen::new, "/screens/colorizer.json");
 
         // Terminals
         InitScreens.<MEStorageMenu, MEStorageScreen<MEStorageMenu>>register(

@@ -18,9 +18,15 @@
 
 package appeng.menu.me.crafting;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.WeakHashMap;
 import java.util.concurrent.Future;
+
+import com.google.common.collect.ImmutableSet;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -62,10 +68,17 @@ import appeng.menu.locator.MenuLocator;
 /**
  * @see appeng.client.gui.me.crafting.CraftConfirmScreen
  */
-public class CraftConfirmMenu extends AEBaseMenu implements ISubMenu {
+public class CraftConfirmMenu extends AEBaseMenu implements ISubMenu, ICpuListMenu {
+
+    private static final CraftingCpuList EMPTY_CPU_LIST = new CraftingCpuList(Collections.emptyList());
+
+    private static final Comparator<CraftingCpuListEntry> CPU_COMPARATOR = Comparator
+            .comparing((CraftingCpuListEntry e) -> e.name() == null)
+            .thenComparing(e -> e.name() != null ? e.name().getString() : "")
+            .thenComparingInt(CraftingCpuListEntry::serial);
 
     private static final String ACTION_BACK = "back";
-    private static final String ACTION_CYCLE_CPU = "cycleCpu";
+    private static final String ACTION_SELECT_CPU = "selectCpu";
     private static final String ACTION_START_JOB = "startJob";
     private static final String ACTION_START_FOLLOWING_JOB = "startFollowingJob";
     private static final String ACTION_REPLAN = "replan";
@@ -75,7 +88,20 @@ public class CraftConfirmMenu extends AEBaseMenu implements ISubMenu {
     public static final MenuType<CraftConfirmMenu> TYPE = MenuTypeBuilder
             .create(CraftConfirmMenu::new, ISubMenuHost.class)
             .build("craftconfirm");
-    private final CraftingCPUCycler cpuCycler;
+
+    private final WeakHashMap<ICraftingCPU, Integer> cpuSerialMap = new WeakHashMap<>();
+
+    private int nextCpuSerial = 1;
+
+    private ImmutableSet<ICraftingCPU> lastCpuSet = ImmutableSet.of();
+
+    private int lastUpdate = 0;
+
+    @GuiSync(9)
+    public CraftingCpuList cpuList = EMPTY_CPU_LIST;
+
+    @GuiSync(10)
+    private int selectedCpuSerial = -1;
 
     private ICraftingCPU selectedCpu;
 
@@ -123,12 +149,9 @@ public class CraftConfirmMenu extends AEBaseMenu implements ISubMenu {
     public CraftConfirmMenu(int id, Inventory ip, ISubMenuHost te) {
         super(TYPE, id, ip, te);
         this.host = te;
-        this.cpuCycler = new CraftingCPUCycler(this::cpuMatches, this::onCPUSelectionChanged);
-        // A player can select no crafting CPU to use a suitable one automatically
-        this.cpuCycler.setAllowNoSelection(true);
 
         registerClientAction(ACTION_BACK, this::goBack);
-        registerClientAction(ACTION_CYCLE_CPU, Boolean.class, this::cycleSelectedCPU);
+        registerClientAction(ACTION_SELECT_CPU, Integer.class, this::selectCpu);
         registerClientAction(ACTION_START_JOB, this::startJob);
         registerClientAction(ACTION_START_FOLLOWING_JOB, this::startFollowingJob);
         registerClientAction(ACTION_REPLAN, this::replan);
@@ -196,14 +219,6 @@ public class CraftConfirmMenu extends AEBaseMenu implements ISubMenu {
         return true;
     }
 
-    public void cycleSelectedCPU(boolean next) {
-        if (isClientSide()) {
-            sendClientAction(ACTION_CYCLE_CPU, next);
-        } else {
-            this.cpuCycler.cycleCpu(next);
-        }
-    }
-
     @Override
     public void broadcastChanges() {
         if (isClientSide()) {
@@ -218,7 +233,22 @@ public class CraftConfirmMenu extends AEBaseMenu implements ISubMenu {
             return;
         }
 
-        this.cpuCycler.detectAndSendChanges(grid);
+        // Periodically update the CPU list so that busy statuses are reflected
+        // on the client, similar to CraftingStatusMenu.
+        if (!lastCpuSet.equals(grid.getCraftingService().getCpus()) || ++lastUpdate >= 20) {
+            lastCpuSet = grid.getCraftingService().getCpus();
+            cpuList = createCpuList();
+            lastUpdate = 0;
+        }
+
+        noCPU = lastCpuSet.isEmpty();
+
+        // Clear selection if CPU is no longer in list
+        if (selectedCpuSerial != -1) {
+            if (cpuList.cpus().stream().noneMatch(c -> c.serial() == selectedCpuSerial)) {
+                selectCpu(-1);
+            }
+        }
 
         super.broadcastChanges();
 
@@ -249,6 +279,33 @@ public class CraftConfirmMenu extends AEBaseMenu implements ISubMenu {
         final IActionHost h = (IActionHost) this.getTarget();
         final IGridNode a = h.getActionableNode();
         return a != null ? a.getGrid() : null;
+    }
+
+    private CraftingCpuList createCpuList() {
+        var entries = new ArrayList<CraftingCpuListEntry>(lastCpuSet.size());
+        for (var cpu : lastCpuSet) {
+            var serial = getOrAssignCpuSerial(cpu);
+            var status = cpu.getJobStatus();
+            var progress = 0f;
+            if (status != null && status.totalItems() > 0) {
+                progress = (float) (status.progress() / (double) status.totalItems());
+            }
+            entries.add(new CraftingCpuListEntry(
+                    serial,
+                    cpu.getAvailableStorage(),
+                    cpu.getCoProcessors(),
+                    cpu.getName(),
+                    cpu.getSelectionMode(),
+                    status != null ? status.crafting() : null,
+                    progress,
+                    status != null ? status.elapsedTimeNanos() : 0));
+        }
+        entries.sort(CPU_COMPARATOR);
+        return new CraftingCpuList(entries);
+    }
+
+    private int getOrAssignCpuSerial(ICraftingCPU cpu) {
+        return cpuSerialMap.computeIfAbsent(cpu, ignored -> nextCpuSerial++);
     }
 
     private boolean cpuMatches(ICraftingCPU c) {
@@ -311,19 +368,54 @@ public class CraftConfirmMenu extends AEBaseMenu implements ISubMenu {
         }
     }
 
-    private void onCPUSelectionChanged(CraftingCPURecord cpuRecord, boolean cpusAvailable) {
-        noCPU = !cpusAvailable;
+    @Override
+    public CraftingCpuList getCpuList() {
+        return cpuList;
+    }
 
-        if (cpuRecord == null) {
-            cpuBytesAvail = 0;
-            cpuCoProcessors = 0;
-            cpuName = null;
-            selectedCpu = null;
+    @Override
+    public int getSelectedCpuSerial() {
+        return selectedCpuSerial;
+    }
+
+    @Override
+    public boolean isCpuValid(CraftingCpuListEntry cpu) {
+        if (this.plan == null) {
+            return true;
+        }
+        return cpu.storage() >= this.plan.getUsedBytes() && cpu.currentJob() == null;
+    }
+
+    @Override
+    public void selectCpu(int serial) {
+        if (isClientSide()) {
+            selectedCpuSerial = serial;
+            sendClientAction(ACTION_SELECT_CPU, serial);
         } else {
-            cpuBytesAvail = cpuRecord.getSize();
-            cpuCoProcessors = cpuRecord.getProcessors();
-            cpuName = cpuRecord.getName();
-            selectedCpu = cpuRecord.getCpu();
+            ICraftingCPU newSelectedCpu = null;
+            if (serial != -1) {
+                for (var cpu : lastCpuSet) {
+                    if (cpuSerialMap.getOrDefault(cpu, -1) == serial) {
+                        newSelectedCpu = cpu;
+                        break;
+                    }
+                }
+            }
+
+            if (newSelectedCpu != selectedCpu) {
+                selectedCpu = newSelectedCpu;
+                selectedCpuSerial = serial;
+
+                if (newSelectedCpu == null) {
+                    cpuBytesAvail = 0;
+                    cpuCoProcessors = 0;
+                    cpuName = null;
+                } else {
+                    cpuBytesAvail = newSelectedCpu.getAvailableStorage();
+                    cpuCoProcessors = newSelectedCpu.getCoProcessors();
+                    cpuName = newSelectedCpu.getName();
+                }
+            }
         }
     }
 

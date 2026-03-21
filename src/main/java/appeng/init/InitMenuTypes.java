@@ -27,6 +27,7 @@ import net.minecraftforge.registries.IForgeRegistry;
 
 import appeng.menu.implementations.CellWorkbenchMenu;
 import appeng.menu.implementations.ChestMenu;
+import appeng.menu.implementations.ColorizerMenu;
 import appeng.menu.implementations.CondenserMenu;
 import appeng.menu.implementations.DriveMenu;
 import appeng.menu.implementations.EnergyLevelEmitterMenu;
@@ -71,6 +72,7 @@ public final class InitMenuTypes {
         registerAll(registry,
                 CellWorkbenchMenu.TYPE,
                 ChestMenu.TYPE,
+                ColorizerMenu.TYPE,
                 CondenserMenu.TYPE,
                 CraftAmountMenu.TYPE,
                 CraftConfirmMenu.TYPE,

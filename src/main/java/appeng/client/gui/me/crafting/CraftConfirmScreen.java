@@ -37,6 +37,7 @@ import appeng.client.gui.StackWithBounds;
 import appeng.client.gui.style.ScreenStyle;
 import appeng.client.gui.style.TerminalStyle;
 import appeng.client.gui.widgets.ActionButton;
+import appeng.client.gui.widgets.CPUSelectionList;
 import appeng.client.gui.widgets.Scrollbar;
 import appeng.client.gui.widgets.SettingToggleButton;
 import appeng.core.AEConfig;
@@ -55,7 +56,6 @@ public class CraftConfirmScreen extends AEBaseScreen<CraftConfirmMenu> {
     private CraftConfirmTableRenderer table;
 
     private final Button start, startWithFollow;
-    private final Button selectCPU;
     private final Scrollbar scrollbar;
     private final boolean isNotifyForFinishedCraftingJobs;
 
@@ -63,6 +63,9 @@ public class CraftConfirmScreen extends AEBaseScreen<CraftConfirmMenu> {
 
     private TerminalStyle terminalStyle;
     private int rows = 0;
+
+    private final CPUSelectionList cpuList;
+    private final Scrollbar cpuScrollbar;
 
     public CraftConfirmScreen(CraftConfirmMenu menu, Inventory playerInventory, Component title,
             ScreenStyle style) {
@@ -86,8 +89,10 @@ public class CraftConfirmScreen extends AEBaseScreen<CraftConfirmMenu> {
                 () -> this.start(true));
         this.startWithFollow.active = false;
 
-        this.selectCPU = widgets.addButton("selectCpu", getNextCpuButtonLabel(), this::selectNextCpu);
-        this.selectCPU.active = false;
+        this.cpuScrollbar = widgets.addScrollBar("selectCpuScrollbar");
+
+        this.cpuList = new CPUSelectionList(menu, cpuScrollbar, style);
+        widgets.add("selectCpuList", this.cpuList);
 
         this.addToLeftToolbar(new ActionButton(ActionItems.EXPORT_CRAFT, this::exportCraft));
 
@@ -114,6 +119,11 @@ public class CraftConfirmScreen extends AEBaseScreen<CraftConfirmMenu> {
             if (this.scrollbar != null) {
                 this.scrollbar.setHeight(this.rows * this.terminalStyle.getRow().getSrcHeight() - 1);
             }
+
+            cpuList.setVisibleRows(this.rows);
+            cpuList.setSize(cpuList.getBounds().getWidth(),
+                    this.imageHeight - this.terminalStyle.getBottom().getSrcHeight());
+            cpuScrollbar.setHeight(this.rows * this.terminalStyle.getRow().getSrcHeight() - 1);
         }
         super.init();
     }
@@ -128,15 +138,18 @@ public class CraftConfirmScreen extends AEBaseScreen<CraftConfirmMenu> {
             return;
         }
 
-        this.selectCPU.setMessage(getNextCpuButtonLabel());
-
         CraftingPlanSummary plan = menu.getPlan();
         boolean planIsStartable = plan != null && !plan.isSimulation();
         var start = !this.menu.hasNoCPU() && planIsStartable;
+        if (menu.getSelectedCpuSerial() == -1 && start) {
+            boolean hasValidCpu = menu.getCpuList().cpus().stream().anyMatch(menu::isCpuValid);
+            if (!hasValidCpu) {
+                start = false;
+            }
+        }
         this.start.active = start;
         this.startWithFollow.active = start;
         this.startWithFollow.visible = !isNotifyForFinishedCraftingJobs;
-        this.selectCPU.active = planIsStartable;
 
         // Show additional status about the selected CPU and plan when the planning is done
         Component planDetails = GuiText.CalculatingWait.text();
@@ -168,6 +181,7 @@ public class CraftConfirmScreen extends AEBaseScreen<CraftConfirmMenu> {
         }
     }
 
+    @Deprecated(forRemoval = true)
     private Component getNextCpuButtonLabel() {
         if (this.menu.hasNoCPU()) {
             return GuiText.NoCraftingCPUs.text();
@@ -237,14 +251,12 @@ public class CraftConfirmScreen extends AEBaseScreen<CraftConfirmMenu> {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int p_keyPressed_3_) {
         if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
-            this.start(isNotifyForFinishedCraftingJobs);
+            if (this.start.active) {
+                this.start(isNotifyForFinishedCraftingJobs);
+            }
             return true;
         }
         return super.keyPressed(keyCode, scanCode, p_keyPressed_3_);
-    }
-
-    private void selectNextCpu() {
-        getMenu().cycleSelectedCPU(!isHandlingRightClick());
     }
 
     private void start(boolean isFollowing) {
