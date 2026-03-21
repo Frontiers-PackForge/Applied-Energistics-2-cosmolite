@@ -100,6 +100,7 @@ class PatternProviderTargetCache {
                         }
                     }
                     case SMART -> {
+                        // SMART mode: block if machine contains items NOT in current pattern's inputs
                         for (var stack : storage.getAvailableStacks()) {
                             if (stack.getKey().getId().equals(programmedCircuit))
                                 continue;
