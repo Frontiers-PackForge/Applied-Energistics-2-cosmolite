@@ -1,8 +1,8 @@
 ---
-
-## navigation:
+navigation:
   parent: ae2-mechanics/ae2-mechanics-index.md
   title: 输入、输出与存储
+---
 
 # 输入、输出与存储
 
