@@ -79,6 +79,7 @@ import appeng.core.settings.TickRates;
 import appeng.helpers.InterfaceLogicHost;
 import appeng.me.cluster.implementations.CraftingCPUCluster;
 import appeng.me.helpers.MachineSource;
+import appeng.util.ConfigInventory;
 import appeng.util.ConfigManager;
 import appeng.util.inv.AppEngInternalInventory;
 import appeng.util.inv.InternalInventoryHost;
@@ -97,6 +98,7 @@ public class PatternProviderLogic implements InternalInventoryHost, ICraftingPro
     public static final String NBT_SEND_LIST = "sendList";
     public static final String NBT_SEND_DIRECTION = "sendDirection";
     public static final String NBT_RETURN_INV = "returnInv";
+    public static final String NBT_BLOCKING_WHITELIST = "blockingWhitelist";
 
     public final PatternProviderLogicHost host;
     private final IManagedGridNode mainNode;
@@ -114,6 +116,7 @@ public class PatternProviderLogic implements InternalInventoryHost, ICraftingPro
      * target, the pattern won't be pushed. Always contains keys with the secondary component dropped.
      */
     private final Set<AEKey> patternInputs = new HashSet<>();
+    private final ConfigInventory blockingWhitelist = ConfigInventory.configTypes(1, this::saveChanges);
     // Pattern sending logic
     private final List<GenericStack> sendList = new ArrayList<>();
     private Direction sendDirection;
@@ -199,6 +202,7 @@ public class PatternProviderLogic implements InternalInventoryHost, ICraftingPro
         }
 
         tag.put(NBT_RETURN_INV, this.returnInv.writeToTag());
+        this.blockingWhitelist.writeToChildTag(tag, NBT_BLOCKING_WHITELIST);
     }
 
     public void readFromNBT(CompoundTag tag) {
@@ -239,6 +243,11 @@ public class PatternProviderLogic implements InternalInventoryHost, ICraftingPro
         }
 
         this.returnInv.readFromTag(tag.getList("returnInv", Tag.TAG_COMPOUND));
+        this.blockingWhitelist.readFromChildTag(tag, NBT_BLOCKING_WHITELIST);
+    }
+
+    public ConfigInventory getBlockingWhitelist() {
+        return this.blockingWhitelist;
     }
 
     public IConfigManager getConfigManager() {
@@ -365,13 +374,26 @@ public class PatternProviderLogic implements InternalInventoryHost, ICraftingPro
         // Rearrange for round-robin
         rearrangeRoundRobin(possibleTargets);
 
+        var pushedInputs = new HashSet<AEKey>();
+        for (var inputs : inputHolder) {
+            for (var input : inputs) {
+                pushedInputs.add(input.getKey().dropSecondary());
+            }
+        }
+
+        var ignoredKeys = new HashSet<AEKey>();
+        for (var key : blockingWhitelist.keySet()) {
+            ignoredKeys.add(key.dropSecondary());
+        }
+
         // Push to other kinds of blocks
         for (int i = 0; i < possibleTargets.size(); ++i) {
             var target = possibleTargets.get(i);
             var direction = target.direction();
             var adapter = target.target();
 
-            if (this.isBlocking() && adapter.containsPatternInput(this.patternInputs)) {
+            if (this.isBlocking() && adapter.containsPatternInput(this.patternInputs, pushedInputs, ignoredKeys,
+                    this.getBlockingMode())) {
                 continue;
             }
 
@@ -625,6 +647,7 @@ public class PatternProviderLogic implements InternalInventoryHost, ICraftingPro
         this.sendList.clear();
         this.returnInv.clear();
         this.upgrades.clear();
+        this.blockingWhitelist.clear();
     }
 
     public PatternProviderReturnInventory getReturnInv() {
@@ -633,9 +656,12 @@ public class PatternProviderLogic implements InternalInventoryHost, ICraftingPro
 
     public void exportSettings(CompoundTag output) {
         patternInventory.writeToNBT(output, NBT_MEMORY_CARD_PATTERNS);
+        blockingWhitelist.writeToChildTag(output, NBT_BLOCKING_WHITELIST);
     }
 
     public void importSettings(CompoundTag input, @Nullable Player player) {
+        blockingWhitelist.readFromChildTag(input, NBT_BLOCKING_WHITELIST);
+
         if (player != null && input.contains(NBT_MEMORY_CARD_PATTERNS) && !player.level().isClientSide) {
             clearPatternInventory(player);
 
