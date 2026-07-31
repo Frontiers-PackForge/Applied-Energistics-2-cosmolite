@@ -101,9 +101,19 @@ public interface PatternProviderTarget {
 
     boolean containsPatternInput(Set<AEKey> patternInputs);
 
+    default boolean containsPatternInput(Set<AEKey> patternInputs, Set<AEKey> pushedInputs, Set<AEKey> ignoredKeys) {
+        return containsPatternInput(patternInputs);
+    }
+
     default boolean containsPatternInput(Set<AEKey> patternInputs, BlockingMode blockingMode) {
         setBlockingMode(blockingMode);
         return containsPatternInput(patternInputs);
+    }
+
+    default boolean containsPatternInput(Set<AEKey> patternInputs, Set<AEKey> pushedInputs, Set<AEKey> ignoredKeys,
+            BlockingMode blockingMode) {
+        setBlockingMode(blockingMode);
+        return containsPatternInput(patternInputs, pushedInputs, ignoredKeys);
     }
 
     default void setBlockingMode(BlockingMode blockingMode) {

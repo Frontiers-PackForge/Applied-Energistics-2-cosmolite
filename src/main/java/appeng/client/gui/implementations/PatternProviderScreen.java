@@ -21,6 +21,8 @@ package appeng.client.gui.implementations;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 
@@ -35,6 +37,7 @@ import appeng.client.gui.style.ScreenStyle;
 import appeng.client.gui.widgets.PatternBoxPanel;
 import appeng.client.gui.widgets.ServerSettingToggleButton;
 import appeng.client.gui.widgets.SettingToggleButton;
+import appeng.client.gui.widgets.SlotPanel;
 import appeng.client.gui.widgets.ToggleButton;
 import appeng.client.gui.widgets.ToolboxPanel;
 import appeng.client.gui.widgets.UpgradesPanel;
@@ -51,6 +54,7 @@ public class PatternProviderScreen<C extends PatternProviderMenu> extends AEBase
     private final SettingToggleButton<LockCraftingMode> lockCraftingModeButton;
     private final ToggleButton showInPatternAccessTerminalButton;
     private final PatternProviderLockReason lockReason;
+    private final SlotPanel blockingWhitelist;
 
     public PatternProviderScreen(C menu, Inventory playerInventory, Component title,
             ScreenStyle style) {
@@ -86,6 +90,32 @@ public class PatternProviderScreen<C extends PatternProviderMenu> extends AEBase
 
         this.lockReason = new PatternProviderLockReason(this);
         widgets.add("lockReason", this.lockReason);
+
+        this.blockingWhitelist = new SlotPanel(
+                menu.getSlots(SlotSemantics.BLOCKING_WHITELIST),
+                () -> List.of(GuiText.BlockingWhitelist.text(),
+                        GuiText.BlockingWhitelistHint.text().copy().withStyle(ChatFormatting.GRAY)));
+    }
+
+    @Override
+    protected void init() {
+        super.init();
+
+        blockingWhitelist.layout(leftPos, topPos, imageWidth + 2, getBlockingWhitelistTop());
+        addRenderableWidget(blockingWhitelist);
+    }
+
+    @Override
+    public List<Rect2i> getExclusionZones() {
+        var zones = super.getExclusionZones();
+        zones.add(new Rect2i(blockingWhitelist.getX(), blockingWhitelist.getY(),
+                blockingWhitelist.getWidth(), blockingWhitelist.getHeight()));
+        return zones;
+    }
+
+    private int getBlockingWhitelistTop() {
+        var upgradeRows = Math.min(menu.getSlots(SlotSemantics.UPGRADE).size(), 8);
+        return upgradeRows > 0 ? 2 * SlotPanel.PADDING + upgradeRows * SlotPanel.SLOT_SIZE : 0;
     }
 
     @Override

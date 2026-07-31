@@ -1,5 +1,6 @@
 package appeng.helpers.patternprovider;
 
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -79,6 +80,12 @@ class PatternProviderTargetCache {
 
             @Override
             public boolean containsPatternInput(Set<AEKey> patternInputs) {
+                return containsPatternInput(patternInputs, patternInputs, Set.of());
+            }
+
+            @Override
+            public boolean containsPatternInput(Set<AEKey> patternInputs, Set<AEKey> pushedInputs,
+                    Set<AEKey> ignoredKeys) {
                 var mode = blockingMode == null
                         ? (configManager == null ? BlockingMode.DEFAULT
                                 : configManager.getSetting(Settings.BLOCKING_MODE_EXTRA))
@@ -86,26 +93,40 @@ class PatternProviderTargetCache {
                 switch (mode) {
                     case ALL -> {
                         for (var stack : storage.getAvailableStacks()) {
-                            if (stack.getKey().getId().equals(programmedCircuit))
+                            if (stack.getKey().dropSecondary().getId().equals(PatternProviderTarget.programmedCircuit)
+                                    || ignoredKeys.contains(stack.getKey().dropSecondary()))
                                 continue;
                             return true;
                         }
                     }
                     case DEFAULT -> {
                         for (var stack : storage.getAvailableStacks()) {
-                            if (stack.getKey().getId().equals(programmedCircuit))
+                            var key = stack.getKey().dropSecondary();
+                            if (stack.getKey().dropSecondary().getId().equals(PatternProviderTarget.programmedCircuit)
+                                    || ignoredKeys.contains(stack.getKey().dropSecondary()))
                                 continue;
-                            if (patternInputs.contains(stack.getKey().dropSecondary()))
+                            if (patternInputs.contains(key))
                                 return true;
                         }
                     }
                     case SMART -> {
+                        var present = new HashSet<AEKey>();
                         for (var stack : storage.getAvailableStacks()) {
-                            if (stack.getKey().getId().equals(programmedCircuit))
-                                continue;
-                            if (!patternInputs.contains(stack.getKey().dropSecondary()))
-                                return true;
+                            var key = stack.getKey().dropSecondary();
+                            if (!stack.getKey().dropSecondary().getId().equals(PatternProviderTarget.programmedCircuit)
+                                    || ignoredKeys.contains(stack.getKey().dropSecondary()))
+                                present.add(key);
                         }
+                        if (present.isEmpty())
+                            return false;
+
+                        var expected = new HashSet<AEKey>();
+                        for (var input : pushedInputs) {
+                            if (!input.getId().equals(PatternProviderTarget.programmedCircuit)
+                                    || ignoredKeys.contains(input))
+                                expected.add(input);
+                        }
+                        return !present.equals(expected);
                     }
                 }
                 return false;

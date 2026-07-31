@@ -38,6 +38,7 @@ import appeng.menu.SlotSemantics;
 import appeng.menu.ToolboxMenu;
 import appeng.menu.guisync.GuiSync;
 import appeng.menu.slot.AppEngSlot;
+import appeng.menu.slot.FakeSlot;
 import appeng.menu.slot.RestrictedInputSlot;
 
 /**
@@ -85,6 +86,11 @@ public class PatternProviderMenu extends AEBaseMenu {
             this.addSlot(new RestrictedInputSlot(RestrictedInputSlot.PlacableItemType.ENCODED_PATTERN,
                     patternInv, x),
                     SlotSemantics.ENCODED_PATTERN);
+        }
+
+        var whitelistInv = logic.getBlockingWhitelist().createMenuWrapper();
+        for (int i = 0; i < whitelistInv.size(); i++) {
+            this.addSlot(new FakeSlot(whitelistInv, i), SlotSemantics.BLOCKING_WHITELIST);
         }
 
         // Show first few entries of the return inv
