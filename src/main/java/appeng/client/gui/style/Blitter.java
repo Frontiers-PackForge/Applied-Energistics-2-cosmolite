@@ -268,11 +268,14 @@ public final class Blitter {
      * Alternate method signature as some textures should not be colorized. (Icons, items, fluids, etc.)
      */
     public void blit(GuiGraphics guiGraphics, boolean colorize) {
+        int r = this.r;
+        int g = this.g;
+        int b = this.b;
         if (colorize) {
-            float r = ScreenColor.getRed();
-            float g = ScreenColor.getGreen();
-            float b = ScreenColor.getBlue();
-            this.color(r, g, b);
+            var screenColor = ScreenColor.getColor();
+            r = r * (screenColor >> 16 & 255) / 255;
+            g = g * (screenColor >> 8 & 255) / 255;
+            b = b * (screenColor & 255) / 255;
         }
 
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
