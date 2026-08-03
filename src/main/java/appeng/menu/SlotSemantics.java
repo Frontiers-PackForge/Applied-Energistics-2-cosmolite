@@ -111,4 +111,6 @@ public final class SlotSemantics {
     public static final SlotSemantic CRAFTING_RESULT = register("CRAFTING_RESULT", false);
 
     public static final SlotSemantic MISSING_INGREDIENT = register("MISSING_INGREDIENT", true);
+
+    public static final SlotSemantic BLOCKING_WHITELIST = register("BLOCKING_WHITELIST", false);
 }

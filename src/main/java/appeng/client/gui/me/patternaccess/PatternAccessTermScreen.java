@@ -623,6 +623,7 @@ public class PatternAccessTermScreen<C extends PatternAccessTermMenu> extends AE
         guiGraphics.setColor(r, g, b, 1f);
         guiGraphics.blit(texture, offsetX, offsetY, srcRect.getX(), srcRect.getY(), srcRect.getWidth(),
                 srcRect.getHeight());
+        guiGraphics.setColor(1f, 1f, 1f, 1f);
     }
 
     sealed interface Row {

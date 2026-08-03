@@ -32,6 +32,9 @@ public enum GuiText implements LocalizationEnum {
     Automatic("Automatic"),
     Black("Black"),
     Blank("Blank"),
+    BlockingWhitelist("Blocking Whitelist"),
+    BlockingWhitelistHint(
+            "Items ignored by the blocking mode, use for non consumable items that are in the target inventory."),
     Blue("Blue"),
     Brown("Brown"),
     BytesUsed("%s Bytes Used"),

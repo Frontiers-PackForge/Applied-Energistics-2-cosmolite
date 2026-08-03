@@ -284,6 +284,8 @@
   "gui.ae2.Automatic": "Automatic",
   "gui.ae2.Black": "Black",
   "gui.ae2.Blank": "Blank",
+  "gui.ae2.BlockingWhitelist": "Blocking Whitelist",
+  "gui.ae2.BlockingWhitelistHint": "Items ignored by the blocking mode, use for non consumable items that are in the target inventory.",
   "gui.ae2.Blue": "Blue",
   "gui.ae2.Brown": "Brown",
   "gui.ae2.BytesUsed": "%s Bytes Used",
